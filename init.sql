@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS Task (
 	Description TEXT NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
-	Deadline date NOT NULL, --зачем?
+	Deadline DATE NOT NULL, --зачем?
 	RecievedScore INT NOT NULL
 );
 
@@ -124,13 +124,94 @@ CREATE TABLE IF NOT EXISTS CourseProject (
 	Subject VARCHAR(50) NOT NULL,
 	Description TEXT NOT NULL, -- какой тип данных?
 	NumberOfHours INT NOT NULL,
-	StartDate date NOT NULL,
-	Deadline date NOT NULL
+	StartDate DATE NOT NULL,
+	Deadline DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Queue (
 	QueueID serial PRIMARY KEY,
-	StartDate date NOT NULL
+	StartDate DATE NOT NULL
+);
+
+-- dop
+CREATE TABLE IF NOT EXISTS StudentInQueue (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (queue_id) REFERENCES Queue (QueueID),
+	PRIMARY KEY(student_id, queue_id),
+	NumInQueue Int NOT NULL,
+	Task VARCHAR(50) NOT NULL, -- решить что с типом
+);
+
+CREATE TABLE IF NOT EXISTS TeacherSubject (
+	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
+	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID),
+	PRIMARY KEY(teacher_id, subject_id),
+	TeacherRole Int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Supervisor (
+	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
+	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
+	PRIMARY KEY(teacher_id, project_id),
+	SupervisorRole Int NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS StudentCourseProject (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
+	PRIMARY KEY(student_id, project_id),
+	ProjAssignment TEXT NOT NULL,
+	TitleOfProject VARCHAR(100) NOT NULL,
+	RecievedScore INT NOT NULL,
+	DateOdPassing DATE
+);
+
+CREATE TABLE IF NOT EXISTS LectureAttendance (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (lecture_id) REFERENCES Lecture (LectureID),
+	PRIMARY KEY(student_id, lecture_id),
+	WasAttended BOOL NOT NULL,
+	BonusScore INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS SeminarAttendance (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (seminar_id) REFERENCES Seminar (SeminarID),
+	PRIMARY KEY(student_id, seminar_id),
+	WasAttended BOOL NOT NULL,
+	BonusScore INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS LabInstance (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (lab_id) REFERENCES Lab (LabID),
+	PRIMARY KEY(student_id, lab_id),
+	NumOfInstance INT NOT NULL,
+	RecievedScore INT NOT NULL,
+	Variant INT,
+	DateOdPassing DATE NOT NULL,
+	Remarks TEXT,
+	BonusScore INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS BCInstance (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (bc_id) REFERENCES BC (BCID),
+	PRIMARY KEY(student_id, bc_id),
+	NumOfInstance INT NOT NULL,
+	RecievedScore INT NOT NULL,
+	Variant INT,
+	DateOdPassing DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ExamInstance (
+	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
+	FOREIGN KEY (exam_id) REFERENCES Exam (ExamID),
+	PRIMARY KEY(student_id, bc_id),
+	NumOfInstance INT NOT NULL,
+	RecievedScore INT NOT NULL,
+	TicketNumber INT,
+	DateOdPassing DATE NOT NULL
 );
 
 INSERT INTO  Student(StudentName, Surname, Patronymic, Email, Phone, YearOfAdmission, PassedCourses, NumInGroup)
