@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS Users (
 	UserID serial NOT NULL PRIMARY KEY,
 	Login VARCHAR(50) NOT NULL,
@@ -7,6 +8,7 @@ CREATE TABLE IF NOT EXISTS Users (
 
 CREATE TABLE IF NOT EXISTS StudentGroup (
 	GroupID serial PRIMARY KEY,
+    Group_name varchar(10) NOT NULL,
 	YearOfAdmission INT NOT NULL,
 	Course INT NOT NULL,
 	AmountOfStudents INT NOT NULL
@@ -22,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Student (
 	YearOfAdmission INT NOT NULL,
 	PassedCourses INT NOT NULL,
 	NumInGroup INT NOT NULL,
-	user_id serial NOT NULL,
+	user_id serial NOT NULL,--есть подозрения, что с этим типом данных будут проблемы
 	group_id serial NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES Users (UserID),
 	FOREIGN KEY (group_id) REFERENCES StudentGroup (GroupID)
@@ -41,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Teacher (
 CREATE TABLE IF NOT EXISTS Subject (
 	SubjectID serial PRIMARY KEY,
 	Description TEXT NOT NULL, -- какой тип данных?
-	SubjectProgram TEXT NOT NULL, -- какой тип данных?
+	SubjectProgram TEXT, -- какой тип данных?
 	NumberOfHours INT NOT NULL,
 	NumberOfCredits INT NOT NULL 
 );
@@ -60,7 +62,7 @@ CREATE TABLE IF NOT EXISTS Exam (
 	Questions TEXT NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
-	ExamDate date,
+	ExamDate date,--по моему не надо
 	subject_id serial NOT NULL,
 	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID)
 );
@@ -226,4 +228,3 @@ CREATE TABLE IF NOT EXISTS ExamInstance (
 );
 
 
---SELECT * FROM Student;
