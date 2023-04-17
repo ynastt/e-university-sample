@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS Student (
 	YearOfAdmission VARCHAR(4) NOT NULL,
 	PassedCourses INT NOT NULL,
 	NumInGroup serial,
+	user_id serial NOT NULL,
+	group_id serial NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES Users (UserID),
 	FOREIGN KEY (group_id) REFERENCES StudentGroup (GroupID)
 );
@@ -47,6 +49,7 @@ CREATE TABLE IF NOT EXISTS Teacher (
 	Surname VARCHAR(50) NOT NULL,
 	Patronymic VARCHAR(50),
 	Email VARCHAR(255) UNIQUE NOT NULL,
+	user_id serial NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES Users (UserID)
 );
 
@@ -59,9 +62,9 @@ CREATE TABLE IF NOT EXISTS Subject (
 );
 
 CREATE TABLE IF NOT EXISTS Modules (
-	ModuleID serial,
-	SubjectID serial,
-	PRIMARY KEY(ModuleID, SubjectID)
+	ModuleID serial NOT NULL,
+	SubjectID serial NOT NULL,
+	PRIMARY KEY(ModuleID, SubjectID),
 	ModuleName Varchar(50) NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL
@@ -73,6 +76,7 @@ CREATE TABLE IF NOT EXISTS Exam (
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	ExamDate date,
+	subject_id serial NOT NULL,
 	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID)
 );
 
@@ -80,6 +84,7 @@ CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
 	LectureText JSON NOT NULL, -- какой тип данных?
+	module_id serial NOT NULL,
 	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
@@ -87,6 +92,7 @@ CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
 	SeminarText JSON NOT NULL, -- какой тип данных?
+	module_id serial NOT NULL,
 	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
@@ -98,6 +104,7 @@ CREATE TABLE IF NOT EXISTS Lab (
 	MinScore INT NOT NULL,
 	LabDate date NOT NULL,
 	Deadline date NOT NULL,
+	module_id serial NOT NULL,
 	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
@@ -107,6 +114,7 @@ CREATE TABLE IF NOT EXISTS BC (
 	Questions JSON NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
+	module_id serial NOT NULL,
 	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
@@ -135,14 +143,18 @@ CREATE TABLE IF NOT EXISTS Queue (
 
 -- dop
 CREATE TABLE IF NOT EXISTS StudentInQueue (
+	student_id serial NOT NULL,
+	queue_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (queue_id) REFERENCES Queue (QueueID),
 	PRIMARY KEY(student_id, queue_id),
 	NumInQueue Int NOT NULL,
-	Task VARCHAR(50) NOT NULL, -- решить что с типом
+	Task VARCHAR(50) NOT NULL -- решить что с типом
 );
 
 CREATE TABLE IF NOT EXISTS TeacherSubject (
+	teacher_id serial NOT NULL,
+	subject_id serial NOT NULL,
 	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
 	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID),
 	PRIMARY KEY(teacher_id, subject_id),
@@ -150,6 +162,8 @@ CREATE TABLE IF NOT EXISTS TeacherSubject (
 );
 
 CREATE TABLE IF NOT EXISTS Supervisor (
+	teacher_id serial NOT NULL,
+	project_id serial NOT NULL,
 	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
 	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
 	PRIMARY KEY(teacher_id, project_id),
@@ -157,6 +171,8 @@ CREATE TABLE IF NOT EXISTS Supervisor (
 );
 
 CREATE TABLE IF NOT EXISTS StudentCourseProject (
+	student_id serial NOT NULL,
+	project_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
 	PRIMARY KEY(student_id, project_id),
@@ -167,6 +183,8 @@ CREATE TABLE IF NOT EXISTS StudentCourseProject (
 );
 
 CREATE TABLE IF NOT EXISTS LectureAttendance (
+	student_id serial NOT NULL,
+	lecture_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (lecture_id) REFERENCES Lecture (LectureID),
 	PRIMARY KEY(student_id, lecture_id),
@@ -175,6 +193,8 @@ CREATE TABLE IF NOT EXISTS LectureAttendance (
 );
 
 CREATE TABLE IF NOT EXISTS SeminarAttendance (
+	student_id serial NOT NULL,
+	seminar_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (seminar_id) REFERENCES Seminar (SeminarID),
 	PRIMARY KEY(student_id, seminar_id),
@@ -183,6 +203,8 @@ CREATE TABLE IF NOT EXISTS SeminarAttendance (
 );
 
 CREATE TABLE IF NOT EXISTS LabInstance (
+	student_id serial NOT NULL,
+	lab_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (lab_id) REFERENCES Lab (LabID),
 	PRIMARY KEY(student_id, lab_id),
@@ -195,6 +217,8 @@ CREATE TABLE IF NOT EXISTS LabInstance (
 );
 
 CREATE TABLE IF NOT EXISTS BCInstance (
+	student_id serial NOT NULL,
+	bc_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (bc_id) REFERENCES BC (BCID),
 	PRIMARY KEY(student_id, bc_id),
@@ -205,6 +229,8 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
+	student_id serial NOT NULL,
+	exam_id serial NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (exam_id) REFERENCES Exam (ExamID),
 	PRIMARY KEY(student_id, bc_id),
