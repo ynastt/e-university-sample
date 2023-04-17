@@ -1,8 +1,9 @@
 DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Student;
 DROP TABLE IF EXISTS StudentGroup;
+DROP TABLE IF EXISTS Student;
 DROP TABLE IF EXISTS Teacher;
 DROP TABLE IF EXISTS Subject;
+DROP TABLE IF EXISTS Modules;
 DROP TABLE IF EXISTS Exam;
 DROP TABLE IF EXISTS Lecture;
 DROP TABLE IF EXISTS Seminar;
@@ -19,6 +20,13 @@ CREATE TABLE IF NOT EXISTS Users (
 	UsersRights Boolean NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS StudentGroup (
+	GroupID serial PRIMARY KEY,
+	YearOfAdmission VARCHAR(4) NOT NULL,
+	Course INT NOT NULL,
+	AmountOfStudents INT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS Student (
 	StudentID serial PRIMARY KEY,
 	StudentName VARCHAR(50) NOT NULL,
@@ -28,14 +36,9 @@ CREATE TABLE IF NOT EXISTS Student (
 	Phone VARCHAR(11),
 	YearOfAdmission VARCHAR(4) NOT NULL,
 	PassedCourses INT NOT NULL,
-	NumInGroup serial
-);
-
-CREATE TABLE IF NOT EXISTS StudentGroup (
-	GroupID serial PRIMARY KEY,
-	YearOfAdmission VARCHAR(4) NOT NULL,
-	Course INT NOT NULL,
-	AmountOfStudents INT NOT NULL
+	NumInGroup serial,
+	FOREIGN KEY (user_id) REFERENCES Users (UserID),
+	FOREIGN KEY (group_id) REFERENCES StudentGroup (GroupID)
 );
 
 CREATE TABLE IF NOT EXISTS Teacher (
@@ -43,7 +46,8 @@ CREATE TABLE IF NOT EXISTS Teacher (
 	TeacherName VARCHAR(50) NOT NULL,
 	Surname VARCHAR(50) NOT NULL,
 	Patronymic VARCHAR(50),
-	Email VARCHAR(255) UNIQUE NOT NULL
+	Email VARCHAR(255) UNIQUE NOT NULL,
+	FOREIGN KEY (user_id) REFERENCES Users (UserID)
 );
 
 CREATE TABLE IF NOT EXISTS Subject (
@@ -54,22 +58,36 @@ CREATE TABLE IF NOT EXISTS Subject (
 	NumberOfCredits INT NOT NULL -- что это?
 );
 
-CREATE TABLE IF NOT EXISTS Exam (
-	ExamID serial PRIMARY KEY, -- как идентифицировать экзамены?
+CREATE TABLE IF NOT EXISTS Modules (
+	ModuleID serial,
+	SubjectID serial,
+	PRIMARY KEY(ModuleID, SubjectID)
+	ModuleName Varchar(50) NOT NULL, 
 	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL 
+	MinScore INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Exam (
+	ExamID serial PRIMARY KEY, 
+	Questions JSON NOT NULL, -- какой тип данных?
+	MaxScore INT NOT NULL,
+	MinScore INT NOT NULL,
+	ExamDate date,
+	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID)
 );
 
 CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
-	LectureText JSON NOT NULL -- какой тип данных?
+	LectureText JSON NOT NULL, -- какой тип данных?
+	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
-	SeminarText JSON NOT NULL -- какой тип данных?
+	SeminarText JSON NOT NULL, -- какой тип данных?
+	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
 CREATE TABLE IF NOT EXISTS Lab (
@@ -79,7 +97,8 @@ CREATE TABLE IF NOT EXISTS Lab (
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	LabDate date NOT NULL,
-	Deadline date NOT NULL
+	Deadline date NOT NULL,
+	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
 CREATE TABLE IF NOT EXISTS BC (
@@ -87,7 +106,8 @@ CREATE TABLE IF NOT EXISTS BC (
 	Theme TEXT NOT NULL,
 	Questions JSON NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL
+	MinScore INT NOT NULL,
+	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
 
 CREATE TABLE IF NOT EXISTS Task (
