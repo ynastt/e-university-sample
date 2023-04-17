@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS CourseProject;
 DROP TABLE IF EXISTS Queue;
 
 CREATE TABLE IF NOT EXISTS Users (
-	UserID serial PRIMARY KEY,
+	UserID serial NOT NULL PRIMARY KEY,
 	Login VARCHAR(50) NOT NULL,
 	Passw VARCHAR(50) NOT NULL,
 	UsersRights Boolean NOT NULL
@@ -62,8 +62,8 @@ CREATE TABLE IF NOT EXISTS Subject (
 );
 
 CREATE TABLE IF NOT EXISTS Modules (
-	ModuleID serial NOT NULL,
-	SubjectID serial NOT NULL,
+	ModuleID serial UNIQUE NOT NULL,
+	SubjectID serial UNIQUE NOT NULL,
 	PRIMARY KEY(ModuleID, SubjectID),
 	ModuleName Varchar(50) NOT NULL, 
 	MaxScore INT NOT NULL,
@@ -229,19 +229,16 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
-	student_id serial NOT NULL,
-	exam_id serial NOT NULL,
+	student_id serial UNIQUE NOT NULL,
+	exam_id serial UNIQUE NOT NULL,
 	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
 	FOREIGN KEY (exam_id) REFERENCES Exam (ExamID),
-	PRIMARY KEY(student_id, bc_id),
+	PRIMARY KEY(student_id, exam_id),
 	NumOfInstance INT NOT NULL,
 	RecievedScore INT NOT NULL,
 	TicketNumber INT,
 	DateOdPassing DATE NOT NULL
 );
 
-INSERT INTO  Student(StudentName, Surname, Patronymic, Email, Phone, YearOfAdmission, PassedCourses, NumInGroup)
-VALUES
-	('Анастасия', 'Яровикова', 'Сергеевна', 'yarovnast@bmstu.ru', '89598675865', '2020', 101, DEFAULT);
 
 SELECT * FROM Student;
