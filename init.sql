@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Users (
 
 CREATE TABLE IF NOT EXISTS StudentGroup (
 	GroupID serial PRIMARY KEY,
-	YearOfAdmission VARCHAR(4) NOT NULL,
+	YearOfAdmission INT NOT NULL,
 	Course INT NOT NULL,
 	AmountOfStudents INT NOT NULL
 );
@@ -34,9 +34,9 @@ CREATE TABLE IF NOT EXISTS Student (
 	Patronymic VARCHAR(50),
 	Email VARCHAR(255) UNIQUE NOT NULL,
 	Phone VARCHAR(11),
-	YearOfAdmission VARCHAR(4) NOT NULL,
+	YearOfAdmission INT NOT NULL,
 	PassedCourses INT NOT NULL,
-	NumInGroup serial,
+	NumInGroup INT NOT NULL,
 	user_id serial NOT NULL,
 	group_id serial NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES Users (UserID),
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS Teacher (
 CREATE TABLE IF NOT EXISTS Subject (
 	SubjectID serial PRIMARY KEY,
 	Description TEXT NOT NULL, -- какой тип данных?
-	SubjectProgram JSON NOT NULL, -- какой тип данных?
+	SubjectProgram TEXT NOT NULL, -- какой тип данных?
 	NumberOfHours INT NOT NULL,
-	NumberOfCredits INT NOT NULL -- что это?
+	NumberOfCredits INT NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS Modules (
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS Modules (
 
 CREATE TABLE IF NOT EXISTS Exam (
 	ExamID serial PRIMARY KEY, 
-	Questions JSON NOT NULL, -- какой тип данных?
+	Questions TEXT NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	ExamDate date,
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS Exam (
 CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
-	LectureText JSON NOT NULL, -- какой тип данных?
+	LectureText TEXT NOT NULL, -- какой тип данных?
 	module_id serial NOT NULL,
 	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
 );
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS Lab (
 CREATE TABLE IF NOT EXISTS BC (
 	BCID serial PRIMARY KEY, -- как идентифицировать?
 	Theme TEXT NOT NULL,
-	Questions JSON NOT NULL, -- какой тип данных?
+	Questions TEXT NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	module_id serial NOT NULL,
