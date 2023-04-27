@@ -1,7 +1,7 @@
 package dataBase 
 
 type StudentGroup struct{
-    idd []uint8
+    id []uint8
     name string
     yearOfAdm int
     course int

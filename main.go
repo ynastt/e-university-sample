@@ -3,7 +3,7 @@ package main
 import (
     "database/sql"
     "fmt"
-  
+    "e-university-sample/dataBase"
     _ "github.com/lib/pq"
 )
 
@@ -11,17 +11,10 @@ const (
     host     = "localhost"
     port     = 5432
     user     = "postgres"
-    password = "ub7u3nAntu"
+    //password = "ub7u3nAntu"
+    password = "postgres"
     dbname   = "Euniversity"
 )
-
-type StudentGroup struct{
-    groupId []uint8
-    groupName string
-    yearOfAdm int
-    course int
-    amount int
-}
 
 func main() {
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -41,23 +34,25 @@ func main() {
     fmt.Printf("Successfully connected!\n\n")
 
 
-    res, err := db.Query("select * from StudentGroup")
+    res, err := db.Query("select * from Users")
     if err != nil {
         panic(err)
     }
     defer res.Close()
-    groups := []StudentGroup{}
+    users := []dataBase.User{}
+    //groups := []StudentGroup{}
     for res.Next(){
-        g := StudentGroup{}
-        err := res.Scan(&g.groupId, &g.groupName, &g.yearOfAdm, &g.course, &g.amount)
+        g := dataBase.User{}
+        err := res.Scan(&g.Id, &g.Login, &g.Passw, &g.UserRights)
+        g.Db = db
         if err != nil{
             fmt.Println(err)
             continue
         }
-        groups = append(groups, g)
+        users = append(users, g)
     }
-    fmt.Println("\nGroup Names:")
-    for _, g := range groups{
-        fmt.Println(g.groupName)
+    fmt.Println("\nUsers logins:")
+    for _, g := range users{
+        fmt.Println(g.Get_login())
     }
 }
