@@ -34,16 +34,16 @@ func main() {
     fmt.Printf("Successfully connected!\n\n")
 
 
-    res, err := db.Query("select * from Student")
+    res, err := db.Query("select * from StudentGroup")
     if err != nil {
         panic(err)
     }
     defer res.Close()
-    students := []dataBase.Student{}
+    students := []dataBase.StudentGroup{}
     //groups := []StudentGroup{}
     for res.Next(){
-        g := dataBase.Student{}
-        err := res.Scan(&g.Id, &g.Name, &g.Surname, &g.Patronymic, &g.Email, &g.Phone, &g.Courses, &g.Number, &g.Year, &g.Userid, &g.Groupid)
+        g := dataBase.StudentGroup{}
+        err := res.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
         g.Db = db
         if err != nil{
             fmt.Println(err)
