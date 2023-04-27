@@ -25,21 +25,21 @@ func (u User) Get_userRights() bool{ return u.UserRights }
 
 func (u *User) Set_login(log1 string) {
     u.Login = log1
-    _, err := u.Db.Exec("update Users (Login) values ($1)", u.Login)
+    _, err := u.Db.Exec("update Users set Login = $1 where UserID = $2", u.Login, u.Id)
     if err != nil {
         panic(err)
     }
 }
 func (u *User) Set_passw(passw1 string) {
     u.Passw = passw1
-    _, err := u.Db.Exec("update Users (Passw) values ($1)", u.Passw)
+    _, err := u.Db.Exec("update Users set Passw = $1 where UserID = $2", u.Passw, u.Id)
     if err != nil {
         panic(err)
     }
 }
 func (u *User) Set_userRights(userRights1 bool) {
      u.UserRights = userRights1
-     _, err := u.Db.Exec("update Users (UsersRights) values ($1)", u.UserRights)
+     _, err := u.Db.Exec("update Users set UsersRights = $1 where UserID = $2", u.UserRights, u.Id)
      if err != nil {
         panic(err)
     }

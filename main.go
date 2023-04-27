@@ -34,25 +34,25 @@ func main() {
     fmt.Printf("Successfully connected!\n\n")
 
 
-    res, err := db.Query("select * from Users")
+    res, err := db.Query("select * from Student")
     if err != nil {
         panic(err)
     }
     defer res.Close()
-    users := []dataBase.User{}
+    students := []dataBase.Student{}
     //groups := []StudentGroup{}
     for res.Next(){
-        g := dataBase.User{}
-        err := res.Scan(&g.Id, &g.Login, &g.Passw, &g.UserRights)
+        g := dataBase.Student{}
+        err := res.Scan(&g.Id, &g.Name, &g.Surname, &g.Patronymic, &g.Email, &g.Phone, &g.Courses, &g.Number, &g.Year, &g.Userid, &g.Groupid)
         g.Db = db
         if err != nil{
             fmt.Println(err)
             continue
         }
-        users = append(users, g)
+        students = append(students, g)
     }
-    fmt.Println("\nUsers logins:")
-    for _, g := range users{
-        fmt.Println(g.Get_login())
+    fmt.Println("\nStudents names:")
+    for _, g := range students{
+        fmt.Println(g.Get_name())
     }
 }
