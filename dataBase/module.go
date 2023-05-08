@@ -4,7 +4,7 @@ import (
     "database/sql"
 )
 
-type Module struct{
+type Module struct {
     Id []uint8
 	SubjectID []uint8
 	Name string

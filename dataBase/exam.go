@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-type Exam struct{
+type Exam struct {
     Id []uint8
 	SubjectID []uint8
 	Questions json.RawMessage

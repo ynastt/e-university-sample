@@ -8,7 +8,7 @@ const (
 	student
 )
 
-type User struct{
+type User struct {
     Id []uint8
     Login string
     Passw string

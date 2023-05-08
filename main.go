@@ -40,7 +40,7 @@ func main() {
         panic(err)
     }
     defer res.Close()
-    students := []dataBase.StudentGroup{}
+    studentGroups := []dataBase.StudentGroup{}
     for res.Next(){
         g := dataBase.StudentGroup{}
         err := res.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
@@ -49,10 +49,10 @@ func main() {
             fmt.Println(err)
             continue
         }
-        students = append(students, g)
+        studentGroups = append(studentGroups, g)
     }
-    fmt.Println("\nStudents names:")
-    for _, g := range students{
+    fmt.Println("\nstudentGroups names:")
+    for _, g := range studentGroups{
         fmt.Println(g.Get_name())
     }
 }

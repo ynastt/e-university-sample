@@ -4,7 +4,7 @@ import (
     "database/sql"
 )
 
-type Subject struct{
+type Subject struct {
     Id []uint8
     Description []byte
 	Program []byte
