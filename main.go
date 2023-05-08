@@ -11,8 +11,9 @@ const (
     host     = "localhost"
     port     = 5432
     user     = "postgres"
+    password = "ub7u3nAntu"
+    // password = "postgres"
     //password = "ub7u3nAntu"
-    password = "postgres"
     dbname   = "Euniversity"
 )
 
@@ -40,7 +41,6 @@ func main() {
     }
     defer res.Close()
     students := []dataBase.StudentGroup{}
-    //groups := []StudentGroup{}
     for res.Next(){
         g := dataBase.StudentGroup{}
         err := res.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
