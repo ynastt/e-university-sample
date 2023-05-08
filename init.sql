@@ -1,244 +1,236 @@
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS StudentGroup;
-DROP TABLE IF EXISTS Student;
-DROP TABLE IF EXISTS Teacher;
-DROP TABLE IF EXISTS Subject;
-DROP TABLE IF EXISTS Modules;
-DROP TABLE IF EXISTS Exam;
-DROP TABLE IF EXISTS Lecture;
-DROP TABLE IF EXISTS Seminar;
-DROP TABLE IF EXISTS Lab;
-DROP TABLE IF EXISTS BC;
-DROP TABLE IF EXISTS Task;
-DROP TABLE IF EXISTS CourseProject;
-DROP TABLE IF EXISTS Queue;
-
 CREATE TABLE IF NOT EXISTS Users (
-	UserID serial NOT NULL PRIMARY KEY,
+	UserID UUID PRIMARY KEY,
 	Login VARCHAR(50) NOT NULL,
 	Passw VARCHAR(50) NOT NULL,
-	UsersRights Boolean NOT NULL
+	UsersRights Boolean NOT NULL,
+	CONSTRAINT user_unique UNIQUE(Login) --именование ограничение табилцы
 );
 
 CREATE TABLE IF NOT EXISTS StudentGroup (
-	GroupID serial PRIMARY KEY,
+	GroupID UUID PRIMARY KEY,
+	GroupName VARCHAR NOT NULL UNIQUE,
 	YearOfAdmission INT NOT NULL,
 	Course INT NOT NULL,
 	AmountOfStudents INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Student (
-	StudentID serial PRIMARY KEY,
+	StudentID UUID PRIMARY KEY,
 	StudentName VARCHAR(50) NOT NULL,
 	Surname VARCHAR(50) NOT NULL,
 	Patronymic VARCHAR(50),
 	Email VARCHAR(255) UNIQUE NOT NULL,
-	Phone VARCHAR(11),
+	Phone VARCHAR(11) NOT NULL,
 	YearOfAdmission INT NOT NULL,
 	PassedCourses INT NOT NULL,
 	NumInGroup INT NOT NULL,
-	user_id serial NOT NULL,
-	group_id serial NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES Users (UserID),
-	FOREIGN KEY (group_id) REFERENCES StudentGroup (GroupID)
+	user_id UUID NOT NULL REFERENCES Users(UserID),
+	group_id UUID NOT NULL REFERENCES StudentGroup(GroupID),
+	CONSTRAINT student_unique UNIQUE(user_id, group_id)
 );
 
 CREATE TABLE IF NOT EXISTS Teacher (
-	TeacherID serial PRIMARY KEY,
+	TeacherID UUID PRIMARY KEY,
 	TeacherName VARCHAR(50) NOT NULL,
 	Surname VARCHAR(50) NOT NULL,
 	Patronymic VARCHAR(50),
 	Email VARCHAR(255) UNIQUE NOT NULL,
-	user_id serial NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES Users (UserID)
+	user_id UUID  NOT NULL REFERENCES Users(UserID)
 );
 
 CREATE TABLE IF NOT EXISTS Subject (
-	SubjectID serial PRIMARY KEY,
-	Description TEXT NOT NULL, -- какой тип данных?
-	SubjectProgram TEXT NOT NULL, -- какой тип данных?
+	SubjectID UUID PRIMARY KEY,
+	Description TEXT NOT NULL, 
+	SubjectProgram TEXT NOT NULL, 
 	NumberOfHours INT NOT NULL,
 	NumberOfCredits INT NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS Modules (
-	ModuleID serial UNIQUE NOT NULL,
-	SubjectID serial UNIQUE NOT NULL,
-	PRIMARY KEY(ModuleID, SubjectID),
+	ModuleID UUID NOT NULL UNIQUE,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
 	ModuleName Varchar(50) NOT NULL, 
 	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL
+	MinScore INT NOT NULL,
+	--CONSTRAINT module_unique UNIQUE(ModuleID, subject_id)
+	PRIMARY KEY(ModuleID, subject_id)
 );
 
 CREATE TABLE IF NOT EXISTS Exam (
-	ExamID serial PRIMARY KEY, 
-	Questions TEXT NOT NULL, -- какой тип данных?
+	ExamID UUID PRIMARY KEY, 
+	Questions TEXT NOT NULL,
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	ExamDate date,
-	subject_id serial NOT NULL,
-	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID)
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Lecture (
-	LectureID serial PRIMARY KEY, -- как идентифицировать?
+	LectureID UUID PRIMARY KEY,
 	Theme TEXT NOT NULL,
-	LectureText TEXT NOT NULL, -- какой тип данных?
-	module_id serial NOT NULL,
-	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
+	LectureText TEXT NOT NULL, 
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
-	SeminarID serial PRIMARY KEY, -- как идентифицировать?
+	SeminarID UUID PRIMARY KEY, 
 	Theme TEXT NOT NULL,
-	SeminarText JSON NOT NULL, -- какой тип данных?
-	module_id serial NOT NULL,
-	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
+	SeminarText TEXT NOT NULL, 
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Lab (
-	LabID serial PRIMARY KEY, -- как идентифицировать?
+	LabID UUID PRIMARY KEY,
 	LabName TEXT NOT NULL,
-	LabText JSON NOT NULL, -- какой тип данных?
+	LabText TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	LabDate date NOT NULL,
 	Deadline date NOT NULL,
-	module_id serial NOT NULL,
-	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT --запрет на удаление модуля через таблицу лабы
 );
 
 CREATE TABLE IF NOT EXISTS BC (
-	BCID serial PRIMARY KEY, -- как идентифицировать?
+	BCID uuid PRIMARY KEY, 
 	Theme TEXT NOT NULL,
-	Questions TEXT NOT NULL, -- какой тип данных?
+	Questions TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
-	module_id serial NOT NULL,
-	FOREIGN KEY (module_id) REFERENCES Modules (ModuleID)
-);
-
-CREATE TABLE IF NOT EXISTS Task (
-	TaskID serial PRIMARY KEY, -- как идентифицировать?
-	Description TEXT NOT NULL, -- какой тип данных?
-	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL,
-	Deadline DATE NOT NULL, --зачем?
-	RecievedScore INT NOT NULL
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS CourseProject (
-	ProjectID serial PRIMARY KEY, -- как идентифицировать?
+	ProjectID UUID PRIMARY KEY, 
 	Subject VARCHAR(50) NOT NULL,
-	Description TEXT NOT NULL, -- какой тип данных?
+	Description TEXT NOT NULL, 
 	NumberOfHours INT NOT NULL,
 	StartDate DATE NOT NULL,
 	Deadline DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Queue (
-	QueueID serial PRIMARY KEY,
+	QueueID UUID PRIMARY KEY,
 	StartDate DATE NOT NULL
 );
 
 -- dop
 CREATE TABLE IF NOT EXISTS StudentInQueue (
-	student_id serial NOT NULL,
-	queue_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (queue_id) REFERENCES Queue (QueueID),
-	PRIMARY KEY(student_id, queue_id),
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE RESTRICT,
 	NumInQueue Int NOT NULL,
-	Task VARCHAR(50) NOT NULL -- решить что с типом
+	Task INT NOT NULL, -- делать enum
+	PRIMARY KEY(student_id, queue_id)
 );
 
 CREATE TABLE IF NOT EXISTS TeacherSubject (
-	teacher_id serial NOT NULL,
-	subject_id serial NOT NULL,
-	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
-	FOREIGN KEY (subject_id) REFERENCES Subject (SubjectID),
-	PRIMARY KEY(teacher_id, subject_id),
-	TeacherRole Int NOT NULL
+	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE RESTRICT,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	TeacherRole Int NOT NULL,
+	PRIMARY KEY(teacher_id, subject_id)
 );
 
 CREATE TABLE IF NOT EXISTS Supervisor (
-	teacher_id serial NOT NULL,
-	project_id serial NOT NULL,
-	FOREIGN KEY (teacher_id) REFERENCES Teacher (TeacherID),
-	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
-	PRIMARY KEY(teacher_id, project_id),
-	SupervisorRole Int NOT NULL
+	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE RESTRICT,
+	project_id UUID NOT NULL REFERENCES CourseProject (ProjectID) ON DELETE CASCADE,
+	SupervisorRole Int NOT NULL,
+	PRIMARY KEY(teacher_id, project_id)
 );
 
 CREATE TABLE IF NOT EXISTS StudentCourseProject (
-	student_id serial NOT NULL,
-	project_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (project_id) REFERENCES CourseProject (ProjectID),
-	PRIMARY KEY(student_id, project_id),
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	project_id UUID NOT NULL REFERENCES CourseProject(ProjectID) ON DELETE CASCADE,
 	ProjAssignment TEXT NOT NULL,
 	TitleOfProject VARCHAR(100) NOT NULL,
 	RecievedScore INT NOT NULL,
-	DateOdPassing DATE
+	DateOdPassing DATE,
+	PRIMARY KEY(student_id, project_id)
 );
 
 CREATE TABLE IF NOT EXISTS LectureAttendance (
-	student_id serial NOT NULL,
-	lecture_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (lecture_id) REFERENCES Lecture (LectureID),
-	PRIMARY KEY(student_id, lecture_id),
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	lecture_id UUID NOT NULL REFERENCES Lecture(LectureID) ON DELETE RESTRICT,
 	WasAttended BOOL NOT NULL,
-	BonusScore INT NOT NULL
+	BonusScore INT NOT NULL,
+	PRIMARY KEY(student_id, lecture_id)
 );
 
 CREATE TABLE IF NOT EXISTS SeminarAttendance (
-	student_id serial NOT NULL,
-	seminar_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (seminar_id) REFERENCES Seminar (SeminarID),
-	PRIMARY KEY(student_id, seminar_id),
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	seminar_id UUID NOT NULL REFERENCES Seminar(SeminarID) ON DELETE RESTRICT,
 	WasAttended BOOL NOT NULL,
-	BonusScore INT NOT NULL
+	BonusScore INT NOT NULL,
+	PRIMARY KEY(student_id, seminar_id)
 );
 
 CREATE TABLE IF NOT EXISTS LabInstance (
-	student_id serial NOT NULL,
-	lab_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (lab_id) REFERENCES Lab (LabID),
-	PRIMARY KEY(student_id, lab_id),
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	lab_id UUID NOT NULL REFERENCES Lab(LabID) ON DELETE RESTRICT,
+	DateOdPassing DATE NOT NULL,
 	NumOfInstance INT NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
-	DateOdPassing DATE NOT NULL,
 	Remarks TEXT,
-	BonusScore INT NOT NULL
+	BonusScore INT NOT NULL,
+	PRIMARY KEY(student_id, lab_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
 );
 
 CREATE TABLE IF NOT EXISTS BCInstance (
-	student_id serial NOT NULL,
-	bc_id serial NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (bc_id) REFERENCES BC (BCID),
-	PRIMARY KEY(student_id, bc_id),
-	NumOfInstance INT NOT NULL,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	bc_id UUID UNIQUE NOT NULL REFERENCES BC(BCID) ON DELETE RESTRICT,
+	DateOdPassing DATE NOT NULL,
+	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
-	DateOdPassing DATE NOT NULL
+	PRIMARY KEY(student_id, bc_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
-	student_id serial UNIQUE NOT NULL,
-	exam_id serial UNIQUE NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES Student (StudentID),
-	FOREIGN KEY (exam_id) REFERENCES Exam (ExamID),
-	PRIMARY KEY(student_id, exam_id),
-	NumOfInstance INT NOT NULL,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	DateOdPassing DATE NOT NULL,
+	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	TicketNumber INT,
-	DateOdPassing DATE NOT NULL
+	PRIMARY KEY(student_id, exam_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
+);
+
+CREATE TABLE IF NOT EXISTS Task (
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи 
+	Description TEXT NOT NULL, -- какой тип данных?
+	MaxScore INT NOT NULL,
+	MinScore INT NOT NULL,
+	Deadline DATE NOT NULL,
+	RecievedScore INT NOT NULL,
+	PRIMARY KEY(student_id, subject_id, TaskID) --мне кажется это бредом
+);
+
+CREATE TABLE IF NOT EXISTS TaskExam (
+	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
+	Description TEXT NOT NULL, 
+	MaxScore INT NOT NULL,
+	MinScore INT NOT NULL,
+	Deadline DATE NOT NULL,
+	RecievedScore INT NOT NULL,
+	PRIMARY KEY(exam_id, TaskID) --мб тоже см Task
+);
+
+CREATE TABLE IF NOT EXISTS TaskBC (
+	bc_id UUID NOT NULL REFERENCES BCInstance(bc_id) ON DELETE RESTRICT,
+	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
+	Description TEXT NOT NULL, 
+	MaxScore INT NOT NULL,
+	MinScore INT NOT NULL,
+	Deadline DATE NOT NULL,
+	RecievedScore INT NOT NULL,
+	PRIMARY KEY(bc_id, TaskID) --мб тоже см Task
 );
 
 
-SELECT * FROM Student;
+INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
+	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
+	(gen_random_uuid(), 'ИУ9-62Б', 2020, 3, 24);
+
+SELECT * FROM StudentGroup;
