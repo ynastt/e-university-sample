@@ -4,9 +4,21 @@ import (
     "database/sql"
 )
 
-var c = 1
-var m = map[int]string {
-    1:"базы данных",
+var subjects_counter = 1
+var subjects = map[string]int {
+    "базы данных": 1,
+}
+
+// функция нахождения ключа по значению
+func mapkey(mapa map[string]int, value int) (key string, ok bool) {
+	for k, v := range mapa {
+	  if v == value { 
+		key = k
+		ok = true
+		return
+	  }
+	}
+	return
 }
 
 type CourseProject struct {
@@ -20,16 +32,24 @@ type CourseProject struct {
 }
 
 func (p CourseProject) Get_id() []uint8 { return p.Id }
-func (p CourseProject) Get_subject() string { return m[p.Subject] }
+func (p CourseProject) Get_subject() string { 
+	subj, ok := mapkey(subjects, p.Subject)
+	if !ok {
+  		panic("there is no such subject in database")
+	}
+	return subj
+}
 func (p CourseProject) Get_description() []byte { return p.Description }
 func (p CourseProject) Get_hours() int { return p.Hours }
 func (p CourseProject) Get_start_date() string { return p.StartDate }
 func (p CourseProject) Get_deadline() string { return p.Deadline }
 
 func (p *CourseProject) Set_subject(name string) {
-	c += 1
-	m[c] = name
-    p.Subject = c
+	if _, ok := subjects[name]; !ok {
+		subjects_counter += 1
+		subjects[name] = subjects_counter
+	}
+	p.Subject = subjects[name]
     _, err := p.Db.Exec("update CourseProject SET Subject = $1 where ProjectID = $2", p.Subject, p.Id)
     if err != nil {
         panic(err)
