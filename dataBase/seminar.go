@@ -14,7 +14,7 @@ type Seminar struct {
 }
 
 
-func (s Seminar) Get_id() ([]uint8, []uint8) { return s.Id, s.ModuleID}
+func (s Seminar) Get_id() ([]uint8, []uint8) { return s.Id, s.ModuleID }
 func (s Seminar) Get_text() string { 
 	j, err := json.Marshal(s.Text)
 	if err != nil {
@@ -22,7 +22,7 @@ func (s Seminar) Get_text() string {
 	}
 	return string(j) 
 }
-func (s *Seminar) Get_theme() string {return s.Theme}
+func (s *Seminar) Get_theme() string { return s.Theme }
 
 
 func (s *Seminar) Set_text(text []byte) {

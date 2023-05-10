@@ -13,8 +13,7 @@ type Lecture struct {
 	Db *sql.DB
 }
 
-
-func (l Lecture) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID}
+func (l Lecture) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
 func (l Lecture) Get_text() string { 
 	j, err := json.Marshal(l.Text)
 	if err != nil {
@@ -22,7 +21,7 @@ func (l Lecture) Get_text() string {
 	}
 	return string(j) 
 }
-func (l *Lecture) Get_theme() string {return l.Theme}
+func (l *Lecture) Get_theme() string { return l.Theme }
 
 
 func (l *Lecture) Set_text(text []byte) {

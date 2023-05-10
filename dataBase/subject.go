@@ -16,8 +16,8 @@ type Subject struct {
 func (s Subject) Get_id() []uint8 { return s.Id }
 func (s Subject) Get_description() []byte { return s.Description }
 func (s Subject) Get_program() []byte { return s.Program }
-func (s Subject) Get_hours() int{ return s.Hours }
-func (s Subject) Get_credits() int{ return s.Credits }
+func (s Subject) Get_hours() int { return s.Hours }
+func (s Subject) Get_credits() int { return s.Credits }
 
 func (s *Subject) Set_description(name1 []byte) {
     s.Description = name1
