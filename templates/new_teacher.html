@@ -1,0 +1,17 @@
+{{define "new_teacher"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новом преподавателе</h1>
+      <form action="/save_teacher" method="post">
+        <input type="text" name = "name" id = "name" placeholder="Введите имя преподавателя" class="form-control"><br>
+        <input type="text" name = "surname" id = "surname" placeholder="Введите фамилию преподавателя" class="form-control"><br>
+        <input type="text" name = "patronymic" id = "patronymic" placeholder="Введите отчество преподавателя" class="form-control"><br>
+        <input type="text" name = "email" id = "email" placeholder="Введите почту преподавателя" class="form-control"><br>
+        <input type="text" name = "login" id = "login" placeholder="Введите логин преподавателя" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    
