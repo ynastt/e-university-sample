@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// рубежный контроль в модуле
 type Bc struct {
     Id []uint8
 	ModuleID []uint8

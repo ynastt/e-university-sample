@@ -4,6 +4,7 @@ import (
     "database/sql"
 )
 
+// группа студентов
 type StudentGroup struct {
     Id []uint8
     Name string

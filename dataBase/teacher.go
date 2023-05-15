@@ -4,6 +4,7 @@ import (
     "database/sql"
 )
 
+// преподаватель
 type Teacher struct {
     Id []uint8
     Name string

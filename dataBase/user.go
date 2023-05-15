@@ -8,6 +8,7 @@ const (
 	student
 )
 
+// пользователь сервиса
 type User struct {
     Id []uint8
     Login string

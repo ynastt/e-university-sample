@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS LectureAttendance (
 	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
 	lecture_id UUID NOT NULL REFERENCES Lecture(LectureID) ON DELETE RESTRICT,
 	WasAttended BOOL NOT NULL,
-	BonusScore INT NOT NULL,
+	BonusScore INT,
 	PRIMARY KEY(student_id, lecture_id)
 );
 
@@ -158,19 +158,19 @@ CREATE TABLE IF NOT EXISTS SeminarAttendance (
 	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
 	seminar_id UUID NOT NULL REFERENCES Seminar(SeminarID) ON DELETE RESTRICT,
 	WasAttended BOOL NOT NULL,
-	BonusScore INT NOT NULL,
+	BonusScore INT,
 	PRIMARY KEY(student_id, seminar_id)
 );
 
 CREATE TABLE IF NOT EXISTS LabInstance (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	lab_id UUID NOT NULL REFERENCES Lab(LabID) ON DELETE RESTRICT,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	lab_id UUID UNIQUE NOT NULL REFERENCES Lab(LabID) ON DELETE RESTRICT,
 	DateOdPassing DATE NOT NULL,
-	NumOfInstance INT NOT NULL,
+	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
 	Remarks TEXT,
-	BonusScore INT NOT NULL,
+	BonusScore INT,
 	PRIMARY KEY(student_id, lab_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
 );
 
@@ -185,8 +185,8 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	exam_id UUID UNIQUE NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
 	DateOdPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,

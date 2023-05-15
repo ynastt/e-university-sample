@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// экзамен по дисциплине
 type Exam struct {
     Id []uint8
 	SubjectID []uint8

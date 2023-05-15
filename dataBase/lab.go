@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// лабораторная работа в модуле
 type Lab struct {
     Id []uint8
 	ModuleID []uint8
@@ -12,7 +13,7 @@ type Lab struct {
 	Text json.RawMessage
 	MaxScore int
 	MinScore int
-	Date string // like that '2005-01-01'
+	Date string     // таким образом '2005-01-01'
 	Deadline string
 	Db *sql.DB
 }

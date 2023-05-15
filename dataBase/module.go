@@ -4,6 +4,7 @@ import (
     "database/sql"
 )
 
+// модуль по дисциплине
 type Module struct {
     Id []uint8
 	SubjectID []uint8

@@ -4,7 +4,7 @@ import (
     "database/sql"
 )
 
-
+// очередь студентов на сдачу работ
 type Queue struct {
     Id []uint8
 	StartDate string
@@ -28,6 +28,7 @@ var tasks = map[string]int {
 	"Рубежный контроль": 2,
 }
 
+// студент в очереди
 type StudentInQueue struct {
     StudentId []uint8
 	QueueId []uint8
