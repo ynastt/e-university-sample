@@ -71,3 +71,75 @@ func (l *Lab) Set_deadline(date string) {
         panic(err)
     }
 }
+
+// лабораторная работa студента
+type LabInstance struct {
+    StudentId []uint8
+	LabID []uint8
+    Date string 
+	NumOfInstance int
+	Score int
+    Variant int
+    Remarks json.RawMessage
+    BonusScore int
+	Db *sql.DB
+}
+
+func (i LabInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.LabID }
+func (i LabInstance) Get_date() string { return i.Date }
+func (i LabInstance) Get_num_of_instance() int { return i.NumOfInstance }
+func (i LabInstance) Get_score() int { return i.Score }
+func (i LabInstance) Get_variant() int { return i.Variant }
+func (i LabInstance) Get_remarks() string { 
+	j, err := json.Marshal(i.Remarks)
+	if err != nil {
+		panic(err)
+	}
+	return string(j) 
+}
+func (i LabInstance) Get_bonus_score() int { return i.BonusScore}
+
+func (i *LabInstance) Set_date(date string) {
+    i.Date = date
+	_, err := i.Db.Exec("update LabInstance SET DateOfPassing = $1 where student_id = $2 and lab_id = $3", i.Date, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *LabInstance) Set_num_of_instance(num int)  {
+    i.NumOfInstance = num
+	_, err := i.Db.Exec("update LabInstance SET NumOfInstance = $1 where student_id = $2 and lab_id = $3", i.NumOfInstance, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *LabInstance) Set_score(score int)  {
+    i.Score = score
+	_, err := i.Db.Exec("update LabInstance SET RecievedScore = $1 where student_id = $2 and lab_id = $3", i.Score, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *LabInstance) Set_variant(v int)  {
+    i.Variant = v
+	_, err := i.Db.Exec("update LabInstance SET Variant = $1 where student_id = $2 and lab_id = $3", i.Variant, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}
+
+func (i *LabInstance) Set_remarks(text []byte) {
+    i.Remarks = json.RawMessage(text)
+	_, err := i.Db.Exec("update LabInstance SET Remarks = $1 where student_id = $2 and lab_id = $3", i.Remarks, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}
+
+func (i *LabInstance) Set_bonus_score(score int)  {
+    i.BonusScore = score
+	_, err := i.Db.Exec("update LabInstance SET BonusScore = $1 where student_id = $2 and lab_id = $3", i.BonusScore, i.StudentId, i.LabID)
+    if err != nil {
+        panic(err)
+    }
+}

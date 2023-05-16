@@ -181,6 +181,7 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
+	Remarks TEXT,
 	PRIMARY KEY(student_id, bc_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
 );
 

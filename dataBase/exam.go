@@ -61,3 +61,49 @@ func (e *Exam) Set_date(date string) {
         panic(err)
     }
 }
+
+// экзамен студента
+type ExamInstance struct {
+    StudentId []uint8
+	ExamID []uint8
+    Date string 
+	NumOfInstance int
+	Score int
+    Ticket int
+	Db *sql.DB
+}
+
+func (i ExamInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.ExamID }
+func (i ExamInstance) Get_date() string { return i.Date }
+func (i ExamInstance) Get_num_of_instance() int { return i.NumOfInstance }
+func (i ExamInstance) Get_score() int { return i.Score }
+func (i ExamInstance) Get_ticket() int { return i.Ticket }
+
+func (i *ExamInstance) Set_date(date string) {
+    i.Date = date
+	_, err := i.Db.Exec("update ExamInstance SET DateOfPassing = $1 where student_id = $2 and exam_id = $3", i.Date, i.StudentId, i.ExamID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *ExamInstance) Set_num_of_instance(num int)  {
+    i.NumOfInstance = num
+	_, err := i.Db.Exec("update ExamInstance SET NumOfInstance = $1 where student_id = $2 and exam_id = $3", i.NumOfInstance, i.StudentId, i.ExamID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *ExamInstance) Set_score(score int)  {
+    i.Score = score
+	_, err := i.Db.Exec("update ExamInstance SET RecievedScore = $1 where student_id = $2 and exam_id = $3", i.Score, i.StudentId, i.ExamID)
+    if err != nil {
+        panic(err)
+    }
+}
+func (i *ExamInstance) Set_ticket(v int)  {
+    i.Ticket = v
+	_, err := i.Db.Exec("update LExamInstance SET TicketNumber = $1 where student_id = $2 and exam_id = $3", i.Ticket, i.StudentId, i.ExamID)
+    if err != nil {
+        panic(err)
+    }
+}
