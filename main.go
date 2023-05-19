@@ -13,10 +13,22 @@ const (
     host     = "localhost"
     port     = 5432
     user     = "postgres"
-    password = "postgres"
-    //password = "ub7u3nAntu"
+    // password = "postgres"
+    password = "ub7u3nAntu"
     dbname   = "Euniversity"
 )
+
+func auth(w http.ResponseWriter, r *http.Request){
+    fmt.Println("auth")
+    // http.ServeFile(w, r, "templates/auth.html")
+    t, err := template.ParseFiles("templates/auth.html")
+
+    if err != nil {
+        fmt.Fprintf(w, err.Error())
+    }
+
+    t.ExecuteTemplate(w, "auth", nil)
+}
 
 func index(w http.ResponseWriter, r *http.Request){
     t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
@@ -61,7 +73,9 @@ func save_teacher(w http.ResponseWriter, r *http.Request){
 
     fmt.Printf("Successfully connected!\n\n")
 
-    res, err := db.Query(fmt.Sprintf("INSERT INTO Teacher(TeacherID, user_id, TeacherName, Surname,Patronymic, Email) Values (gen_random_uuid(),(SELECT UserID From Users Where Login = '%s') ,'%s', '%s','%s',  '%s')",login, name, surname, patronymic, email ))
+    res, err := db.Query(
+        fmt.Sprintf("INSERT INTO Teacher(TeacherID, user_id, TeacherName, Surname,Patronymic, Email) Values (gen_random_uuid(),(SELECT UserID From Users Where Login = '%s') ,'%s', '%s','%s',  '%s')",
+            login, name, surname, patronymic, email ))
     if err != nil {
         panic(err)
     }
@@ -70,10 +84,12 @@ func save_teacher(w http.ResponseWriter, r *http.Request){
 }
 
 func handleFunc() {
-    http.HandleFunc("/", index)
+    http.HandleFunc("/", auth)
+    http.HandleFunc("/main", index)
     http.HandleFunc("/new_teacher", new_teacher)
     http.HandleFunc("/save_teacher", save_teacher)
-    http.ListenAndServe(":8080", nil)
+    fmt.Println("Server is listening...")
+    http.ListenAndServe("localhost:8080", nil)
 }
 
 func main() {
