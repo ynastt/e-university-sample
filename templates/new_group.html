@@ -1,0 +1,17 @@
+{{define "new_group"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новой группе</h1>
+      <form action="/save_group" method="post">
+        <input type="text" name = "group_num" id = "group_num" placeholder="Введите номер группы" class="form-control"><br>
+        <input type="text" name = "course" id = "course" placeholder="Введите номер курса" class="form-control"><br>
+        <input type="text" name = "amount_of_students" id = "amount_of_students" placeholder="Введите количество студентов" class="form-control"><br>
+        <input type="text" name = "year_of_admission" id = "year_of_admission" placeholder="Введите год зачисления" class="form-control"><br>
+        <input type="text" name = "group" id = "group" placeholder="Введите Json форму об учениках данной группы в формате: { &quot;students&quot;: [{&quot;name&quot; ,&quot;surname&quot;: ,&quot;patronymic:&quot; ,&quot;email:&quot; ,&quot;phone:&quot; ,&quot;courses:&quot; ,&quot;number:&quot; ,&quot;year:&quot;,&quot;userLogin:&quot;}"class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS Users (
 
 CREATE TABLE IF NOT EXISTS StudentGroup (
 	GroupID UUID PRIMARY KEY,
-	GroupName VARCHAR NOT NULL UNIQUE,
+	GroupName VARCHAR NOT NULL,
 	YearOfAdmission INT NOT NULL,
 	Course INT NOT NULL,
 	AmountOfStudents INT NOT NULL
@@ -229,3 +229,22 @@ CREATE TABLE IF NOT EXISTS TaskBC (
 	RecievedScore INT NOT NULL,
 	PRIMARY KEY(bc_id, TaskID) --мб тоже см Task
 );
+
+
+INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
+	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
+	(gen_random_uuid(), 'ИУ9-62Б', 2020, 3, 24);
+
+SELECT * FROM StudentGroup;
+
+INSERT INTO Users(UserID, Login, Passw, UsersRights) VALUES
+	(gen_random_uuid(),'Iliin', 'dskdfjkfdn',False),
+    (gen_random_uuid(),'Kozoch', 'dskdjkfdn',False),
+    (gen_random_uuid(),'SPKirich', 'dskdkfdn',False),
+    (gen_random_uuid(),'Belyaev', 'skdfjkfdn',False),
+    (gen_random_uuid(),'Yarov', 'dskdfjkfdn',False),
+    (gen_random_uuid(),'IgorE', 'bdiscool',true),
+    (gen_random_uuid(),'SoFa325', 'yyy',true),
+    (gen_random_uuid(),'Anastasia', 'djkbfhkd',true),
+    (gen_random_uuid(),'Tsarukan', 'fff',false),
+	(gen_random_uuid(), 'Pos', 'kdjckdk', True);
