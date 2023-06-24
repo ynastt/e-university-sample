@@ -1,8 +1,9 @@
+drop table Users cascade;
 CREATE TABLE IF NOT EXISTS Users (
 	UserID UUID PRIMARY KEY,
 	Login VARCHAR(50) NOT NULL,
 	Passw VARCHAR(50) NOT NULL,
-	UsersRights Boolean NOT NULL,
+	UsersRights INT NOT NULL,
 	CONSTRAINT user_unique UNIQUE(Login) --именование ограничение табилцы
 );
 
@@ -228,10 +229,3 @@ CREATE TABLE IF NOT EXISTS TaskBC (
 	RecievedScore INT NOT NULL,
 	PRIMARY KEY(bc_id, TaskID) --мб тоже см Task
 );
-
-
-INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
-	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
-	(gen_random_uuid(), 'ИУ9-62Б', 2020, 3, 24);
-
-SELECT * FROM StudentGroup;

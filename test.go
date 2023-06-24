@@ -7,15 +7,6 @@ import (
     _ "github.com/lib/pq"
 )
 
-// const (
-//     host     = "localhost"
-//     port     = 5432
-//     user     = "postgres"
-//     password = "ub7u3nAntu"
-//     // password = "postgres"
-//     dbname   = "Euniversity"
-// )
-
 func test_connection() {
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
         "password=%s dbname=%s sslmode=disable",
@@ -38,7 +29,7 @@ func test_connection() {
     if err != nil {
         panic(err)
     }
-    defer res.Close()
+    
     studentGroups := []dataBase.StudentGroup{}
     for res.Next(){
         g := dataBase.StudentGroup{}
@@ -53,5 +44,5 @@ func test_connection() {
     fmt.Println("\nstudentGroups names:")
     for _, g := range studentGroups{
         fmt.Println(g.Get_name())
-    }
+    }   
 }
