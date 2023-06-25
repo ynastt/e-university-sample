@@ -38,6 +38,47 @@ type StructForPage struct {
 	CourseInfo  []Course
 }
 
+type Lab struct {
+	Num int
+	Date string
+	Name string
+	Min int
+	Max int
+	Recieved int
+	Bonus int
+	Comment string
+}
+
+type RK struct {
+	Num int
+	Date string
+	Min int
+	Max int
+	Variant int
+	Recieved int
+	Comment string
+}
+
+type Attend struct {
+	Num int
+	Date string
+	Attendance bool
+	Bonus int
+}
+
+type Module struct {
+	ModNumber int
+	Labs []Lab
+	Rks []RK
+	Lects []Attend
+	Sems []Attend
+}
+
+type Subject struct {
+	Name string
+	Mods []Module
+}
+
 var err error
 var conn *net.TCPConn
 var data UserDetails
@@ -113,11 +154,8 @@ func check_student(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Printf("error: server reports unknown status %q\n", resp.Status)
 	}
-
-	print(data.Username, data.Password)
-	print(data.Succes)
-
-	// data.Succes = true
+	// print(data.Username, data.Password)
+	// print(data.Succes)
 	if data.Succes {
 		log.Printf("Successful authentification")
 		http.Redirect(w, r, "/student", 301)
@@ -133,7 +171,6 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
-	// t.ExecuteTemplate(w, "student_main", nil)
 	// запрос на сервер
 	conn = connectToServer()	
 	defer conn.Close()
@@ -194,10 +231,87 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func databases_subject(w http.ResponseWriter, r *http.Request) {
+	log.Printf("databases subject page")
+	t, err := template.ParseFiles("templs/subject.html", "templs/header.html")
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+	// // запрос на сервер
+	// conn = connectToServer()	
+	// defer conn.Close()
+	// encoder, decoder := json.NewEncoder(conn), json.NewDecoder(conn)
+	// var stud Stud
+	// // данные для передачи на сервер
+	// var info proto.LoginInfo
+	// info.Username = data.Username
+	// send_request(encoder, "databases", &info)
+	// // Получение ответа с сервера
+	// var resp proto.Response
+	// if err := decoder.Decode(&resp); err != nil {
+	// 	log.Printf("error: %v\n", err)
+	// 	println("here")
+	// }
+	// switch resp.Status {
+	// case "failed":
+	// 	if resp.Data == nil {
+	// 		log.Printf("error: data field is absent in response\n")
+	// 	} else {
+	// 		var errorMsg string
+	// 		if err := json.Unmarshal(*resp.Data, &errorMsg); err != nil {
+	// 			log.Printf("error: malformed data field in response\n")
+	// 		} else {
+	// 			log.Printf("failed: %s\n", errorMsg)
+	// 		}
+	// 	}
+	// case "ok":
+	// 	if resp.Data == nil {
+	// 		log.Printf("error: data field is absent in response\n")
+	// 	} else {
+	// 		var info proto.StudInfo
+	// 		if err := json.Unmarshal(*resp.Data, &info); err != nil {
+	// 			log.Printf("error: malformed data field in response\n")
+	// 		} else {
+	// 			log.Printf("result: {%s, %s, %s, %s}\n", info.Name, info.Surname, info.Patronymic, info.Group)
+	// 			stud.Name = info.Name
+	// 			stud.Surname = info.Surname
+	// 			stud.Patronymic = info.Patronymic
+	// 			stud.Group = info.Group
+	// 			println("student is:", stud.Surname)
+	// 		}
+	// 	}
+	// default:
+	// 	log.Printf("error: server reports unknown status %q\n", resp.Status)
+	// }
+	var strct Subject
+	
+	strct.Name = "Базы данных"
+	
+	err = t.ExecuteTemplate(w, "databases_subject", strct)
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+}
+
+func courseproject(w http.ResponseWriter, r *http.Request) {
+	log.Printf("courseproject page")
+	t, err := template.ParseFiles("templs/coursework.html", "templs/header.html")
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+	err = t.ExecuteTemplate(w, "coursework", nil)
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+}
+
 func handleFunc() {
 	http.HandleFunc("/logout", auth)
 	http.HandleFunc("/login", check_student)
 	http.HandleFunc("/student", student_main)
+	http.HandleFunc("/subject/databases", databases_subject)
+	http.HandleFunc("/coursework", courseproject)
+	// http.HandleFunc("/subject/rprp", rprp__page)
 	log.Println("Server is listening...")
 	log.Fatal(http.ListenAndServe(":80", nil))
 }

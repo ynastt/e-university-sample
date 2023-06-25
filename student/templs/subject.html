@@ -1,0 +1,133 @@
+{{define "databases_subject"}}
+{{template "header"}}
+<div class="content">
+    <div class="container">
+      <h6 class="title" style="text-align:left">
+        <a href="/student">Вернуться к курсам</a>
+      </h6>
+        <h1 class="title">{{.Name}}</h1>
+        <h2 class="title" style="text-align:left">Лабораторные работы</h2>
+        <table class="table custom-table">
+          {{range $m := .Mods}}
+            <tr>
+              <td>Модуль</td>
+              <td>{{$m.ModNumber}}</td>
+            </tr>
+            {{range $item := m.Labs}}
+              <tr>
+                <td>№</td>
+                <td>{{$item.Num}}</td>
+              </tr>
+              <tr>
+                <td>Дата</td>
+                <td>{{$item.Date}}</td>
+              </tr>
+              <tr>
+                <td>Название работы</td>
+                <td>{{$item.Name}}</td>
+              </tr>
+              <tr>
+                <td>Мин./макс. балл</td>
+                <td>{{$item.Min}}/{{$item.Max}}</td>
+              </tr>
+              <tr>
+                <td>Полученный балл</td>
+                <td>{{$item.Recieved}}</td>
+              </tr>
+              <tr>
+                <td>Бонусный балл</td>
+                <td>{{$item.Bonus}}</td>
+              </tr>
+              <tr>  
+                <td scope="col">Комментарий преподавателя</td>
+                <td>{{$item.Comment}}</td>
+              </tr>
+            {{end}}
+          {{end}}
+        </table>
+    </div>
+    <div class="container">
+      <h2 class="title"style="text-align:left">Рубежные контроли</h2>
+        <table class="table custom-table">
+          {{range $m := .Mods}}
+            {{range $item := m.Rks}}
+              <tr>
+                <td>РК</td>
+                <td>{{$item.Num}}</td>
+              </tr>
+              <tr>
+                <td>Дата</td>
+                <td>{{$item.Date}}</td>
+              </tr>
+              <tr>
+                <td>Мин./макс. балл</td>
+                <td>{{$item.Min}}/{{$item.Max}}</td>
+              </tr>
+              <tr>
+                <td>Вариант билета</td>
+                <td>{{$item.Variant}}</td>
+              </tr>
+              <tr>
+                <td>Полученный балл</td>
+                <td>{{$item.Recieved}}</td>
+              </tr>
+              <tr>  
+                <td scope="col">Комментарий преподавателя</td>
+                <td>{{$item.Comment}}</td>
+              </tr>
+            {{end}}
+          {{end}}  
+        </table>
+    </div>
+    <div class="container">
+      <h2 class="title" style="text-align:left">Посещаемость</h2>
+        <table class="table custom-table">
+          {{range $m := .Mods}}
+            {{range $item := m.Lects}}
+            <tr>
+              <td>Лекция</td>
+              <td>{{$item.Num}}</td>
+            </tr>
+            <tr>
+              <td>Дата</td>
+              <td>{{$item.Date}}</td>
+            </tr>
+            <tr>
+              <td>Присутствие</td>
+              <td>{{$item.Attendance}}</td>
+            </tr>
+            <tr>
+              <td>Бонусный балл</td>
+              <td>{{$item.Bonus}}</td>
+            </tr>
+            {{end}}
+          {{end}}
+          {{range $m := .Mods}}  
+            {{range $item := m.Semss}}
+            <tr>
+              <td>Семинар</td>
+              <td>{{$item.Num}}</td>
+            </tr>
+            <tr>
+              <td>Дата</td>
+              <td>{{$item.Date}}</td>
+            </tr>
+            <tr>
+              <td>Присутствие</td>
+              <td>{{$item.Attendance}}</td>
+            </tr>
+            <tr>
+              <td>Бонусный балл</td>
+              <td>{{$item.Bonus}}</td>
+            </tr>
+            {{end}}
+          {{end}}
+        </table>
+    </div>
+  </div>
+</main>
+</body>
+</html>
+{{end}}
+    
+    

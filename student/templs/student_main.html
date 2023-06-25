@@ -1,7 +1,7 @@
 {{define "student_main"}}
 {{template "header"}}
 <main role="main" class="inner cover">
-  <p class="lead" style=" margin-bottom: 30px">Добро пожаловать в электронный университет!</p>
+  <p class="lead" style=" margin-bottom: 30px">Добро пожаловать в электронный дневник студента!</p>
   <div class="student-info" style="outline-style: double; margin-bottom: 50px">
     <p class="lead"> Студент:    {{.StudentInfo.Surname}} {{.StudentInfo.Name}} {{.StudentInfo.Patronymic}}</p>
     <p class="lead"> Группа: {{.StudentInfo.Group}}</p>
@@ -13,6 +13,9 @@
           <a href="{{$item.CourseLink}}" class="btn btn-lg btn-light fw-bold border-white bg-white" style="margin-bottom: 20px;">{{$item.CourseName}}</a>
         </div>
     {{end}}
+    <div>
+      <a href="/coursework" class="btn btn-lg btn-light fw-bold border-white bg-white" style="margin-bottom: 20px;">КУРСОВАЯ РАБОТА</a>
+    </div>
   </div>
 </main>
 </body>
