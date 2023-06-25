@@ -41,10 +41,11 @@ CREATE TABLE IF NOT EXISTS Teacher (
 
 CREATE TABLE IF NOT EXISTS Subject (
 	SubjectID UUID PRIMARY KEY,
-	Description TEXT NOT NULL, 
+	Description TEXT NOT NULL UNIQUE,  --название предмета
 	SubjectProgram TEXT NOT NULL, 
 	NumberOfHours INT NOT NULL,
-	NumberOfCredits INT NOT NULL 
+	NumberOfCredits INT NOT NULL, 
+	CONSTRAINT subject_unique UNIQUE(SubjectID, Description)
 );
 
 CREATE TABLE IF NOT EXISTS Modules (

@@ -7,9 +7,11 @@ type Request struct {
 	// Поле Command может принимать три значения:
 	// * "quit" - прощание с сервером (после этого сервер рвёт соединение);
 	// * "check" - передача данных авторизации и просьба проверить логин и пароль, существует ли такой пользователь.
+	// * "student" - поиск студента в соответствии с переданным логином пользвоателя
 	Command string `json:"command"`
 
 	// Если Command == "check", в поле Data должна лежать структура с  логином и паролем пользователя.
+	// Если Command == "student", в поле Data должна лежать структура с ФИО пользователя.
 	// В противном случае, поле Data пустое.
 	Data *json.RawMessage `json:"data"`
 }
@@ -32,5 +34,13 @@ type Response struct {
 type LoginInfo struct {
 	Username string `json:"login"`
 	Password string `json:"password"`
-	Exists bool `json:"exists"`
+	Exists   bool   `json:"exists"`
+}
+
+// StudInfo -- ФИО студента.
+type StudInfo struct {
+	Name       string `json:"name"` 
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Group string `json:"group"`
 }

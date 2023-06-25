@@ -12,6 +12,7 @@ import (
 	"net"
 
 	_ "github.com/lib/pq"
+	fill "e-university-sample/fill"
 )
 
 var (
@@ -62,6 +63,7 @@ func NewStudentClient(conn *net.TCPConn) *StudentClient {
 // метод serve будет вызаваться в отдельной go-программе.
 func (client *StudentClient) serve() {
 	defer client.conn.Close()
+	log.Println("new client serve")
 	decoder := json.NewDecoder(client.conn)
 	for {
 		var req proto.Request
@@ -69,7 +71,7 @@ func (client *StudentClient) serve() {
 			log.Println("client: cannot decode message", "reason ", err)
 			break
 		} else {
-			log.Println("client received command", "command", req.Command)
+			log.Println("client received command", req.Command)
 			client.handleRequest(&req) 
 		}
 	}
@@ -117,12 +119,55 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 			log.Println("client: checking failed", "reason", errorMsg)
 			client.respond("failed", errorMsg)
 		}
-	
+	case "student":
+		errorMsg := ""
+		if req.Data == nil {
+			errorMsg = "data field is absent"
+		} else {
+			var info proto.LoginInfo
+			if err := json.Unmarshal(*req.Data, &info); err != nil {
+				errorMsg = "malformed data field"
+			} else {
+				user := dbase.User{}
+				row := db.QueryRow("select * from Users where Login = $1", info.Username)
+				err = row.Scan(&user.Id, &user.Login, &user.Passw, &user.UserRights)
+				if err != nil{
+					errorMsg = err.Error()
+				}
+				fmt.Println("user id:", user.Id)
+				stud := dbase.Student{}
+				g := dbase.StudentGroup{}
+				row = db.QueryRow("select * from Student where user_id = $1", string(user.Id))
+				err = row.Scan(&stud.Id, &stud.Name, &stud.Surname, &stud.Patronymic, &stud.Email, &stud.Phone, &stud.Year, &stud.Courses, &stud.Number, &stud.Userid, &stud.Groupid)
+				if err != nil{
+					errorMsg = err.Error()
+				}
+				println("student: ", stud.Name, "errr:", errorMsg)
+				println("group id: ", stud.Groupid, "errr:", errorMsg)
+				row = db.QueryRow("select GroupName from StudentGroup where GroupID = $1", stud.Groupid)
+				err = row.Scan(&g.Name)
+				if err != nil{
+					errorMsg = err.Error()
+				}
+				log.Println("client: student is found")
+				log.Println(stud.Name, stud.Surname, stud.Patronymic, g.Name)
+				client.respond("ok", &proto.StudInfo{
+					Name: stud.Get_name(), 
+					Surname: stud.Get_surname(),
+					Patronymic: stud.Get_patronymic(),
+					Group: g.Name,
+				})
+			}
+		}
+		
+		if errorMsg != ""  {
+			log.Println("client: finding student failed", "reason", errorMsg)
+			client.respond("failed", errorMsg)
+		}
 	default:
 		log.Println("client: unknown command")
 		client.respond("failed", "unknown command")
 	}
-
 }
 
 // respond - вспомогательный метод для передачи ответа с указанным статусом
@@ -151,11 +196,13 @@ func openConnection() {
 			for {
 				if conn, err := listener.AcceptTCP(); err != nil {
 					log.Fatal("cannot accept connection", "reason", err)
+					break
 				} else {
 					log.Println("accepted connection", "address", conn.RemoteAddr().String())
 
                     // Запуск go-программы для обслуживания клиентов.
 					go NewStudentClient(conn).serve()
+					log.Println("here")
 				}
 			}
 		}
@@ -183,37 +230,6 @@ func main() {
     }
   
     fmt.Printf("Successfully connected!\n\n")
-
-	_, err := db.Query("DELETE FROM Users where Login = 'yarv';")
-    if err != nil {
-        panic(err)
-    }
-
-	_, err = db.Query("INSERT INTO Users(UserID, Login, Passw, UsersRights) Values (gen_random_uuid(),'yarv', '12', 2);")
-    if err != nil {
-        panic(err)
-    }
-
-	res, err := db.Query("select * from Users")
-    if err != nil {
-        panic(err)
-    }
-    
-    users := []dbase.User{}
-    for res.Next(){
-        g := dbase.User{}
-        err := res.Scan(&g.Id, &g.Login, &g.Passw, &g.UserRights)
-        g.Db = db
-        if err != nil{
-            fmt.Println(err)
-            continue
-        }
-        users = append(users, g)
-    }
-    fmt.Println("\nusers names:")
-    for _, g := range users{
-        fmt.Println(g.Get_login(), g.Get_passw(), g.Get_userRights())
-    } 
-
+	fill.ConnectAndFill()
 	openConnection()
 }
