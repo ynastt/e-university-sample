@@ -11,51 +11,53 @@ import (
 	"log"
 	"net"
 
-	_ "github.com/lib/pq"
 	fill "e-university-sample/fill"
+
+	_ "github.com/lib/pq"
 )
 
 var (
-    db *sql.DB
-    err error  
-	conn *net.TCPConn  
+	db   *sql.DB
+	err  error
+	conn *net.TCPConn
+	query string
 )
 
 func connectPostgres() {
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s " +
-        "password=%s dbname=%s sslmode=disable",
-        configs.PostgresConfig.Host,
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		configs.PostgresConfig.Host,
 		configs.PostgresConfig.Port,
 		configs.PostgresConfig.User,
 		configs.PostgresConfig.Password,
 		configs.PostgresConfig.DBname,
 	)
-    db, err = sql.Open("postgres", psqlInfo)
-    if err != nil {
-        panic(err)
-    }
-    // defer db.Close()
-  
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-  
-    log.Printf("Successfully connected!\n\n")
+	db, err = sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	// defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	log.Printf("Successfully connected!\n\n")
 
 }
 
 type StudentClient struct {
-	conn   *net.TCPConn  // Объект TCP-соединения
-	enc    *json.Encoder // Объект для кодирования и отправки сообщений
+	conn *net.TCPConn  // Объект TCP-соединения
+	enc  *json.Encoder // Объект для кодирования и отправки сообщений
 }
 
 // NewClient - конструктор клиента, принимает в качестве параметра
 // объект TCP-соединения.
 func NewStudentClient(conn *net.TCPConn) *StudentClient {
 	return &StudentClient{
-		conn:   conn,
-		enc:    json.NewEncoder(conn),
+		conn: conn,
+		enc:  json.NewEncoder(conn),
 	}
 }
 
@@ -72,7 +74,7 @@ func (client *StudentClient) serve() {
 			break
 		} else {
 			log.Println("client received command", req.Command)
-			client.handleRequest(&req) 
+			client.handleRequest(&req)
 		}
 	}
 }
@@ -95,11 +97,11 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				user := dbase.User{}
 				row := db.QueryRow("select * from Users where Login = $1", info.Username)
 				err = row.Scan(&user.Id, &user.Login, &user.Passw, &user.UserRights)
-				if err != nil{
+				if err != nil {
 					errorMsg = err.Error()
 				}
 				fmt.Println(user.Id, user.Login, user.Passw, user.UserRights)
-  
+
 				if user.UserRights != 2 {
 					errorMsg = "it is not student"
 				} else {
@@ -108,14 +110,14 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 					}
 					log.Println("client: user exists")
 					client.respond("ok", &proto.LoginInfo{
-						Username: user.Get_login(), 
+						Username: user.Get_login(),
 						Password: user.Get_passw(),
-						Exists: true,
+						Exists:   true,
 					})
 				}
 			}
 		}
-		if errorMsg != ""  {
+		if errorMsg != "" {
 			log.Println("client: checking failed", "reason", errorMsg)
 			client.respond("failed", errorMsg)
 		}
@@ -131,7 +133,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				user := dbase.User{}
 				row := db.QueryRow("select * from Users where Login = $1", info.Username)
 				err = row.Scan(&user.Id, &user.Login, &user.Passw, &user.UserRights)
-				if err != nil{
+				if err != nil {
 					errorMsg = err.Error()
 				}
 				fmt.Println("user id:", user.Id)
@@ -139,29 +141,120 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				g := dbase.StudentGroup{}
 				row = db.QueryRow("select * from Student where user_id = $1", string(user.Id))
 				err = row.Scan(&stud.Id, &stud.Name, &stud.Surname, &stud.Patronymic, &stud.Email, &stud.Phone, &stud.Year, &stud.Courses, &stud.Number, &stud.Userid, &stud.Groupid)
-				if err != nil{
+				if err != nil {
 					errorMsg = err.Error()
 				}
 				println("student: ", stud.Name, "errr:", errorMsg)
 				println("group id: ", stud.Groupid, "errr:", errorMsg)
 				row = db.QueryRow("select GroupName from StudentGroup where GroupID = $1", stud.Groupid)
 				err = row.Scan(&g.Name)
-				if err != nil{
+				if err != nil {
 					errorMsg = err.Error()
 				}
 				log.Println("client: student is found")
 				log.Println(stud.Name, stud.Surname, stud.Patronymic, g.Name)
 				client.respond("ok", &proto.StudInfo{
-					Name: stud.Get_name(), 
-					Surname: stud.Get_surname(),
+					Name:       stud.Get_name(),
+					Surname:    stud.Get_surname(),
 					Patronymic: stud.Get_patronymic(),
-					Group: g.Name,
+					Group:      g.Name,
 				})
 			}
 		}
-		
-		if errorMsg != ""  {
+
+		if errorMsg != "" {
 			log.Println("client: finding student failed", "reason", errorMsg)
+			client.respond("failed", errorMsg)
+		}
+	case "databases":
+		errorMsg := ""
+		if req.Data == nil {
+			errorMsg = "data field is absent"
+		} else {
+			var info proto.SubjectInfo
+			if err := json.Unmarshal(*req.Data, &info); err != nil {
+				errorMsg = "malformed data field"
+			} else {
+				var subject_name = info.Name
+				var realmodules []proto.Module
+				//exam
+				ex := dbase.Exam{}
+				row := db.QueryRow("select * from Exam where subject_id = (SELECT SubjectID from Subject where Description = $1)", subject_name)
+				err = row.Scan(&ex.Id, &ex.Questions, &ex.MaxScore, &ex.MinScore, &ex.Date, &ex.SubjectID)
+				if err != nil {
+					println(err.Error())
+				}
+				fmt.Println("exam date:", ex.Date)
+				//modules
+				mods := []dbase.Module{}
+				res, err := db.Query("select * from Modules where subject_id = (SELECT SubjectID from Subject where Description = $1);", subject_name)
+				if err != nil {
+					panic(err)
+				}
+				k := 0
+				for res.Next() {
+					mod := dbase.Module{}
+					err = res.Scan(&mod.Id, &mod.SubjectID, &mod.Name, &mod.MaxScore, &mod.MinScore)
+					mod.Db = db
+					if err != nil {
+						fmt.Println(err)
+						continue
+					}
+					k += 1
+					mods = append(mods, mod)
+					fmt.Println("module: ", mod.Name, " module num: ", k)
+					//labs
+					labs := []proto.Lab{}	
+					res2, err := db.Query("SELECT * FROM labview where module_id = $1", mod.Id)
+					if err != nil {
+						panic(err)
+					}
+					for res2.Next() {
+						l := proto.Lab{}
+						err = res2.Scan(&l.Num, &l.Name, &l.Text, &l.Max, &l.Min, &l.Date, &l.Deadline, &l.Module_id, &l.Instance, &l.Recieved, &l.Comment, &l.Bonus)
+						if err != nil {
+							fmt.Println(err)
+							continue
+						}
+						labs = append(labs, l)
+						fmt.Println(labs)
+					}
+					fmt.Println("\tstudent labs for module :")
+					for _, l := range labs {
+						// fmt.Println(l.Get_id())
+						fmt.Println("\t", l.Num, l.Name, l.Recieved)
+					}
+					//rk s
+					rks := []proto.RK{}
+
+					//lects
+					lects := []proto.Attend{}
+
+					//sems
+					sems := []proto.Attend{}
+
+					realmodules = append(realmodules, proto.Module{
+						ModNumber: k,
+						Labs:      labs,
+						Rks:       rks,
+						Lects:     lects,
+						Sems:      sems,
+					})
+				}
+				fmt.Println("\nmodules for databases subject:")
+				for _, mod := range mods {
+					fmt.Println(mod.Get_id())
+					fmt.Println(mod.Get_name(), mod.Get_max_score(), mod.Get_min_score())
+				}
+				client.respond("ok", &proto.SubjectInfo{
+					Name: info.Name,
+					Mods: realmodules,
+					Exam: proto.Exam{Date: ex.Date, Min: ex.MinScore, Max: ex.MaxScore},
+				})
+			}
+		}
+		if errorMsg != "" {
+			log.Println("client: fetching databases subject info failed", "reason", errorMsg)
 			client.respond("failed", errorMsg)
 		}
 	default:
@@ -188,11 +281,11 @@ func openConnection() {
 	} else {
 		log.Println("resolved TCP address", "address", addr.String())
 
-        // Инициация слушания сети на заданном адресе.
+		// Инициация слушания сети на заданном адресе.
 		if listener, err := net.ListenTCP("tcp", addr); err != nil {
 			log.Fatal("listening failed", "reason", err)
 		} else {
-            // Цикл приёма входящих соединений.
+			// Цикл приёма входящих соединений.
 			for {
 				if conn, err := listener.AcceptTCP(); err != nil {
 					log.Fatal("cannot accept connection", "reason", err)
@@ -200,7 +293,7 @@ func openConnection() {
 				} else {
 					log.Println("accepted connection", "address", conn.RemoteAddr().String())
 
-                    // Запуск go-программы для обслуживания клиентов.
+					// Запуск go-программы для обслуживания клиентов.
 					go NewStudentClient(conn).serve()
 					log.Println("here")
 				}
@@ -210,26 +303,26 @@ func openConnection() {
 }
 
 func main() {
-    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s " +
-        "password=%s dbname=%s sslmode=disable",
-        configs.PostgresConfig.Host,
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		configs.PostgresConfig.Host,
 		configs.PostgresConfig.Port,
 		configs.PostgresConfig.User,
 		configs.PostgresConfig.Password,
 		configs.PostgresConfig.DBname,
 	)
-    db, err = sql.Open("postgres", psqlInfo)
-    if err != nil {
-        panic(err)
-    }
-    defer db.Close()
-  
-    err = db.Ping()
-    if err != nil {
-        panic(err)
-    }
-  
-    fmt.Printf("Successfully connected!\n\n")
+	db, err = sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Successfully connected!\n\n")
 	fill.ConnectAndFill()
 	openConnection()
 }

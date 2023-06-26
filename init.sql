@@ -234,6 +234,18 @@ CREATE TABLE IF NOT EXISTS TaskBC (
 	PRIMARY KEY(bc_id, TaskID) --мб тоже см Task
 );
 
+-- views
+
+drop view if exists labview;
+
+CREATE VIEW labview AS
+    SELECT LabNumber, LabName, LabText, MaxScore, MinScore, LabDate, Deadline, module_id,
+		NumOfInstance, RecievedScore, Remarks, BonusScore
+	FROM
+    	Lab
+	LEFT JOIN LabInstance 
+   	ON LabID = lab_id;
+SELECT * FROM labview;
 
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
 	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
