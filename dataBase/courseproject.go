@@ -2,7 +2,6 @@ package dataBase
 
 import (
     "database/sql"
-    "encoding/json"
 )
 
 var subjects_counter = 1
@@ -117,7 +116,7 @@ func (s *Supervisor) Set_role(name string) {
 type StudentCourseProject struct {
     StudentId []uint8
 	ProjectId []uint8
-    Assignment json.RawMessage
+    Assignment string
     Title string
 	Score int
     Date string
@@ -125,19 +124,13 @@ type StudentCourseProject struct {
 }
 
 func (s StudentCourseProject) Get_id() ([]uint8, []uint8) { return s.StudentId, s.ProjectId }
-func (s StudentCourseProject) Get_assignment() string {
-    j, err := json.Marshal(s.Assignment)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (s StudentCourseProject) Get_assignment() string { return s.Assignment }
 func (s StudentCourseProject) Get_title() string { return s.Title }
 func (s StudentCourseProject) Get_score() int { return s.Score }
 func (s StudentCourseProject) Get_date() string { return s.Date }
 
-func (s *StudentCourseProject) Set_assignment(text []byte) {
-    s.Assignment = json.RawMessage(text)
+func (s *StudentCourseProject) Set_assignment(text string) {
+    s.Assignment = text
 	_, err := s.Db.Exec("update StudentCourseProject SET ProjAssignment = $1 where student_id = $2 and project_id =$3", s.Assignment, s.StudentId, s.ProjectId)
     if err != nil {
         panic(err)

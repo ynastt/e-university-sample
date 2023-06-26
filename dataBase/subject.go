@@ -2,35 +2,21 @@ package dataBase
 
 import (
     "database/sql"
-    "encoding/json"
 )
 
 // дисциплина
 type Subject struct {
     Id []uint8
     Description string
-	Program json.RawMessage
+	Program string
 	Hours int
 	Credits int
 	Db *sql.DB
 }
 
 func (s Subject) Get_id() []uint8 { return s.Id }
-func (s Subject) Get_description() string {
-    // j, err := json.Marshal(s.Description)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// return string(j) 
-    return s.Description
-}
-func (s Subject) Get_program() string {
-    j, err := json.Marshal(s.Program)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (s Subject) Get_description() string { return s.Description }
+func (s Subject) Get_program() string { return s.Program }
 func (s Subject) Get_hours() int { return s.Hours }
 func (s Subject) Get_credits() int { return s.Credits }
 
@@ -42,8 +28,8 @@ func (s *Subject) Set_description(name1 string) {
     }
 }
 
-func (s *Subject) Set_program(name1 []byte) {
-    s.Program = json.RawMessage(name1)
+func (s *Subject) Set_program(name1 string) {
+    s.Program = name1
     _, err := s.Db.Exec("update Subject SET SubjectProgram = $1 where SubjectID = $2", s.Program, s.Id)
     if err != nil {
         panic(err)

@@ -2,14 +2,13 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
 )
 
 // экзамен по дисциплине
 type Exam struct {
     Id []uint8
 	SubjectID []uint8
-	Questions json.RawMessage
+	Questions string
 	MaxScore int
 	MinScore int
 	Date string // like that '2005-01-01'
@@ -18,20 +17,14 @@ type Exam struct {
 
 
 func (e Exam) Get_id() ([]uint8, []uint8) { return e.Id, e.SubjectID }
-func (e Exam) Get_questions() string { 
-	j, err := json.Marshal(e.Questions)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (e Exam) Get_questions() string { return e.Questions }
 func (e Exam) Get_max_score() int { return e.MaxScore }
 func (e Exam) Get_min_score() int { return e.MinScore }
 func (e Exam) Get_date() string { return e.Date }
 
 
-func (e *Exam) Set_questions(text []byte) {
-    e.Questions = json.RawMessage(text)
+func (e *Exam) Set_questions(text string) {
+    e.Questions = text
 	_, err := e.Db.Exec("update Exam SET Questions = $1 where ExamID = $2", e.Questions, e.Id)
     if err != nil {
         panic(err)

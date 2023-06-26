@@ -2,7 +2,6 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
 )
 
 // задание студента по дисциплине
@@ -10,7 +9,7 @@ type Task struct {
     TaskId []uint8
 	StudentID []uint8
 	SubjectID []uint8
-	Description json.RawMessage
+	Description string
 	MaxScore int
 	MinScore int
 	Deadline string // like that '2005-01-01'
@@ -20,21 +19,15 @@ type Task struct {
 
 
 func (t Task) Get_id() ([]uint8, []uint8, []uint8) { return t.TaskId, t.StudentID, t.SubjectID }
-func (t Task) Get_description() string { 
-	j, err := json.Marshal(t.Description)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (t Task) Get_description() string { return t.Description }
 func (t Task) Get_max_score() int { return t.MaxScore }
 func (t Task) Get_min_score() int { return t.MinScore }
 func (t Task) Get_deadline() string { return t.Deadline }
 func (t Task) Get_score() int { return t.RecievedScore }
 
 
-func (t *Task) Set_description(text []byte) {
-    t.Description = json.RawMessage(text)
+func (t *Task) Set_description(text string) {
+    t.Description = text
 	_, err := t.Db.Exec("update Task SET Description = $1 where TaskID = $2 and student_id = $3 and subject_id = $4", t.Description, t.TaskId, t.StudentID, t.SubjectID)
     if err != nil {
         panic(err)
@@ -77,7 +70,7 @@ func (t *Task) Set_score(score int) {
 type TaskExam struct {
     TaskId []uint8
 	ExamID []uint8
-	Description json.RawMessage
+	Description string
 	MaxScore int
 	MinScore int
 	Deadline string // like that '2005-01-01'
@@ -87,21 +80,15 @@ type TaskExam struct {
 
 
 func (t TaskExam) Get_id() ([]uint8, []uint8) { return t.TaskId, t.ExamID }
-func (t TaskExam) Get_description() string { 
-	j, err := json.Marshal(t.Description)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (t TaskExam) Get_description() string { return t.Description }
 func (t TaskExam) Get_max_score() int { return t.MaxScore }
 func (t TaskExam) Get_min_score() int { return t.MinScore }
 func (t TaskExam) Get_deadline() string { return t.Deadline }
 func (t TaskExam) Get_score() int { return t.RecievedScore }
 
 
-func (t *TaskExam) Set_description(text []byte) {
-    t.Description = json.RawMessage(text)
+func (t *TaskExam) Set_description(text string) {
+    t.Description = text
 	_, err := t.Db.Exec("update TaskExam SET Description = $1 where TaskID = $2 and exam_id = $3", t.Description, t.TaskId, t.ExamID)
     if err != nil {
         panic(err)
@@ -144,7 +131,7 @@ func (t *TaskExam) Set_score(score int) {
 type TaskBC struct {
     TaskId []uint8
 	BCID []uint8
-	Description json.RawMessage
+	Description string
 	MaxScore int
 	MinScore int
 	Deadline string // like that '2005-01-01'
@@ -154,21 +141,15 @@ type TaskBC struct {
 
 
 func (t TaskBC) Get_id() ([]uint8, []uint8) { return t.TaskId, t.BCID }
-func (t TaskBC) Get_description() string { 
-	j, err := json.Marshal(t.Description)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (t TaskBC) Get_description() string { return t.Description }
 func (t TaskBC) Get_max_score() int { return t.MaxScore }
 func (t TaskBC) Get_min_score() int { return t.MinScore }
 func (t TaskBC) Get_deadline() string { return t.Deadline }
 func (t TaskBC) Get_score() int { return t.RecievedScore }
 
 
-func (t *TaskBC) Set_description(text []byte) {
-    t.Description = json.RawMessage(text)
+func (t *TaskBC) Set_description(text string) {
+    t.Description = text
 	_, err := t.Db.Exec("update TaskBC SET Description = $1 where TaskID = $2 and bc_id = $3", t.Description, t.TaskId, t.BCID)
     if err != nil {
         panic(err)

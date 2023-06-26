@@ -2,7 +2,6 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
 )
 
 // лабораторная работа в модуле
@@ -10,7 +9,7 @@ type Lab struct {
     Id []uint8
 	ModuleID []uint8
 	Name string
-	Text json.RawMessage
+	Text string
 	MaxScore int
 	MinScore int
 	Date string     // таким образом '2005-01-01'
@@ -21,13 +20,7 @@ type Lab struct {
 
 func (l Lab) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
 func (l Lab) Get_name() string { return l.Name }
-func (l Lab) Get_text() string { 
-	j, err := json.Marshal(l.Text)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (l Lab) Get_text() string { return l.Text }
 func (l Lab) Get_max_score() int { return l.MaxScore }
 func (l Lab) Get_min_score() int { return l.MinScore }
 func (l Lab) Get_date() string { return l.Date }
@@ -41,8 +34,8 @@ func (l *Lab) Set_name( name1 string) {
     }
 }
 
-func (l *Lab) Set_text(text []byte) {
-    l.Text = json.RawMessage(text)
+func (l *Lab) Set_text(text string) {
+    l.Text = text
 	_, err := l.Db.Exec("update Lab SET Text = $1 where LabID = $2", l.Text, l.Id)
     if err != nil {
         panic(err)
@@ -89,7 +82,7 @@ type LabInstance struct {
 	NumOfInstance int
 	Score int
     Variant int
-    Remarks json.RawMessage
+    Remarks string
     BonusScore int
 	Db *sql.DB
 }
@@ -99,13 +92,7 @@ func (i LabInstance) Get_date() string { return i.Date }
 func (i LabInstance) Get_num_of_instance() int { return i.NumOfInstance }
 func (i LabInstance) Get_score() int { return i.Score }
 func (i LabInstance) Get_variant() int { return i.Variant }
-func (i LabInstance) Get_remarks() string { 
-	j, err := json.Marshal(i.Remarks)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
-}
+func (i LabInstance) Get_remarks() string { return i.Remarks }
 func (i LabInstance) Get_bonus_score() int { return i.BonusScore}
 
 func (i *LabInstance) Set_date(date string) {
@@ -137,8 +124,8 @@ func (i *LabInstance) Set_variant(v int)  {
     }
 }
 
-func (i *LabInstance) Set_remarks(text []byte) {
-    i.Remarks = json.RawMessage(text)
+func (i *LabInstance) Set_remarks(text string) {
+    i.Remarks = text
 	_, err := i.Db.Exec("update LabInstance SET Remarks = $1 where student_id = $2 and lab_id = $3", i.Remarks, i.StudentId, i.LabID)
     if err != nil {
         panic(err)
