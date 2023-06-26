@@ -8,6 +8,7 @@ import (
 type Lab struct {
     Id []uint8
 	ModuleID []uint8
+    Number int
 	Name string
 	Text string
 	MaxScore int
@@ -19,12 +20,21 @@ type Lab struct {
 
 
 func (l Lab) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
+func (l Lab) Get_number() int { return l.Number }
 func (l Lab) Get_name() string { return l.Name }
 func (l Lab) Get_text() string { return l.Text }
 func (l Lab) Get_max_score() int { return l.MaxScore }
 func (l Lab) Get_min_score() int { return l.MinScore }
 func (l Lab) Get_date() string { return l.Date }
 func (l Lab) Get_dealine() string { return l.Deadline }
+
+func (l *Lab) Set_number(num int) {
+    l.MaxScore = num
+	_, err := l.Db.Exec("update Lab SET LabNumber = $1 where LabID = $2", l.Number, l.Id)
+    if err != nil {
+        panic(err)
+    }
+}
 
 func (l *Lab) Set_name( name1 string) { 
     l.Name = name1
