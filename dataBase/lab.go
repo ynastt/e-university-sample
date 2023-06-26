@@ -91,9 +91,9 @@ type LabInstance struct {
     Date string 
 	NumOfInstance int
 	Score int
-    Variant int
+    Variant sql.NullInt64
     Remarks string
-    BonusScore int
+    BonusScore sql.NullInt64
 	Db *sql.DB
 }
 
@@ -101,9 +101,9 @@ func (i LabInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.LabID }
 func (i LabInstance) Get_date() string { return i.Date }
 func (i LabInstance) Get_num_of_instance() int { return i.NumOfInstance }
 func (i LabInstance) Get_score() int { return i.Score }
-func (i LabInstance) Get_variant() int { return i.Variant }
+func (i LabInstance) Get_variant() int { return int(i.Variant.Int64) }
 func (i LabInstance) Get_remarks() string { return i.Remarks }
-func (i LabInstance) Get_bonus_score() int { return i.BonusScore}
+func (i LabInstance) Get_bonus_score() int { return int(i.BonusScore.Int64)}
 
 func (i *LabInstance) Set_date(date string) {
     i.Date = date
@@ -127,7 +127,7 @@ func (i *LabInstance) Set_score(score int)  {
     }
 }
 func (i *LabInstance) Set_variant(v int)  {
-    i.Variant = v
+    i.Variant = sql.NullInt64{Int64: int64(v), Valid: true}
 	_, err := i.Db.Exec("update LabInstance SET Variant = $1 where student_id = $2 and lab_id = $3", i.Variant, i.StudentId, i.LabID)
     if err != nil {
         panic(err)
@@ -143,7 +143,7 @@ func (i *LabInstance) Set_remarks(text string) {
 }
 
 func (i *LabInstance) Set_bonus_score(score int)  {
-    i.BonusScore = score
+    i.BonusScore = sql.NullInt64{Int64: int64(score), Valid: true}
 	_, err := i.Db.Exec("update LabInstance SET BonusScore = $1 where student_id = $2 and lab_id = $3", i.BonusScore, i.StudentId, i.LabID)
     if err != nil {
         panic(err)
