@@ -86,9 +86,12 @@ type Exam struct {
 }
 
 type Subject struct {
-	Name string
-	Mods []Module
-	Exam Exam
+	Name    string
+	Mods    []Module
+	Exam    Exam
+	Sems_ok bool
+	Labs_ok bool
+	Rks_ok  bool
 }
 
 var err error
@@ -267,6 +270,7 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 	conn = connectToServer()
 	defer conn.Close()
 	encoder, decoder := json.NewEncoder(conn), json.NewDecoder(conn)
+	var strct Subject
 	var modules []Module
 	var ex Exam
 	// данные для передачи на сервер
@@ -316,6 +320,9 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 				ex.Max = info.Exam.Max
 				ex.Min = info.Exam.Min
 
+				strct.Sems_ok = false
+				strct.Rks_ok = false
+				strct.Labs_ok = false
 				for _, m := range info.Mods {
 					var mym Module
 					mym.ModNumber = m.ModNumber
@@ -336,11 +343,19 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 						} else {
 							myl.Instance = 0
 						}
-						myl.Comment, myl.Date =  l.Comment, l.Date[0:10]
+						if l.Comment.Valid {
+							myl.Comment = l.Comment.String
+						} else {
+							myl.Comment = "-"
+						}
+						myl.Date = l.Date[0:10]
 						myl.Max, myl.Min, myl.Name = l.Max, l.Min, l.Name
 						myl.Num = l.Num
 						myl.Deadline, myl.Text = l.Deadline[0:10], l.Text
 						mym.Labs = append(mym.Labs, myl)
+						if len(mym.Labs) > 0 {
+							strct.Labs_ok = true
+						}
 					}
 					println("labs info")
 					for _, r := range m.Rks {
@@ -349,6 +364,9 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 						myr.Max, myr.Min = r.Max, r.Min
 						myr.Num, myr.Recieved, myr.Variant = r.Num, r.Recieved, r.Variant
 						mym.Rks = append(mym.Rks, myr)
+						if len(mym.Rks) > 0 {
+							strct.Rks_ok = true
+						}
 					}
 					println("rk info")
 					for _, s := range m.Sems {
@@ -357,6 +375,9 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 						mys.Attendance = s.Attendance
 						mys.Num, mys.Theme = s.Num, s.Theme
 						mym.Sems = append(mym.Sems, mys)
+						if len(mym.Sems) > 0 {
+							strct.Sems_ok = true
+						}
 					}
 					println("sems info")
 					for _, l := range m.Lects {
@@ -376,7 +397,6 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Printf("error: server reports unknown status %q\n", resp.Status)
 	}
-	var strct Subject
 	strct.Name = crsname
 	strct.Mods = modules
 	strct.Exam = ex
