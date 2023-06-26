@@ -20,6 +20,7 @@ type Lab struct {
 
 
 func (l Lab) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
+func (l Lab) Get_name() string { return l.Name }
 func (l Lab) Get_text() string { 
 	j, err := json.Marshal(l.Text)
 	if err != nil {
@@ -31,6 +32,14 @@ func (l Lab) Get_max_score() int { return l.MaxScore }
 func (l Lab) Get_min_score() int { return l.MinScore }
 func (l Lab) Get_date() string { return l.Date }
 func (l Lab) Get_dealine() string { return l.Deadline }
+
+func (l *Lab) Set_name( name1 string) { 
+    l.Name = name1
+	_, err := l.Db.Exec("update Lab SET Name = $1 where LabID = $2", l.Name, l.Id)
+    if err != nil {
+        panic(err)
+    }
+}
 
 func (l *Lab) Set_text(text []byte) {
     l.Text = json.RawMessage(text)
