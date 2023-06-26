@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	db   *sql.DB
-	err  error
-	conn *net.TCPConn
+	db    *sql.DB
+	err   error
+	conn  *net.TCPConn
 	query string
 )
 
@@ -204,7 +204,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 					mods = append(mods, mod)
 					fmt.Println("module: ", mod.Name, " module num: ", k)
 					//labs
-					labs := []proto.Lab{}	
+					labs := []proto.Lab{}
 					res2, err := db.Query("SELECT * FROM labview where module_id = $1", mod.Id)
 					if err != nil {
 						panic(err)
@@ -226,13 +226,67 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 					}
 					//rk s
 					rks := []proto.RK{}
-
+					res3, err := db.Query("SELECT * FROM rkview where module_id = $1", mod.Id)
+					if err != nil {
+						panic(err)
+					}
+					for res3.Next() {
+						r := proto.RK{}
+						err = res3.Scan(&r.Num, &r.Date, &r.Max, &r.Min, &r.Module_id, &r.Instance, &r.Variant, &r.Recieved, &r.Comment)
+						if err != nil {
+							fmt.Println(err)
+							continue
+						}
+						rks = append(rks, r)
+						fmt.Println(rks)
+					}
+					fmt.Println("\tstudent rks for module :")
+					for _, r := range rks {
+						// fmt.Println(l.Get_id())
+						fmt.Println("\t", r.Num, r.Date, r.Recieved)
+					}
 					//lects
 					lects := []proto.Attend{}
-
+					res4, err := db.Query("SELECT * FROM lectview where module_id = $1", mod.Id)
+					if err != nil {
+						panic(err)
+					}
+					for res4.Next() {
+						l := proto.Attend{}
+						err = res4.Scan(&l.Num, &l.Theme, &l.Date, &l.Module_id, &l.Attendance, &l.Bonus)
+						if err != nil {
+							fmt.Println(err)
+							continue
+						}
+						lects = append(lects, l)
+						fmt.Println(lects)
+					}
+					fmt.Println("\tstudent lects for module :")
+					for _, l := range lects {
+						// fmt.Println(l.Get_id())
+						fmt.Println("\t", l.Num, l.Date, l.Theme)
+					}
 					//sems
 					sems := []proto.Attend{}
-
+					res5, err := db.Query("SELECT * FROM semview where module_id = $1", mod.Id)
+					if err != nil {
+						panic(err)
+					}
+					for res5.Next() {
+						l := proto.Attend{}
+						err = res5.Scan(&l.Num, &l.Theme, &l.Date, &l.Module_id, &l.Attendance, &l.Bonus)
+						if err != nil {
+							fmt.Println(err)
+							continue
+						}
+						sems = append(sems, l)
+						fmt.Println(sems)
+					}
+					fmt.Println("\tstudent sems for module :")
+					for _, l := range sems {
+						// fmt.Println(l.Get_id())
+						fmt.Println("\t", l.Num, l.Date, l.Theme)
+					}
 					realmodules = append(realmodules, proto.Module{
 						ModNumber: k,
 						Labs:      labs,

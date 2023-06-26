@@ -72,14 +72,18 @@ CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID UUID PRIMARY KEY,
 	Theme TEXT NOT NULL UNIQUE,
 	LectureText TEXT NOT NULL, 
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	LectNumber INT NOT NULL,
+	LectDate date
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID UUID PRIMARY KEY, 
 	Theme TEXT NOT NULL UNIQUE,
 	SeminarText TEXT NOT NULL, 
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	SemNumber INT NOT NULL,
+	SemDate date
 );
 
 CREATE TABLE IF NOT EXISTS Lab (
@@ -97,11 +101,13 @@ CREATE TABLE IF NOT EXISTS Lab (
 
 CREATE TABLE IF NOT EXISTS BC (
 	BCID uuid PRIMARY KEY, 
-	Theme TEXT NOT NULL UNIQUE,
+	Theme TEXT NOT NULL,
 	Questions TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
+	CONSTRAINT rk_unique UNIQUE(Theme),
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	BCNum int
 );
 
 CREATE TABLE IF NOT EXISTS CourseProject (
@@ -247,6 +253,35 @@ CREATE VIEW labview AS
    	ON LabID = lab_id;
 SELECT * FROM labview;
 
+drop view if exists rkview;
+
+CREATE VIEW rkview AS
+    SELECT BCNum, DateOdPassing, MaxScore, MinScore, module_id, NumOfInstance, Variant, RecievedScore, Remarks
+	FROM
+    	BC
+	LEFT JOIN BCInstance 
+   	ON BCID = bc_id;
+SELECT * FROM rkview;
+
+drop view if exists semview;
+CREATE VIEW semview AS
+    SELECT SemNumber, Theme, SemDate, module_id, WasAttended, BonusScore
+	FROM
+    	Seminar
+	LEFT JOIN SeminarAttendance 
+   	ON SeminarID = seminar_id;
+SELECT * FROM semview;
+
+drop view if exists lectview;
+CREATE VIEW lectview AS
+    SELECT LectNumber, Theme, LectDate, module_id, WasAttended, BonusScore
+	FROM
+    	Lecture
+	LEFT JOIN LectureAttendance 
+   	ON LectureID = lecture_id;
+SELECT * FROM lectview;
+
+-- Sonya
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
 	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
 	(gen_random_uuid(), 'ИУ9-62Б', 2020, 3, 24);

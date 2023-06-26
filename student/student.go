@@ -59,6 +59,7 @@ type RK struct {
 	Min      int
 	Max      int
 	Variant  int
+	Instance int
 	Recieved int
 	Comment  string
 }
@@ -90,6 +91,7 @@ type Subject struct {
 	Mods    []Module
 	Exam    Exam
 	Sems_ok bool
+	Lects_ok bool
 	Labs_ok bool
 	Rks_ok  bool
 }
@@ -260,7 +262,7 @@ func courseproject(w http.ResponseWriter, r *http.Request) {
 
 func dbases(w http.ResponseWriter, r *http.Request) {
 	log.Printf("subject db page")
-	t, err := template.ParseFiles("templs/dbases_subject.html", "templs/header.html")
+	t, err := template.ParseFiles("templs/subject.html", "templs/header.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
@@ -323,9 +325,14 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 				strct.Sems_ok = false
 				strct.Rks_ok = false
 				strct.Labs_ok = false
+				strct.Lects_ok = false
 				for _, m := range info.Mods {
 					var mym Module
 					mym.ModNumber = m.ModNumber
+					mym.Labs = make([]Lab, 0)
+					mym.Lects = make([]Attend, 0)
+					mym.Sems = make([]Attend, 0)
+					mym.Rks = make([]RK, 0)
 					for _, l := range m.Labs {
 						var myl Lab
 						if l.Bonus.Valid {
@@ -360,18 +367,49 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 					println("labs info")
 					for _, r := range m.Rks {
 						var myr RK
-						myr.Comment, myr.Date = r.Comment, r.Date[0:10]
+						if r.Recieved.Valid {
+							myr.Recieved = int(r.Recieved.Int64)
+						} else {
+							myr.Recieved = 0
+						}
+						if r.Instance.Valid {
+							myr.Instance = int(r.Instance.Int64)
+						} else {
+							myr.Instance = 0
+						}
+						if r.Variant.Valid {
+							myr.Variant = int(r.Variant.Int64)
+						} else {
+							myr.Variant = 0
+						}
+						if r.Comment.Valid {
+							myr.Comment = r.Comment.String
+						} else {
+							myr.Comment = "-"
+						}
+						if r.Date.Valid {
+							myr.Date = r.Date.String[0:10]
+						} else {
+							myr.Date = "-"
+						}
+						println("date:", myr.Date)
 						myr.Max, myr.Min = r.Max, r.Min
-						myr.Num, myr.Recieved, myr.Variant = r.Num, r.Recieved, r.Variant
+						myr.Num = r.Num
 						mym.Rks = append(mym.Rks, myr)
 						if len(mym.Rks) > 0 {
 							strct.Rks_ok = true
 						}
 					}
 					println("rk info")
+					// println(strct.Rks_ok)
 					for _, s := range m.Sems {
 						var mys Attend
-						mys.Bonus, mys.Date = s.Bonus, s.Date[0:10]
+						if s.Bonus.Valid {
+							mys.Bonus = int(s.Bonus.Int64)
+						} else {
+							mys.Bonus = 0
+						}
+						mys.Date = s.Date[0:10]
 						mys.Attendance = s.Attendance
 						mys.Num, mys.Theme = s.Num, s.Theme
 						mym.Sems = append(mym.Sems, mys)
@@ -382,10 +420,18 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 					println("sems info")
 					for _, l := range m.Lects {
 						var myl Attend
-						myl.Bonus, myl.Date = l.Bonus, l.Date[0:10]
+						if l.Bonus.Valid {
+							myl.Bonus = int(l.Bonus.Int64)
+						} else {
+							myl.Bonus = 0
+						}
+						myl.Date = l.Date[0:10]
 						myl.Attendance = l.Attendance
 						myl.Num, myl.Theme = l.Num, l.Theme
 						mym.Lects = append(mym.Lects, myl)
+						if len(mym.Lects) > 0 {
+							strct.Lects_ok = true
+						}
 					}
 					println("lect info")
 					modules = append(modules, mym)
@@ -400,7 +446,7 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 	strct.Name = crsname
 	strct.Mods = modules
 	strct.Exam = ex
-	err = t.ExecuteTemplate(w, "dbases_subject", strct)
+	err = t.ExecuteTemplate(w, "subject", strct)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}

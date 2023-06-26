@@ -49,36 +49,39 @@ type StudInfo struct {
 }
 
 type Lab struct {
-	Num       int           `json:"labnum"`
-	Date      string        `json:"labdate"`
-	Deadline  string        `json:"labdeadline"`
-	Name      string        `json:"labname"`
-	Text      string        `json:"labtext"`
-	Min       int           `json:"labmin"`
-	Max       int           `json:"labmax"`
-	Recieved  sql.NullInt64           `json:"labscore"`
-	Instance  sql.NullInt64 `json:"labinstance"`
-	Bonus     sql.NullInt64           `json:"labbonus"`
-	Comment   string        `json:"labcomment"`
-	Module_id []uint8       `json:"moduleid"`
+	Num       int            `json:"labnum"`
+	Date      string         `json:"labdate"`
+	Deadline  string         `json:"labdeadline"`
+	Name      string         `json:"labname"`
+	Text      string         `json:"labtext"`
+	Min       int            `json:"labmin"`
+	Max       int            `json:"labmax"`
+	Recieved  sql.NullInt64  `json:"labscore"`
+	Instance  sql.NullInt64  `json:"labinstance"`
+	Bonus     sql.NullInt64  `json:"labbonus"`
+	Comment   sql.NullString `json:"labcomment"`
+	Module_id []uint8        `json:"labmoduleid"`
 }
 
 type RK struct {
-	Num      int    `json:"rknum"`
-	Date     string `json:"rkdate"`
-	Min      int    `json:"rkmin"`
-	Max      int    `json:"rkmax"`
-	Variant  int    `json:"rkvariant"`
-	Recieved int    `json:"rkscore"`
-	Comment  string `json:"rkcomment"`
+	Num       int            `json:"rknum"`
+	Date      sql.NullString `json:"rkdate"`
+	Min       int            `json:"rkmin"`
+	Max       int            `json:"rkmax"`
+	Variant   sql.NullInt64  `json:"rkvariant"`
+	Instance  sql.NullInt64  `json:"rkinstance"`
+	Recieved  sql.NullInt64  `json:"rkscore"`
+	Comment   sql.NullString `json:"rkcomment"`
+	Module_id []uint8        `json:"rkmoduleid"`
 }
 
 type Attend struct {
-	Num        int    `json:"eventnumber"`
-	Theme      string `json:"eventtheme"`
-	Date       string `json:"eventdate"`
-	Attendance bool   `json:"eventattendance"`
-	Bonus      int    `json:"eventbonus"`
+	Num        int           `json:"eventnumber"`
+	Theme      string        `json:"eventtheme"`
+	Date       string        `json:"eventdate"`
+	Attendance bool          `json:"eventattendance"`
+	Bonus      sql.NullInt64 `json:"eventbonus"`
+	Module_id  []uint8       `json:"attmoduleid"`
 }
 
 type Module struct {

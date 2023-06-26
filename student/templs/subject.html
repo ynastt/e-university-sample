@@ -1,0 +1,169 @@
+{{define "subject"}}
+{{template "header"}}
+<main role="main" class="inner cover">
+<div>
+    <div class="container">
+        <h6 class="title" style="text-align:center">
+          <a href="/student">Вернуться к курсам</a>
+        </h6>
+        <h1 class="title">{{.Name}}</h1>
+    </div>
+    {{if .Labs_ok}}
+    <div class="container">
+        <h3 class="title"style="text-align:left">Лабораторные работы</h3>
+          <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+            {{range $item := .Mods}}
+                {{ $labs := $item.Labs }}
+                <tr style="background-color:#2c3034;">
+                    <td style="background-color:#2c3034;">Модуль</td>
+                    <td style="background-color:#2c3034;">{{$item.ModNumber}}</td>
+                </tr>
+                <tr>
+                    <td>Номер</td>
+                    <td>Дата</td>
+                    <td>Дедлайн</td>
+                    <td>Название работы</td>
+                    <td>Тема</td>
+                    <td>Мин./макс. балл</td>
+                    <td>Попытка сдачи</td>
+                    <td>Полученный балл</td>
+                    <td>Бонусный балл</td>
+                    <td>Комментарий преподавателя</td>
+                </tr>
+                {{range $lab := $labs}}
+                <tr>
+                    <td>№{{$lab.Num}}</td>
+                    <td>{{$lab.Date}}</td>
+                    <td>{{$lab.Deadline}}</td>
+                    <td>{{$lab.Name}}</td>
+                    <td>{{$lab.Text}}</td>
+                    <td>{{$lab.Min}}/{{$lab.Max}}</td>
+                    <td>{{$lab.Instance}}</td>
+                    <td>{{$lab.Recieved}}</td>
+                    <td>{{$lab.Bonus}}</td>
+                    <td>{{$lab.Comment}}</td>
+                </tr>
+                {{end}}
+            {{end}}  
+          </table>
+    </div>
+    {{else}}
+    {{end}}
+    {{if .Rks_ok}} 
+    <div class="container">
+        <h3 class="title"style="text-align:left">Рубежные контроли</h3>
+          <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+            {{range $item := .Mods}}
+                {{ $rks := $item.Rks }}
+                <tr style="background-color:#2c3034;">
+                    <td style="background-color:#2c3034;">Модуль</td>
+                    <td style="background-color:#2c3034;">{{$item.ModNumber}}</td>
+                </tr>
+                <tr>
+                    <td>РК</td>
+                    <td>Дата</td>
+                    <td>Мин./макс. балл</td>
+                    <td>Попытка сдачи</td>
+                    <td>Вариант</td>
+                    <td>Полученный балл</td>
+                    <td>Комментарий преподавателя</td>
+                </tr>
+                {{range $rk := $rks}}
+                <tr>
+                    <td>№{{$rk.Num}}</td>
+                    <td>{{$rk.Date}}</td>
+                    <td>{{$rk.Min}}/{{$rk.Max}}</td>
+                    <td>{{$rk.Instance}}</td>
+                    <td>{{$rk.Variant}}</td>
+                    <td>{{$rk.Recieved}}</td>
+                    <td>{{$rk.Comment}}</td>
+                </tr>
+                {{end}}
+            {{end}}  
+          </table>
+    </div>
+    {{else}}
+    {{end}}
+    {{if .Sems_ok}}
+    <div class="container">
+        <h3 class="title"style="text-align:left">Семинары. Посещаемость</h3>
+          <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+            {{range $item := .Mods}}
+                {{ $sems := $item.Sems }}
+                <tr style="background-color:#2c3034;">
+                    <td style="background-color:#2c3034;">Модуль</td>
+                    <td style="background-color:#2c3034;">{{$item.ModNumber}}</td>
+                </tr>
+                <tr>
+                    <td>Семинар</td>
+                    <td>Дата</td>
+                    <td>Тема</td>
+                    <td>Присутствие</td>
+                    <td>Бонусный балл</td>
+                </tr>
+                {{range $sem := $sems}}
+                <tr>
+                    <td>№{{$sem.Num}}</td>
+                    <td>{{$sem.Date}}</td>
+                    <td>{{$sem.Theme}}</td>
+                    <td>{{$sem.Attendance}}</td>
+                    <td>{{$sem.Bonus}}</td>
+                </tr>
+                {{end}}
+            {{end}}  
+          </table>
+    </div>
+    {{else}}
+    {{end}}
+    {{if .Lects_ok}}
+    <div class="container">
+        <h3 class="title"style="text-align:left">Лекции. Посещаемость</h3>
+          <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+            {{range $item := .Mods}}
+                {{ $lects := $item.Lects }}
+                <tr style="background-color:#2c3034;">
+                    <td style="background-color:#2c3034;">Модуль</td>
+                    <td style="background-color:#2c3034;">{{$item.ModNumber}}</td>
+                </tr>
+                <tr>
+                    <td>Лекция</td>
+                    <td>Дата</td>
+                    <td>Тема</td>
+                    <td>Присутствие</td>
+                    <td>Бонусный балл</td>
+                </tr>
+                {{range $lect := $lects}}
+                <tr>
+                    <td>№{{$lect.Num}}</td>
+                    <td>{{$lect.Date}}</td>
+                    <td>{{$lect.Theme}}</td>
+                    <td>{{$lect.Attendance}}</td>
+                    <td>{{$lect.Bonus}}</td>
+                </tr>
+                {{end}}
+            {{end}}  
+          </table>
+    </div>
+    {{else}}
+    {{end}}
+    <div class="container">
+        <h3 class="title"style="text-align:left">Экзамен</h3>
+          <table class="table table-dark table-striped" style="color: #fff; border: 1.5px solid #fff;">
+                <tr>
+                  <td>Дата</td>
+                  <td>Мининмальный балл</td>
+                  <td>Максимальный балл</td>
+                </tr>
+                <tr>
+                  <td>{{.Exam.Date}}</td>
+                  <td>{{.Exam.Min}}</td>
+                  <td>{{.Exam.Max}}</td>
+                </tr>    
+          </table>
+    </div>
+</div>    
+</main>
+</body>
+</html>
+{{end}}
+    
