@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Subject (
 CREATE TABLE IF NOT EXISTS Modules (
 	ModuleID UUID NOT NULL UNIQUE,
 	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
-	ModuleName Varchar(50) NOT NULL, 
+	ModuleName Varchar(50) NOT NULL UNIQUE, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	--CONSTRAINT module_unique UNIQUE(ModuleID, subject_id)
@@ -64,19 +64,20 @@ CREATE TABLE IF NOT EXISTS Exam (
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	ExamDate date,
+	CONSTRAINT exam_unique UNIQUE(ExamID, ExamDate),
 	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID UUID PRIMARY KEY,
-	Theme TEXT NOT NULL,
+	Theme TEXT NOT NULL UNIQUE,
 	LectureText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID UUID PRIMARY KEY, 
-	Theme TEXT NOT NULL,
+	Theme TEXT NOT NULL UNIQUE,
 	SeminarText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
@@ -89,12 +90,13 @@ CREATE TABLE IF NOT EXISTS Lab (
 	MinScore INT NOT NULL,
 	LabDate date NOT NULL,
 	Deadline date NOT NULL,
+	CONSTRAINT lab_unique UNIQUE(LabName),
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT --запрет на удаление модуля через таблицу лабы
 );
 
 CREATE TABLE IF NOT EXISTS BC (
 	BCID uuid PRIMARY KEY, 
-	Theme TEXT NOT NULL,
+	Theme TEXT NOT NULL UNIQUE,
 	Questions TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
