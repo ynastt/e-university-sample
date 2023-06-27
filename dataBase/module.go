@@ -4,7 +4,8 @@ import (
     "database/sql"
 )
 
-type Module struct{
+// модуль по дисциплине
+type Module struct {
     Id []uint8
 	SubjectID []uint8
 	Name string
@@ -13,10 +14,10 @@ type Module struct{
 	Db *sql.DB
 }
 
-func (m Module) Get_id() ([]uint8, []uint8) { return m.Id, m.SubjectID}
+func (m Module) Get_id() ([]uint8, []uint8) { return m.Id, m.SubjectID }
 func (m Module) Get_name() string { return m.Name }
-func (m Module) Get_max_score() int { return m.MaxScore}
-func (m Module) Get_min_score() int { return m.MinScore}
+func (m Module) Get_max_score() int { return m.MaxScore }
+func (m Module) Get_min_score() int { return m.MinScore }
 
 func (m *Module) Set_name(name string) {
     m.Name = name
