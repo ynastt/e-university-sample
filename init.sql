@@ -74,7 +74,8 @@ CREATE TABLE IF NOT EXISTS Lecture (
 	LectureText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
 	LectNumber INT NOT NULL,
-	LectDate date
+	LectDate date,
+	CONSTRAINT lect_unique UNIQUE(Theme);
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
@@ -83,7 +84,8 @@ CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
 	SemNumber INT NOT NULL,
-	SemDate date
+	SemDate date,
+	CONSTRAINT sem_unique UNIQUE(Theme);
 );
 
 CREATE TABLE IF NOT EXISTS Lab (

@@ -68,7 +68,7 @@ type Attend struct {
 	Num        int
 	Theme      string
 	Date       string
-	Attendance bool
+	Attendance string
 	Bonus      int
 }
 
@@ -87,13 +87,13 @@ type Exam struct {
 }
 
 type Subject struct {
-	Name    string
-	Mods    []Module
-	Exam    Exam
-	Sems_ok bool
+	Name     string
+	Mods     []Module
+	Exam     Exam
+	Sems_ok  bool
 	Lects_ok bool
-	Labs_ok bool
-	Rks_ok  bool
+	Labs_ok  bool
+	Rks_ok   bool
 }
 
 var err error
@@ -410,7 +410,11 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 							mys.Bonus = 0
 						}
 						mys.Date = s.Date[0:10]
-						mys.Attendance = s.Attendance
+						if s.Attendance {
+							mys.Attendance = "+"
+						} else {
+							mys.Attendance = "-"
+						}
 						mys.Num, mys.Theme = s.Num, s.Theme
 						mym.Sems = append(mym.Sems, mys)
 						if len(mym.Sems) > 0 {
@@ -426,7 +430,11 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 							myl.Bonus = 0
 						}
 						myl.Date = l.Date[0:10]
-						myl.Attendance = l.Attendance
+						if l.Attendance {
+							myl.Attendance = "+"
+						} else {
+							myl.Attendance = "-"
+						}
 						myl.Num, myl.Theme = l.Num, l.Theme
 						mym.Lects = append(mym.Lects, myl)
 						if len(mym.Lects) > 0 {
