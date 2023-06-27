@@ -123,7 +123,8 @@ CREATE TABLE IF NOT EXISTS CourseProject (
 
 CREATE TABLE IF NOT EXISTS Queue (
 	QueueID UUID PRIMARY KEY,
-	StartDate DATE NOT NULL
+	StartDate timestamp NOT NULL,
+	subject_id NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT
 );
 
 -- dop
