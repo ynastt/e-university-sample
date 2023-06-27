@@ -14,12 +14,6 @@ API_TOKEN = '6042118462:AAFSsuIPOcaRocGuT9ImTnuaR8yXgy-_7e0'
 bot = telebot.TeleBot (API_TOKEN)
 
 
-
-class Subject:
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-
 def config(filename='../configs/database.ini', section='postgresql'):
     parser = ConfigParser()
     parser.read(filename)
@@ -69,36 +63,72 @@ def get_text_messages(message):
     elif message.text == 'Войти в электронный дневник':
         bot.send_message(message.from_user.id, 'Введите логин:')
         conn, cur = connectDB()
-        print('PostgreSQL user table:')
+        # print('PostgreSQL user table:')
         cur.execute('SELECT * from Users')
         usrs = cur.fetchall()
         for user in usrs:
             db.usersset.add(user[1])
-        print('PostgreSQL subject table:')
+        # print('PostgreSQL subject table:')
         cur.execute('SELECT SubjectID, Description from Subject')
         subjects = cur.fetchall()
         for s in subjects:
-            print(s)
-            subj = Subject(s[0], s[1])
-            db.subj_set.add(subj)
+            # print(s)
+            db.subj_data[s[1]] = s[0] 
         cur.close()
         conn.close()
     elif message.text in db.usersset and not db.auth:
+        db.login = message.text
         print(message.text)
         print(message.text in db.usersset)
         db.auth = True
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        for s in db.subj_set:
-            btn1 = types.KeyboardButton(s.name)
+        for s in db.subj_data.keys():
+            print(s)
+            btn1 = types.KeyboardButton(s)
             markup.add(btn1)
-        bot.send_message(message.from_user.id, 'Авторизация прошла успешно! Выберете предмет, по которому Вы сдаете работу', reply_markup=markup)
-        
+        bot.send_message(message.from_user.id, 'Авторизация прошла успешно! Выберете предмет, по которому Вы сдаете работу', reply_markup=markup)    
     elif message.text not in db.usersset and not db.auth:
         print(message.text in db.usersset)
         print(db.usersset)
         bot.send_message(message.from_user.id, 'Вы не зарегистрированы в электронном дневнике.\nК сожалению, вы не можете быть записаны в очередь.')
          
-    elif message.text == 'Советы по оформлению публикации':
+    elif message.text in db.subj_data.keys() and not db.subj_choice:
+        db.subj_choice = True
+        db.current_subject = db.Subject(db.subj_data[message.text], message.text)
+        print(db.current_subject.name, db.current_subject.id)
+        conn, cur = connectDB()
+        print('PostgreSQL queue table for current subject:')
+        
+        cur.execute('SELECT * from Queue where subject_id = %s',
+                     (db.current_subject.id,))
+        active_queues = cur.fetchall()
+        print(len(active_queues))
+        if len(active_queues) == 0:
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            btn1 = types.KeyboardButton('Создать очередь')
+            markup.add(btn1)
+            bot.send_message(message.from_user.id, 'Сейчас нет активных очередей по данному предмету.\nХотите создать новую очередь?', reply_markup=markup)
+        else:
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            for q in active_queues:
+                print(q)
+                name = 'Очередь {date}'.format(date=q[1][0:10])
+                btn1 = types.KeyboardButton(name)
+                markup.add(btn1)
+            bot.send_message(message.from_user.id, 'Выберите одну из активных очередей', reply_markup=markup)
+        
+        # cur.execute('SELECT SubjectID, Description from Subject')
+        # subjects = cur.fetchall()
+        # for s in subjects:
+        #     # print(s)\ 
+        #     db.subj_data[s[1]] = s[0] 
+        # cur.close()
+        # conn.close()
+        bot.send_message(message.from_user.id, 'aaaa')
+    
+    elif message.text == 'Посмотреть очередь':
+        bot.send_message(message.from_user.id, 'Подробно про советы по оформлению публикаций прочитать по ' + '[ссылке](https://habr.com/ru/docs/companies/design/)', parse_mode='Markdown')
+    elif message.text == 'Удалить запись':
         bot.send_message(message.from_user.id, 'Подробно про советы по оформлению публикаций прочитать по ' + '[ссылке](https://habr.com/ru/docs/companies/design/)', parse_mode='Markdown')
 
 
