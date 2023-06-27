@@ -157,6 +157,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 					Name:       stud.Get_name(),
 					Surname:    stud.Get_surname(),
 					Patronymic: stud.Get_patronymic(),
+					Email:		stud.Get_email(),
 					Group:      g.Name,
 				})
 			}
@@ -311,6 +312,33 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 			log.Println("client: fetching databases subject info failed", "reason", errorMsg)
 			client.respond("failed", errorMsg)
 		}
+	case "project":
+		errorMsg := ""
+		if req.Data == nil {
+			errorMsg = "data field is absent"
+		} else {
+			var info proto.CP
+			if err := json.Unmarshal(*req.Data, &info); err != nil {
+				errorMsg = "malformed data field"
+			} else {
+				var studentmail = info.Subject
+				println("email: ", studentmail)
+				l := proto.CP{}
+				row := db.QueryRow("SELECT * FROM cpview where student_id = (select StudentID from Student where Email = $1)", studentmail)
+				err = row.Scan(&l.Subject, &l.Description, &l.StartDate, &l.Deadline, &l.Student_id, 
+					&l.ProjAssignment, &l.TitleOfProject, &l.RecievedScore, &l.DateOfPassing)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(l.Subject)
+				fmt.Println("\tstudent project", l.DateOfPassing)
+				client.respond("ok", &l)
+			}
+		}
+		if errorMsg != "" {
+			log.Println("client: fetching studentproject info failed", "reason", errorMsg)
+			client.respond("failed", errorMsg)
+		}	
 	default:
 		log.Println("client: unknown command")
 		client.respond("failed", "unknown command")

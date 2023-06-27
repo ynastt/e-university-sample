@@ -25,6 +25,7 @@ type Stud struct {
 	Name       string
 	Surname    string
 	Patronymic string
+	Email      string
 	Group      string
 }
 
@@ -94,6 +95,18 @@ type Subject struct {
 	Lects_ok bool
 	Labs_ok  bool
 	Rks_ok   bool
+}
+
+type CP struct {
+	Subject string
+	Description string
+	StartDate string
+	Deadline string
+	student_id []uint8
+	ProjAssignment string
+	TitleOfProject string
+	RecievedScore int
+	DateOfPassing string
 }
 
 var err error
@@ -227,6 +240,7 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 				stud.Name = info.Name
 				stud.Surname = info.Surname
 				stud.Patronymic = info.Patronymic
+				stud.Email = info.Email
 				stud.Group = info.Group
 				println("student is:", stud.Surname)
 			}
@@ -254,7 +268,61 @@ func courseproject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}
-	err = t.ExecuteTemplate(w, "coursework", nil)
+	// запрос на сервер
+	conn = connectToServer()
+	defer conn.Close()
+	encoder, decoder := json.NewEncoder(conn), json.NewDecoder(conn)
+	var strct CP
+	// данные для передачи на сервер
+	var info proto.CP
+	info.Subject = stud.Email
+
+	send_request(encoder, "project", &info)
+	// Получение ответа с сервера
+	var resp proto.Response
+	if err := decoder.Decode(&resp); err != nil {
+		println("here")
+		log.Printf("error: %v\n", err)
+	}
+	switch resp.Status {
+	case "failed":
+		if resp.Data == nil {
+			log.Printf("error: data field is absent in response\n")
+		} else {
+			var errorMsg string
+			if err := json.Unmarshal(*resp.Data, &errorMsg); err != nil {
+				log.Printf("error: malformed data field in response\n")
+			} else {
+				log.Printf("failed: %s\n", errorMsg)
+			}
+		}
+	case "ok":
+		if resp.Data == nil {
+			log.Printf("error: data field is absent in response\n")
+		} else {
+			var info proto.CP
+			if err := json.Unmarshal(*resp.Data, &info); err != nil {
+				log.Printf("error: malformed data field in response\n")
+			} else {
+				log.Printf("result: {%s, %s, %d}\n", info.Subject, info.TitleOfProject, info.RecievedScore)
+				conn.Close()
+				strct.Subject = info.Subject
+				strct.Description = info.Description
+				strct.StartDate = info.StartDate[0:10]
+				strct.Deadline = info.Deadline[0:10]
+				strct.student_id = info.Student_id
+				strct.ProjAssignment = info.ProjAssignment
+				strct.TitleOfProject = info.TitleOfProject
+				strct.RecievedScore = info.RecievedScore
+				strct.DateOfPassing = info.DateOfPassing[0:10]
+
+			}
+		}
+	default:
+		log.Printf("error: server reports unknown status %q\n", resp.Status)
+	}
+
+	err = t.ExecuteTemplate(w, "coursework", strct)
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
 	}

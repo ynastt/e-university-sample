@@ -45,6 +45,7 @@ type StudInfo struct {
 	Name       string `json:"name"`
 	Surname    string `json:"surname"`
 	Patronymic string `json:"patronymic"`
+	Email      string `json:"studemail"`
 	Group      string `json:"group"`
 }
 
@@ -103,4 +104,16 @@ type SubjectInfo struct {
 	Name string   `json:"subjectname"`
 	Mods []Module `json:"subjectmodules"`
 	Exam Exam     `json:"subjectexam"`
+}
+
+type CP struct {
+	Subject        string  `json:"cpsubj"`
+	Description    string  `json:"cpdescript"`
+	StartDate      string  `json:"cpstartdate"`
+	Deadline       string  `json:"cpdeadline"`
+	Student_id     []uint8 `json:"cpstudid"`
+	ProjAssignment string  `json:"cpassignment"`
+	TitleOfProject string  `json:"cptitle"`
+	RecievedScore  int     `json:"cpscore"`
+	DateOfPassing  string  `json:"cppass"`
 }

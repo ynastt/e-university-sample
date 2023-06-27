@@ -283,6 +283,15 @@ CREATE VIEW lectview AS
    	ON LectureID = lecture_id;
 SELECT * FROM lectview;
 
+drop view if exists cpview;
+CREATE VIEW cpview AS
+    SELECT Subject, Description, StartDate, Deadline, student_id, ProjAssignment, TitleOfProject, RecievedScore, DateOdPassing
+	FROM
+    	CourseProject
+	LEFT JOIN StudentCourseProject 
+   	ON ProjectID = project_id;
+SELECT * FROM cpview;
+
 -- Sonya
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
 	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
