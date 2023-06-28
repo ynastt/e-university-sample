@@ -2,7 +2,6 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
 )
 
 // лекция в модуле
@@ -10,23 +9,19 @@ type Lecture struct {
     Id []uint8
 	ModuleID []uint8
 	Theme string
-	Text json.RawMessage
+	Text string
 	Db *sql.DB
 }
 
 func (l Lecture) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
 func (l Lecture) Get_text() string { 
-	j, err := json.Marshal(l.Text)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
+	return l.Text
 }
 func (l Lecture) Get_theme() string { return l.Theme }
 
 
-func (l *Lecture) Set_text(text []byte) {
-    l.Text = json.RawMessage(text)
+func (l *Lecture) Set_text(text string) {
+    l.Text = text
 	_, err := l.Db.Exec("update Lecture SET Text = $1 where LectureID = $2", l.Text, l.Id)
     if err != nil {
         panic(err)

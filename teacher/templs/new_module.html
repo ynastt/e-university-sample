@@ -1,0 +1,16 @@
+{{define "new_module"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новом модуле</h1>
+      <form action="/save_module" method="post">
+        <input type="text" name = "subject_name" id = "subject_name" placeholder="Введите описание предмета" class="form-control"><br>
+        <input type="text" name = "ModuleName" id = "ModuleName" placeholder="Введите название модуля" class="form-control"><br>
+        <input type="text" name = "MaxScore" id = "MaxScore" placeholder="Введите максимальное количество баллов за модуль" class="form-control"><br>
+        <input type="text" name = "MinScore" id = "MinScore" placeholder="Введите минимальное количество баллов за предмет" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

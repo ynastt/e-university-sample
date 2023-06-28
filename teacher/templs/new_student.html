@@ -1,0 +1,22 @@
+{{define "new_student"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новом студенте</h1>
+      <form action="/save_student" method="post">
+        <input type="text" name = "Sname" id = "Sname" placeholder="Введите имя студента" class="form-control"><br>
+        <input type="text" name = "Ssurname" id = "Ssurname" placeholder="Введите фамилию студента" class="form-control"><br>
+        <input type="text" name = "Spatronymic" id = "Spatronymic" placeholder="Введите отчество студента" class="form-control"><br>
+        <input type="text" name = "Semail" id = "Semail" placeholder="Введите почту студента" class="form-control"><br>
+        <input type="text" name = "Sphone" id = "Sphone" placeholder="Введите телефон студента" class="form-control"><br>
+        <input type="text" name = "Syear" id = "Syear" placeholder="Введите год поступления студента" class="form-control"><br>
+        <input type="text" name = "SpassedCourses" id = "SpassedCourses" placeholder="Введите сколько курсов студент полностью закрыл" class="form-control"><br>
+        <input type="text" name = "SnumInGroup" id = "SnumInGroup" placeholder="Введите номер студента в группе" class="form-control"><br>
+        <input type="text" name = "Suser_login" id = "Suser_login" placeholder="Введите логин студента" class="form-control"><br>
+        <input type="text" name = "Sgroup_name" id = "Sgroup_name" placeholder="Введите группу, в которую будет добавлен студент" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

@@ -1,0 +1,13 @@
+{{define "delete_group"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об удаляемой группе</h1>
+      <form action="/del_group" method="post">
+        <input type="text" name = "GroupName" id = "GroupName" placeholder="Введите название группы" class="form-control"><br>
+        <button class="btn btn-warning">Удалить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

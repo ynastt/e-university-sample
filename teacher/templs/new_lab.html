@@ -1,0 +1,19 @@
+{{define "new_lab"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новой лабораторной</h1>
+      <form action="/save_lab" method="post">
+        <input type="text" name = "module_name" id = "module_name" placeholder="Введите название модуля" class="form-control"><br>
+        <input type="text" name = "LabName" id = "LabName" placeholder="Введите название лабораторной" class="form-control"><br>
+        <input type="text" name = "LabText" id = "LabText" placeholder="Введите задание лабораторной" class="form-control"><br>
+        <input type="text" name = "MaxScore" id = "MaxScore" placeholder="Введите максимальное количество баллов за лабораторную" class="form-control"><br>
+        <input type="text" name = "MinScore" id = "MinScore" placeholder="Введите минимальное количество баллов за лабораторную" class="form-control"><br>
+        <input type="text" name = "LabDate" id = "LabDate" placeholder="Введите дату выдачи" class="form-control"><br>
+        <input type="text" name = "Deadline" id = "Deadline" placeholder="Введите дату сдачи" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

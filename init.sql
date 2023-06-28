@@ -122,11 +122,12 @@ CREATE TABLE IF NOT EXISTS StudentInQueue (
 	PRIMARY KEY(student_id, queue_id)
 );
 
-CREATE TABLE IF NOT EXISTS TeacherSubject (
+CREATE TABLE IF NOT EXISTS TeacherSubjectGroup (
 	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE RESTRICT,
 	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	group_id UUID NOT NULL REFERENCES StudentGroup(GroupID) ON DELETE RESTRICT,
 	TeacherRole Int NOT NULL,
-	PRIMARY KEY(teacher_id, subject_id)
+	PRIMARY KEY(teacher_id, subject_id, group_id)
 );
 
 CREATE TABLE IF NOT EXISTS Supervisor (

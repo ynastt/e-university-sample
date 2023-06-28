@@ -1,0 +1,17 @@
+{{define "new_bc"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новой рк</h1>
+      <form action="/save_bc" method="post">
+        <input type="text" name = "module_name" id = "module_name" placeholder="Введите название модуля" class="form-control"><br>
+        <input type="text" name = "Theme" id = "Theme" placeholder="Введите тему рк" class="form-control"><br>
+        <input type="text" name = "Questions" id = "Questions" placeholder="Введите вопросы рк" class="form-control"><br>
+        <input type="text" name = "MaxScore" id = "MaxScore" placeholder="Введите максимальный балл за рк" class="form-control"><br>
+        <input type="text" name = "MinScore" id = "MinScore" placeholder="Введите минимальный балл за рк" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

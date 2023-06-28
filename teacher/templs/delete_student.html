@@ -1,0 +1,13 @@
+{{define "delete_student"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об удаляемом студенте</h1>
+      <form action="/del_student" method="post">
+        <input type="text" name = "DEmail" id = "DEmail" placeholder="Введите почту студента" class="form-control"><br>
+        <button class="btn btn-warning">Удалить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

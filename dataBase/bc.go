@@ -10,7 +10,7 @@ type Bc struct {
     Id []uint8
 	ModuleID []uint8
 	Theme string
-	Questions json.RawMessage
+	Questions string
 	MaxScore int
 	MinScore int
 	Db *sql.DB
@@ -20,11 +20,7 @@ type Bc struct {
 func (b Bc) Get_id() ([]uint8, []uint8) { return b.Id, b.ModuleID }
 func (b Bc) Get_theme() string { return b.Theme }
 func (b Bc) Get_questions() string { 
-	j, err := json.Marshal(b.Questions)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
+	return b.Questions
 }
 func (b Bc) Get_max_score() int { return b.MaxScore }
 func (b Bc) Get_min_score() int { return b.MinScore }
@@ -37,8 +33,8 @@ func(b *Bc) Set_theme(text string) {
     }
 }
 
-func (b *Bc) Set_questions(text []byte) {
-    b.Questions = json.RawMessage(text)
+func (b *Bc) Set_questions(text string) {
+    b.Questions = text
 	_, err := b.Db.Exec("update BC SET Questions = $1 where BCID = $2", b.Questions, b.Id)
     if err != nil {
         panic(err)

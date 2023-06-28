@@ -1,0 +1,15 @@
+{{define "update_teacher"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об изменяемом предмете</h1>
+      <form action="/upd_teacher" method="post">
+        <input type="text" name = "Email" id = "Email" placeholder="Введите почту преподавателя" class="form-control"><br>
+        <input type="text" name = "change" id = "change" placeholder="Введите изменяемое поле(TeacherName, Surname, Patronymic,  Email)" class="form-control"><br>
+        <input type="text" name = "value" id = "value" placeholder="Введите новое значение" class="form-control"><br>
+        <button class="btn btn-warning">Изменить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

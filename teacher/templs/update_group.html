@@ -1,0 +1,15 @@
+{{define "update_group"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об изменяемой группе</h1>
+      <form action="/upd_group" method="post">
+        <input type="text" name = "GroupName" id = "GroupName" placeholder="Введите название группы" class="form-control"><br>
+        <input type="text" name = "change" id = "change" placeholder="Введите изменяемое поле(GroupName, YearOfAdmission, Course,  AmountOfStudents)" class="form-control"><br>
+        <input type="text" name = "value" id = "value" placeholder="Введите новое значение" class="form-control"><br>
+        <button class="btn btn-warning">Изменить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

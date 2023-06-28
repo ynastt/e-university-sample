@@ -1,0 +1,17 @@
+{{define "new_ex"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новом экзамене</h1>
+      <form action="/save_ex" method="post">
+        <input type="text" name = "subject_name" id = "subject_name" placeholder="Введите описание предмета" class="form-control"><br>
+        <input type="text" name = "Questions" id = "Questions" placeholder="Введите вопросы к экзамену" class="form-control"><br>
+        <input type="text" name = "MaxScore" id = "MaxScore" placeholder="Введите максимальное количество баллов за экзамен" class="form-control"><br>
+        <input type="text" name = "MinScore" id = "MinScore" placeholder="Введите минимальное количество баллов за экзамен" class="form-control"><br>
+        <input type="text" name = "ExamDate" id = "ExamDate" placeholder="Введите дату экзамена" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

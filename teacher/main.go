@@ -26,8 +26,8 @@ const (
 
 func auth(w http.ResponseWriter, r *http.Request){
     fmt.Println("auth")
-    // http.ServeFile(w, r, "templates/auth.html")
-    t, err := template.ParseFiles("templates/auth.html")
+    // http.ServeFile(w, r, "teacher/templs/auth.html")
+    t, err := template.ParseFiles("teacher/templs/auth.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -37,7 +37,7 @@ func auth(w http.ResponseWriter, r *http.Request){
 }
 
 func index(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/index.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/index.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -47,7 +47,7 @@ func index(w http.ResponseWriter, r *http.Request){
 }
 
 func new_group(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_group.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_group.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -57,7 +57,7 @@ func new_group(w http.ResponseWriter, r *http.Request){
 }
 
 func new_bc(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_bc.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_bc.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -67,7 +67,7 @@ func new_bc(w http.ResponseWriter, r *http.Request){
 }
 
 func new_ex(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_ex.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_ex.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -77,7 +77,7 @@ func new_ex(w http.ResponseWriter, r *http.Request){
 }
 
 func new_lab(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_lab.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_lab.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -87,7 +87,7 @@ func new_lab(w http.ResponseWriter, r *http.Request){
 }
 
 func new_lect(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_lect.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_lect.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -97,7 +97,7 @@ func new_lect(w http.ResponseWriter, r *http.Request){
 }
 
 func new_module(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_module.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_module.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -107,7 +107,7 @@ func new_module(w http.ResponseWriter, r *http.Request){
 }
 
 func new_sem(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_sem.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_sem.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -117,7 +117,7 @@ func new_sem(w http.ResponseWriter, r *http.Request){
 }
 
 func new_teacher(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_teacher.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_teacher.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -127,7 +127,7 @@ func new_teacher(w http.ResponseWriter, r *http.Request){
 }
 
 func new_subject(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_subject.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_subject.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -137,7 +137,7 @@ func new_subject(w http.ResponseWriter, r *http.Request){
 }
 
 func new_student(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/new_student.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/new_student.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -147,7 +147,7 @@ func new_student(w http.ResponseWriter, r *http.Request){
 }
 
 func delete_student(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_student.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_student.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -157,7 +157,7 @@ func delete_student(w http.ResponseWriter, r *http.Request){
 }
 
 func delete_bc(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_bc.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_bc.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -167,7 +167,7 @@ func delete_bc(w http.ResponseWriter, r *http.Request){
 }
 
 func delete_ex(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_ex.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_ex.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -176,7 +176,7 @@ func delete_ex(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_ex", nil)
 }
 func delete_group(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_group.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_group.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -185,7 +185,7 @@ func delete_group(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_group", nil)
 }
 func delete_lab(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_lab.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_lab.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -194,7 +194,7 @@ func delete_lab(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_lab", nil)
 }
 func delete_lect(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_lect.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_lect.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -203,7 +203,7 @@ func delete_lect(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_lect", nil)
 }
 func delete_module(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_module.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_module.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -212,7 +212,7 @@ func delete_module(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_module", nil)
 }
 func delete_sem(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_sem.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_sem.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -221,7 +221,7 @@ func delete_sem(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_sem", nil)
 }
 func delete_subject(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_subject.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_subject.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -230,7 +230,7 @@ func delete_subject(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "delete_subject", nil)
 }
 func delete_teacher(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/delete_teacher.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/delete_teacher.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -520,7 +520,7 @@ func del_teacher(w http.ResponseWriter, r *http.Request){
 
 
 func update_student(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_student.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_student.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -530,7 +530,7 @@ func update_student(w http.ResponseWriter, r *http.Request){
 }
 
 func update_bc(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_bc.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_bc.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -539,7 +539,7 @@ func update_bc(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_bc", nil)
 }
 func update_ex(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_ex.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_ex.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -548,7 +548,7 @@ func update_ex(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_ex", nil)
 }
 func update_group(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_group.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_group.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -557,7 +557,7 @@ func update_group(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_group", nil)
 }
 func update_lab(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_lab.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_lab.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -566,7 +566,7 @@ func update_lab(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_lab", nil)
 }
 func update_lect(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_lect.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_lect.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -575,7 +575,7 @@ func update_lect(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_lect", nil)
 }
 func update_module(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_module.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_module.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -584,7 +584,7 @@ func update_module(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_module", nil)
 }
 func update_sem(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_sem.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_sem.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -593,7 +593,7 @@ func update_sem(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_sem", nil)
 }
 func update_subject(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_subject.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_subject.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -602,7 +602,7 @@ func update_subject(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "update_subject", nil)
 }
 func update_teacher(w http.ResponseWriter, r *http.Request){
-    t, err := template.ParseFiles("templates/update_teacher.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/update_teacher.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())
@@ -928,7 +928,7 @@ func show_list_subjects(w http.ResponseWriter, r *http.Request){
         subjs = append(subjs, p)
     }
  
-    tmpl, _ := template.ParseFiles("templates/subjects.html", "templates/header.html", "templates/footer.html")
+    tmpl, _ := template.ParseFiles("teacher/templs/subjects.html", "teacher/templs/header.html", "teacher/templs/footer.html")
     tmpl.ExecuteTemplate(w, "subjects", subjs)
 }
 
@@ -956,7 +956,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
     vars := mux.Vars(r)
     Descr := vars["descr"]
     var subj = Sbj{}
-    t, err := template.ParseFiles("templates/show_subject.html", "templates/header.html", "templates/footer.html")
+    t, err := template.ParseFiles("teacher/templs/show_subject.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
     if err != nil {
         fmt.Fprintf(w, err.Error())

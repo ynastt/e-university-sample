@@ -1,0 +1,15 @@
+{{define "update_student"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об изменяемом студенте</h1>
+      <form action="/upd_student" method="post">
+        <input type="text" name = "UEmail" id = "UEmail" placeholder="Введите почту студента" class="form-control"><br>
+        <input type="text" name = "change" id = "change" placeholder="Введите изменяемое поле(StudentName, Surname, Patronymic , Email, Phone, YearOfAdmission, PassedCourses, NumInGroup,user_id, group_id)" class="form-control"><br>
+        <input type="text" name = "value" id = "value" placeholder="Введите новое значение" class="form-control"><br>
+        <button class="btn btn-warning">Изменить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

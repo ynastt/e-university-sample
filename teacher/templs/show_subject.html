@@ -1,0 +1,55 @@
+{{define "show_subject"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+        <h2>{{.Description}}</h2>
+        <div class="container" style="padding-left: 200px"> 
+            {{$perL := .IsLab}}
+            {{$perS := .IsSem}}
+            {{range $item := .Modules}}
+
+                <h3 style="text-align:left">{{$item.Module.Name}}<br></h3>
+
+                {{if $perL}}
+                <div class="container">
+                    <h4 style="text-align:left">Лабораторные : <br></h4> 
+                    <ul type="circle">
+                
+                    {{range $lab := $item.Ms.Labs}}
+                        <li style="text-align:left">{{$lab.Name}} {{$lab.MinScore}}/{{$lab.MaxScore}}<br></li>
+                    {{end}}
+                    </ul>
+                </div>
+                {{else}} 
+                {{end}}
+
+
+                <div class="container">
+                <h4 style="text-align:left">Лекции : <br></h4> 
+                <ul type="circle">
+                {{range $lect := $item.Ms.Lects}}
+                    <li style="text-align:left">{{$lect.Theme}}<br></li>  
+                {{end}}
+                </ul>
+                {{if $perS}}
+                <h4 style="text-align:left">Семинары : <br></h4>
+                <ul type="circle">
+                {{range $sems := $item.Ms.Sems}}
+                    <li style="text-align:left">{{$sems.Theme}}<br></li>  
+                {{end}}
+                </ul>
+                {{else}} 
+                {{end}}
+                <h4 style="text-align:left">Рк : <br></h4>
+                <ul type="circle">
+                {{range $bc := $item.Ms.Bc}}  
+                    <li style="text-align:left">{{$bc.Theme}} {{$bc.MinScore}}/{{$bc.MaxScore}}<br></li>  
+                {{end}}
+                </ul>
+                </div>
+            {{end}}
+            <h3 style="text-align:left">Экзамен :</h3>
+            <p style="text-align:left"> {{.Exams.MinScore}}/{{.Exams.MaxScore}}</p>
+        </div>
+    </main>
+{{template "footer"}}
+{{end}}

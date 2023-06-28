@@ -1,0 +1,16 @@
+{{define "new_subject"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новом предмете</h1>
+      <form action="/save_subject" method="post">
+        <input type="text" name = "description" id = "description" placeholder="Введите описание предмета" class="form-control"><br>
+        <input type="text" name = "subjectProgram" id = "subjectProgram" placeholder="Введите программу предмета" class="form-control"><br>
+        <input type="text" name = "numberOfHours" id = "numberOfHours" placeholder="Введите количество часов" class="form-control"><br>
+        <input type="text" name = "numberOfCredits" id = "numberOfCredits" placeholder="Введите максимальное количество баллов за предмет" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

@@ -1,0 +1,26 @@
+{{define "subjects"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+        <h4><br></h4>
+        <h3> Предметы : </h3>
+        <div class="container" style="padding-left: 450px"> 
+        <table>
+            <th><h5>Description</h5></th>
+            <th><h5>&nbsp;</h5></th>
+            <th><h5>NumberOfHours</h5></th>
+            <th><h5>&nbsp;</h5></th>
+            <th><h5>NumberOfCredits</h5></th>
+                {{range . }}
+                <tr>
+                    <p> <td><a href="http://localhost:8080/subjects/{{.Description}}">{{.Description}}</a></td>
+                    <td>&nbsp;</td>
+                    <td>{{.Hours}}</td>
+                    <td>&nbsp;</td>
+                    <td>{{.Credits}}</td></p>
+                    </tr>
+                {{end}}
+            </table>
+            </div>
+    </main>
+{{template "footer"}}
+{{end}}

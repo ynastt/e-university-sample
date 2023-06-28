@@ -1,0 +1,15 @@
+{{define "delete_bc"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об удаляемой рк</h1>
+      <form action="/del_bc" method="post">
+        <input type="text" name = "Description" id = "Description" placeholder="Введите описание предмета" class="form-control"><br>
+        <input type="text" name = "ModuleName" id = "ModuleName" placeholder="Введите название модуля" class="form-control"><br>
+        <input type="text" name = "Theme" id = "Theme" placeholder="Введите тему рк" class="form-control"><br>
+        <button class="btn btn-warning">Удалить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    
