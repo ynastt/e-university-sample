@@ -129,8 +129,8 @@ CREATE TABLE IF NOT EXISTS Queue (
 
 -- dop
 CREATE TABLE IF NOT EXISTS StudentInQueue (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE,
+	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE CASCADE,
 	NumInQueue Int NOT NULL,
 	Task INT NOT NULL, -- делать enum
 	PRIMARY KEY(student_id, queue_id)
