@@ -5,16 +5,11 @@ import (
     "encoding/json"
 )
 
-var subjects_counter = 1
-var subjects = map[string]int {
-    "базы данных": 1,
-}
-
 // курсовая работа по дисциплине
 type CourseProject struct {
     Id []uint8
-    Subject int
-    Description []byte
+    Subject string
+    Description string
 	Hours int
 	StartDate string
 	Deadline string
@@ -23,30 +18,22 @@ type CourseProject struct {
 
 func (p CourseProject) Get_id() []uint8 { return p.Id }
 func (p CourseProject) Get_subject() string { 
-	subj, ok := mapkey(subjects, p.Subject)
-	if !ok {
-  		panic("there is no such subject in database")
-	}
-	return subj
+	return p.Subject
 }
-func (p CourseProject) Get_description() []byte { return p.Description }
+func (p CourseProject) Get_description() string{ return p.Description }
 func (p CourseProject) Get_hours() int { return p.Hours }
 func (p CourseProject) Get_start_date() string { return p.StartDate }
 func (p CourseProject) Get_deadline() string { return p.Deadline }
 
 func (p *CourseProject) Set_subject(name string) {
-	if _, ok := subjects[name]; !ok {
-		subjects_counter += 1
-		subjects[name] = subjects_counter
-	}
-	p.Subject = subjects[name]
+	p.Subject = name
     _, err := p.Db.Exec("update CourseProject SET Subject = $1 where ProjectID = $2", p.Subject, p.Id)
     if err != nil {
         panic(err)
     }
 }
 
-func (p *CourseProject) Set_description(text []byte) {
+func (p *CourseProject) Set_description(text string) {
     p.Description = text
     _, err := p.Db.Exec("update CourseProject SET Description = $1 where ProjectID = $2", p.Description, p.Id)
     if err != nil {

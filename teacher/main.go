@@ -56,6 +56,16 @@ func new_group(w http.ResponseWriter, r *http.Request){
     t.ExecuteTemplate(w, "new_group", nil)
 }
 
+func new_coursePr(w http.ResponseWriter, r *http.Request){
+    t, err := template.ParseFiles("teacher/templs/new_coursePr.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+
+    if err != nil {
+        fmt.Fprintf(w, err.Error())
+    }
+
+    t.ExecuteTemplate(w, "new_coursePr", nil)
+}
+
 func new_bc(w http.ResponseWriter, r *http.Request){
     t, err := template.ParseFiles("teacher/templs/new_bc.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
@@ -183,6 +193,16 @@ func delete_group(w http.ResponseWriter, r *http.Request){
     }
 
     t.ExecuteTemplate(w, "delete_group", nil)
+}
+
+func delete_coursePr(w http.ResponseWriter, r *http.Request){
+    t, err := template.ParseFiles("teacher/templs/delete_coursePr.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+
+    if err != nil {
+        fmt.Fprintf(w, err.Error())
+    }
+
+    t.ExecuteTemplate(w, "delete_coursePr", nil)
 }
 func delete_lab(w http.ResponseWriter, r *http.Request){
     t, err := template.ParseFiles("teacher/templs/delete_lab.html", "teacher/templs/header.html", "teacher/templs/footer.html")
@@ -315,6 +335,33 @@ func del_ex(w http.ResponseWriter, r *http.Request){
 
     res, err := db.Query(
         fmt.Sprintf("Delete FROM Exam Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Description))
+    if err != nil {
+        panic(err)
+    }
+    defer res.Close()
+    http.Redirect(w,r,"/", http.StatusSeeOther)
+}
+
+func del_coursePr(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+    db, err := sql.Open("postgres", psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Successfully connected!\n\n")
+
+    res, err := db.Query(
+        fmt.Sprintf("Delete FROM CourseProject Where Description = '%s'", Description))
     if err != nil {
         panic(err)
     }
@@ -556,6 +603,15 @@ func update_group(w http.ResponseWriter, r *http.Request){
 
     t.ExecuteTemplate(w, "update_group", nil)
 }
+func update_coursePr(w http.ResponseWriter, r *http.Request){
+    t, err := template.ParseFiles("teacher/templs/update_coursePr.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+
+    if err != nil {
+        fmt.Fprintf(w, err.Error())
+    }
+
+    t.ExecuteTemplate(w, "update_coursePr", nil)
+}
 func update_lab(w http.ResponseWriter, r *http.Request){
     t, err := template.ParseFiles("teacher/templs/update_lab.html", "teacher/templs/header.html", "teacher/templs/footer.html")
 
@@ -720,6 +776,35 @@ func upd_group(w http.ResponseWriter, r *http.Request){
 
     res, err := db.Query(
         fmt.Sprintf("update StudentGroup SET %s  = '%s' where GroupName = '%s'", Uchange, Uvalue, GroupName))
+    if err != nil {
+        panic(err)
+    }
+    defer res.Close()
+    http.Redirect(w,r,"/", http.StatusSeeOther)
+}
+
+func upd_coursePr(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    Uchange := r.FormValue("change")
+    Uvalue := r.FormValue("value")
+    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+    db, err := sql.Open("postgres", psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Successfully connected!\n\n")
+
+    res, err := db.Query(
+        fmt.Sprintf("update CourseProject SET %s  = '%s' where Description = '%s'", Uchange, Uvalue, Description))
     if err != nil {
         panic(err)
     }
@@ -940,6 +1025,46 @@ func show_list_subjects(w http.ResponseWriter, r *http.Request){
  
     tmpl, _ := template.ParseFiles("teacher/templs/subjects.html", "teacher/templs/header.html", "teacher/templs/footer.html")
     tmpl.ExecuteTemplate(w, "subjects", subjs)
+}
+
+func show_list_coursePr(w http.ResponseWriter, r *http.Request){
+    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+    db, err := sql.Open("postgres", psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Successfully connected!\n\n")
+    rows, err := db.Query("select * from CourseProject")
+    if err != nil {
+        log.Println(err)
+    }
+    defer rows.Close()
+    subjs := []dataBase.CourseProject{}
+     
+    for rows.Next(){
+        p := dataBase.CourseProject{}
+        err := rows.Scan(&p.Id, &p.Subject, &p.Description, &p.Hours, &p.StartDate, &p.Deadline)
+		p.StartDate = p.StartDate[:10]
+		p.Deadline = p.Deadline[:10]
+        fmt.Println(p.Description)
+        if err != nil{
+            fmt.Println(err)
+            continue
+        }
+        subjs = append(subjs, p)
+    }
+ 
+    tmpl, _ := template.ParseFiles("teacher/templs/show_coursePrs.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+    tmpl.ExecuteTemplate(w, "show_coursePrs", subjs)
 }
 
 type Mods struct {
@@ -1199,6 +1324,39 @@ func save_group(w http.ResponseWriter, r *http.Request){
 
 
     
+    http.Redirect(w,r,"/", http.StatusSeeOther)
+}
+
+func save_coursePr(w http.ResponseWriter, r *http.Request){
+    Subject := r.FormValue("Subject")
+    Description := r.FormValue("Description")
+    NumberOfHours := r.FormValue("NumberOfHours")
+    StartDate := r.FormValue("StartDate")
+	Deadline := r.FormValue("Deadline")
+    psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+    "password=%s dbname=%s sslmode=disable",
+    host, port, user, password, dbname)
+    db, err := sql.Open("postgres", psqlInfo)
+    if err != nil {
+        panic(err)
+    }
+    defer db.Close()
+
+    err = db.Ping()
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("Successfully connected!\n\n")
+    res, err := db.Query(
+        fmt.Sprintf("INSERT INTO CourseProject(ProjectID, Subject, Description, NumberOfHours , StartDate, Deadline) Values (gen_random_uuid(),'%s', '%s','%s',  '%s', '%s')",
+        Subject, Description, NumberOfHours, StartDate,Deadline ))
+        
+    if err != nil {
+        panic(err)
+    }
+
+    defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
 
@@ -1506,6 +1664,8 @@ func handleFunc() {
     router.HandleFunc("/main", index)
     router.HandleFunc("/new_teacher", new_teacher)
     router.HandleFunc("/save_teacher", save_teacher)
+	router.HandleFunc("/new_coursePr", new_coursePr)
+    router.HandleFunc("/save_coursePr", save_coursePr)
     router.HandleFunc("/new_group", new_group)
     router.HandleFunc("/save_group", save_group)
     router.HandleFunc("/new_subject", new_subject)
@@ -1514,6 +1674,7 @@ func handleFunc() {
     router.HandleFunc("/save_student", save_student)
     router.HandleFunc("/del_student", del_student)
     router.HandleFunc("/subjects/", show_list_subjects)
+	router.HandleFunc("/subjects/show_coursePrs", show_list_coursePr)
     router.HandleFunc("/subjects/{descr}", show_subject)
     router.HandleFunc("/new_bc", new_bc)
     router.HandleFunc("/save_bc", save_bc)
@@ -1528,6 +1689,8 @@ func handleFunc() {
     router.HandleFunc("/new_lect", new_lect)
     router.HandleFunc("/save_lect", save_lect)
     router.HandleFunc("/delete_student", delete_student)
+	router.HandleFunc("/del_coursePr", del_coursePr)
+	router.HandleFunc("/delete_coursePr", delete_coursePr)
     router.HandleFunc("/delete_bc", delete_bc)
     router.HandleFunc("/delete_ex", delete_ex)
     router.HandleFunc("/delete_group", delete_group)
@@ -1550,6 +1713,8 @@ func handleFunc() {
 	router.HandleFunc("/update_bc", update_bc)
     router.HandleFunc("/update_ex", update_ex)
     router.HandleFunc("/update_group", update_group)
+	router.HandleFunc("/update_coursePr", update_coursePr)
+	router.HandleFunc("/upd_coursePr", upd_coursePr)
     router.HandleFunc("/update_lab", update_lab)
     router.HandleFunc("/update_lect", update_lect)
     router.HandleFunc("/update_module", update_module)

@@ -1,0 +1,17 @@
+{{define "new_coursePr"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о новой курсовой работе</h1>
+      <form action="/save_coursePr" method="post">
+        <input type="text" name = "Subject" id = "Subject" placeholder="Введите предмет курсовой" class="form-control"><br>
+        <input type="text" name = "Description" id = "Description" placeholder="Введите тему курсовой" class="form-control"><br>
+        <input type="text" name = "NumberOfHours" id = "NumberOfHours" placeholder="Введите количество часов на курсовую" class="form-control"><br>
+        <input type="text" name = "StartDate" id = "StartDate" placeholder="Введите дату начала" class="form-control"><br>
+        <input type="text" name = "Deadline" id = "Deadline" placeholder="Введите дату сдачи" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

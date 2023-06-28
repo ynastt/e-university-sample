@@ -1,0 +1,11 @@
+{{define "delete_coursePr"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные об удаляемой курсовой</h1>
+      <form action="/del_coursePr" method="post">
+        <input type="text" name = "Description" id = "Description" placeholder="Введите описание курсовой" class="form-control"><br>
+        <button class="btn btn-warning">Удалить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
