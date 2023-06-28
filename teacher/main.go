@@ -639,7 +639,8 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-/*func upd_bc(w http.ResponseWriter, r *http.Request){
+
+func upd_bc(w http.ResponseWriter, r *http.Request){
     Description := r.FormValue("Description")
     ModuleName := r.FormValue("ModuleName")
     Theme := r.FormValue("Theme")
@@ -662,15 +663,15 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update BC SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue,Theme, ModuleName, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_ex(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -690,15 +691,15 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Exam SET %s  = '%s' Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Uchange, Uvalue, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_group(w http.ResponseWriter, r *http.Request){
+    GroupName := r.FormValue("GroupName")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -718,15 +719,17 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update StudentGroup SET %s  = '%s' where GroupName = '%s'", Uchange, Uvalue, GroupName))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_lab(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    ModuleName := r.FormValue("ModuleName")
+    LabName := r.FormValue("LabName")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -746,15 +749,17 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Lab SET %s  = '%s' where LabName = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, LabName, ModuleName, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_lect(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    ModuleName := r.FormValue("ModuleName")
+    Theme := r.FormValue("Theme")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -774,15 +779,16 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Lecture SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, Theme, ModuleName, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_module(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    ModuleName := r.FormValue("ModuleName")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -802,15 +808,17 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Modules SET %s  = '%s' Where ModuleID IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, ModuleName, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_sem(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
+    ModuleName := r.FormValue("ModuleName")
+    Theme := r.FormValue("Theme")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -830,15 +838,15 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Seminar SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, Theme, ModuleName, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+func upd_subject(w http.ResponseWriter, r *http.Request){
+    Description := r.FormValue("Description")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -858,15 +866,16 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Subject SET %s  = '%s' Where SubjectID IN (SELECT SubjectID From Subject Where Description = '%s')", Uchange, Uvalue, Description))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
 }
-func upd_student(w http.ResponseWriter, r *http.Request){
-    UEmail := r.FormValue("UEmail")
+
+func upd_teacher(w http.ResponseWriter, r *http.Request){
+    UEmail := r.FormValue("Email")
     Uchange := r.FormValue("change")
     Uvalue := r.FormValue("value")
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -886,13 +895,14 @@ func upd_student(w http.ResponseWriter, r *http.Request){
     fmt.Printf("Successfully connected!\n\n")
 
     res, err := db.Query(
-        fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
+        fmt.Sprintf("update Teacher SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
     if err != nil {
         panic(err)
     }
     defer res.Close()
     http.Redirect(w,r,"/", http.StatusSeeOther)
-}*/
+}
+
 
 func show_list_subjects(w http.ResponseWriter, r *http.Request){
     psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -1093,6 +1103,8 @@ func show_subject(w http.ResponseWriter, r *http.Request){
         if len(lbs) == 0 {
             subj.IsLab = false
             //fmt.Println("aaaaaaaaaaaaaaaaaaa")
+        } else {
+            subj.IsLab =true
         }
         mm.Ms.Sems = sems
         if len(sems) == 0 {
@@ -1501,8 +1513,6 @@ func handleFunc() {
     router.HandleFunc("/new_student", new_student)
     router.HandleFunc("/save_student", save_student)
     router.HandleFunc("/del_student", del_student)
-    router.HandleFunc("/update_student", update_student)
-    router.HandleFunc("/upd_student", upd_student)
     router.HandleFunc("/subjects/", show_list_subjects)
     router.HandleFunc("/subjects/{descr}", show_subject)
     router.HandleFunc("/new_bc", new_bc)
@@ -1536,6 +1546,26 @@ func handleFunc() {
     router.HandleFunc("/del_sem", del_sem)
     router.HandleFunc("/del_subject", del_subject)
     router.HandleFunc("/del_teacher", del_teacher)
+	router.HandleFunc("/update_student", update_student)
+	router.HandleFunc("/update_bc", update_bc)
+    router.HandleFunc("/update_ex", update_ex)
+    router.HandleFunc("/update_group", update_group)
+    router.HandleFunc("/update_lab", update_lab)
+    router.HandleFunc("/update_lect", update_lect)
+    router.HandleFunc("/update_module", update_module)
+    router.HandleFunc("/update_sem", update_sem)
+    router.HandleFunc("/update_subject", update_subject)
+    router.HandleFunc("/update_teacher", update_teacher)
+    router.HandleFunc("/upd_student", upd_student)
+	router.HandleFunc("/upd_bc", upd_bc)
+    router.HandleFunc("/upd_ex", upd_ex)
+    router.HandleFunc("/upd_group", upd_group)
+    router.HandleFunc("/upd_lab", upd_lab)
+    router.HandleFunc("/upd_lect", upd_lect)
+    router.HandleFunc("/upd_module", upd_module)
+    router.HandleFunc("/upd_sem", upd_sem)
+    router.HandleFunc("/upd_subject", upd_subject)
+    router.HandleFunc("/upd_teacher", upd_teacher)
     http.Handle("/", router)
     fmt.Println("Server is listening...")
     http.ListenAndServe("localhost:8080", nil)
