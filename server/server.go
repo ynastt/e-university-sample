@@ -102,8 +102,8 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				}
 				fmt.Println(user.Id, user.Login, user.Passw, user.UserRights)
 
-				if user.UserRights != 2 {
-					errorMsg = "it is not student"
+				if user.UserRights != 2 && user.UserRights != 1{
+					errorMsg = "it is neither student nor teacher"
 				} else {
 					if info.Username == user.Login && info.Password == user.Passw {
 						info.Exists = true
