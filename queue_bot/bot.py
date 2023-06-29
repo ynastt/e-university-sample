@@ -37,11 +37,13 @@ def connectDB():
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    db.auth = False
+    db.subj_choice = False
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("👋 Привет, запиши меня в очередь")
     markup.add(btn1)
     bot.send_message(message.from_user.id, "👋 - Привет, Я - бот-помощник для организации очереди на сдачу лабораторных работ! Для записи в очередь нажми на кнопку ниже", reply_markup=markup)
-
+    
 
 @bot.message_handler(commands=['help'])
 def start(message):
@@ -94,6 +96,7 @@ def get_text_messages(message):
             btn1 = types.KeyboardButton(s)
             markup.add(btn1)
         bot.send_message(message.from_user.id, 'Выберете предмет, по которому Вы сдаете работу', reply_markup=markup)
+    
     elif message.text not in db.user_data and not db.auth:
         # print(message.text in db.user_data)
         # print(db.user_data)
@@ -204,7 +207,7 @@ def get_text_messages(message):
     
     elif message.text == 'Посмотреть очередь':
         conn, cur = connectDB()
-        cur.execute('SELECT NumInQueue, student_id from StudentInQueue where queue_id = %s order by NumInQueue', (db.current_queue.id,))
+        cur.execute('SELECT NumInQueue, student_id from StudentQueue where queue_id = %s order by NumInQueue', (db.current_queue.id,))
         cur_queue = cur.fetchall()
         # cur.execute('select * from StudentInQueue where queue_id = %s', (db.current_queue.id,))
         # cur_queue = cur.fetchall()
@@ -228,6 +231,9 @@ def get_text_messages(message):
         btn2 = types.KeyboardButton('Посмотреть очередь')
         btn3 = types.KeyboardButton('Вернуться к списку очередей')
         markup.add(btn1, btn2, btn3)
+        if len(cur_queue) > 0:
+            btn = types.KeyboardButton('Удалить запись')
+            markup.add(btn)
         bot.send_message(message.from_user.id, queue_list, reply_markup=markup)
     
     elif message.text == 'Подтвердить запись':
@@ -274,20 +280,24 @@ def get_text_messages(message):
             bot.send_message(message.from_user.id, text, reply_markup=markup)
     elif message.text == 'Удалить запись':
         conn, cur = connectDB()
-        cur.execute('drop view StudentQueue if exists')
-        cur.execute('create view StudentQueue AS SELECT student_id, queue_id, NumInQueue FROM StudentInQueue')
-        cur.execute('delete from StudentQueue where student_id =%s)', (db.current_student_id,))
+        cur.execute('delete from StudentQueue where student_id =%s', (db.current_student_id,))
+        conn.commit()
         cur.close()
         conn.close()
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('Посмотреть очередь')
         btn2 = types.KeyboardButton('Вернуться в главное меню')
         markup.add(btn1, btn2)
-        bot.send_message(message.from_user.id, 'Вы удалены из очереди {date}'.format(date=db.current_queue.date), reply_markup=markup)
+        date = db.current_queue.date.date()
+        time = db.current_queue.date.time()
+        text = 'Вы удалены из очереди  {day}-{month}-{year} {hour}:{min}'.format(
+                day=date.day, month=date.month, year=date.year, hour=time.hour, min=time.minute)
+        bot.send_message(message.from_user.id, text, reply_markup=markup)
 
         
 
 
 if __name__ == '__main__':
+    print("START...")
     bot.polling(none_stop=True, interval=0)
 

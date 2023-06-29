@@ -315,6 +315,12 @@ CREATE VIEW cpview AS
    	ON ProjectID = project_id;
 SELECT * FROM cpview;
 
+drop view if exists StudentQueue
+create view StudentQueue AS 
+	SELECT student_id, queue_id, NumInQueue 
+	FROM StudentInQueue
+
+
 -- Sonya
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
 	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
