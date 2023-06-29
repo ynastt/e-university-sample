@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS Subject (
 
 CREATE TABLE IF NOT EXISTS Modules (
 	ModuleID UUID NOT NULL UNIQUE,
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
+	,
 	ModuleName Varchar(50) NOT NULL UNIQUE, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
@@ -65,14 +66,16 @@ CREATE TABLE IF NOT EXISTS Exam (
 	MinScore INT NOT NULL,
 	ExamDate date,
 	CONSTRAINT exam_unique UNIQUE(ExamID, ExamDate),
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
+
 );
 
 CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID UUID PRIMARY KEY,
 	Theme TEXT NOT NULL UNIQUE,
 	LectureText TEXT NOT NULL, 
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE CASCADE
+	,
 	LectNumber INT NOT NULL,
 	LectDate date,
 	CONSTRAINT lect_unique UNIQUE(Theme);
@@ -82,7 +85,8 @@ CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID UUID PRIMARY KEY, 
 	Theme TEXT NOT NULL UNIQUE,
 	SeminarText TEXT NOT NULL, 
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE CASCADE
+	,
 	SemNumber INT NOT NULL,
 	SemDate date,
 	CONSTRAINT sem_unique UNIQUE(Theme);
@@ -98,7 +102,7 @@ CREATE TABLE IF NOT EXISTS Lab (
 	LabDate date NOT NULL,
 	Deadline date NOT NULL,
 	CONSTRAINT lab_unique UNIQUE(LabName),
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT --запрет на удаление модуля через таблицу лабы
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS BC (
@@ -108,7 +112,8 @@ CREATE TABLE IF NOT EXISTS BC (
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	CONSTRAINT rk_unique UNIQUE(Theme),
-	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT,
+	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE CASCADE
+	,
 	BCNum int
 );
 
@@ -123,35 +128,38 @@ CREATE TABLE IF NOT EXISTS CourseProject (
 
 CREATE TABLE IF NOT EXISTS Queue (
 	QueueID UUID PRIMARY KEY,
-	StartDate timestamp NOT NULL,
-	subject_id NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT
+	StartDate timestamp with time zone NOT NULL,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
 );
 
 -- dop
 CREATE TABLE IF NOT EXISTS StudentInQueue (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE,
+	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE CASCADE,
 	NumInQueue Int NOT NULL,
-	Task INT NOT NULL, -- делать enum
 	PRIMARY KEY(student_id, queue_id)
 );
 
 CREATE TABLE IF NOT EXISTS TeacherSubject (
-	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE RESTRICT,
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE CASCADE
+	,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
+	,
 	TeacherRole Int NOT NULL,
 	PRIMARY KEY(teacher_id, subject_id)
 );
 
 CREATE TABLE IF NOT EXISTS Supervisor (
-	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE RESTRICT,
+	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE CASCADE
+	,
 	project_id UUID NOT NULL REFERENCES CourseProject (ProjectID) ON DELETE CASCADE,
 	SupervisorRole Int NOT NULL,
 	PRIMARY KEY(teacher_id, project_id)
 );
 
 CREATE TABLE IF NOT EXISTS StudentCourseProject (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
 	project_id UUID NOT NULL REFERENCES CourseProject(ProjectID) ON DELETE CASCADE,
 	ProjAssignment TEXT NOT NULL,
 	TitleOfProject VARCHAR(100) NOT NULL,
@@ -161,24 +169,30 @@ CREATE TABLE IF NOT EXISTS StudentCourseProject (
 );
 
 CREATE TABLE IF NOT EXISTS LectureAttendance (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	lecture_id UUID NOT NULL REFERENCES Lecture(LectureID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	lecture_id UUID NOT NULL REFERENCES Lecture(LectureID) ON DELETE CASCADE
+	,
 	WasAttended BOOL NOT NULL,
 	BonusScore INT,
 	PRIMARY KEY(student_id, lecture_id)
 );
 
 CREATE TABLE IF NOT EXISTS SeminarAttendance (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	seminar_id UUID NOT NULL REFERENCES Seminar(SeminarID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	seminar_id UUID NOT NULL REFERENCES Seminar(SeminarID) ON DELETE CASCADE
+	,
 	WasAttended BOOL NOT NULL,
 	BonusScore INT,
 	PRIMARY KEY(student_id, seminar_id)
 );
 
 CREATE TABLE IF NOT EXISTS LabInstance (
-	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	lab_id UUID UNIQUE NOT NULL REFERENCES Lab(LabID) ON DELETE RESTRICT,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	lab_id UUID UNIQUE NOT NULL REFERENCES Lab(LabID) ON DELETE CASCADE
+	,
 	DateOdPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
@@ -189,8 +203,10 @@ CREATE TABLE IF NOT EXISTS LabInstance (
 );
 
 CREATE TABLE IF NOT EXISTS BCInstance (
-	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	bc_id UUID UNIQUE NOT NULL REFERENCES BC(BCID) ON DELETE RESTRICT,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	bc_id UUID UNIQUE NOT NULL REFERENCES BC(BCID) ON DELETE CASCADE
+	,
 	DateOdPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
@@ -200,8 +216,10 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
-	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	exam_id UUID UNIQUE NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	exam_id UUID UNIQUE NOT NULL REFERENCES Exam(ExamID) ON DELETE CASCADE
+	,
 	DateOdPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
@@ -210,8 +228,10 @@ CREATE TABLE IF NOT EXISTS ExamInstance (
 );
 
 CREATE TABLE IF NOT EXISTS Task (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE CASCADE
+	,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
+	,
 	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи 
 	Description TEXT NOT NULL, -- какой тип данных?
 	MaxScore INT NOT NULL,
@@ -222,7 +242,8 @@ CREATE TABLE IF NOT EXISTS Task (
 );
 
 CREATE TABLE IF NOT EXISTS TaskExam (
-	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE CASCADE
+	,
 	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
 	Description TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
@@ -233,7 +254,8 @@ CREATE TABLE IF NOT EXISTS TaskExam (
 );
 
 CREATE TABLE IF NOT EXISTS TaskBC (
-	bc_id UUID NOT NULL REFERENCES BCInstance(bc_id) ON DELETE RESTRICT,
+	bc_id UUID NOT NULL REFERENCES BCInstance(bc_id) ON DELETE CASCADE
+	,
 	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
 	Description TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
@@ -292,6 +314,12 @@ CREATE VIEW cpview AS
 	LEFT JOIN StudentCourseProject 
    	ON ProjectID = project_id;
 SELECT * FROM cpview;
+
+drop view if exists StudentQueue
+create view StudentQueue AS 
+	SELECT student_id, queue_id, NumInQueue 
+	FROM StudentInQueue
+
 
 -- Sonya
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
