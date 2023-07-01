@@ -13,7 +13,7 @@ type User struct {
     Id []uint8
     Login string
     Passw string
-    UserRights bool
+    UserRights int
     Db *sql.DB
 }
 
@@ -22,7 +22,7 @@ type User struct {
 func (u User) Get_id() []uint8 { return u.Id }
 func (u User) Get_login() string { return u.Login }
 func (u User) Get_passw() string { return u.Passw }
-func (u User) Get_userRights() bool{ return u.UserRights }
+func (u User) Get_userRights() int{ return u.UserRights }
 
 func (u *User) Set_login(log1 string) {
     u.Login = log1
@@ -38,7 +38,7 @@ func (u *User) Set_passw(passw1 string) {
         panic(err)
     }
 }
-func (u *User) Set_userRights(userRights1 bool) {
+func (u *User) Set_userRights(userRights1 int) {
      u.UserRights = userRights1
      _, err := u.Db.Exec("update Users set UsersRights = $1 where UserID = $2", u.UserRights, u.Id)
      if err != nil {

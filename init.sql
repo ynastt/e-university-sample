@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	UserID UUID PRIMARY KEY,
 	Login VARCHAR(50) NOT NULL,
 	Passw VARCHAR(50) NOT NULL,
-	UsersRights Boolean NOT NULL,
+	UsersRights INT NOT NULL,
 	CONSTRAINT user_unique UNIQUE(Login) --именование ограничение табилцы
 );
 
