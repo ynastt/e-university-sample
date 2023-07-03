@@ -102,7 +102,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				}
 				fmt.Println(user.Id, user.Login, user.Passw, user.UserRights)
 
-				if user.UserRights != 2 && user.UserRights != 1{
+				if user.UserRights != 2 && user.UserRights != 1 {
 					errorMsg = "it is neither student nor teacher"
 				} else {
 					if info.Username == user.Login && info.Password == user.Passw {
@@ -151,14 +151,36 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				if err != nil {
 					errorMsg = err.Error()
 				}
+				crs := make([]string, 0)
+				res, err := db.Query("select subject_id from TeacherSubjectGroup where group_id = (SELECT GroupID from StudentGroup where GroupName= $1)", g.Name)
+				if err != nil {
+					panic(err)
+				}
+				for res.Next() {
+					r := dbase.Subject{}
+					err = res.Scan(&r.Id)
+					if err != nil {
+						fmt.Println(err)
+						continue
+					}
+					row := db.QueryRow("select Description from Subject where SubjectID = $1", r.Id)
+					err = row.Scan(&r.Description)
+					if err != nil {
+						errorMsg = err.Error()
+					}
+					crs = append(crs, r.Description)
+					fmt.Println(crs)
+				}
 				log.Println("client: student is found")
 				log.Println(stud.Name, stud.Surname, stud.Patronymic, g.Name)
+				log.Println(stud.Courses)
 				client.respond("ok", &proto.StudInfo{
 					Name:       stud.Get_name(),
 					Surname:    stud.Get_surname(),
 					Patronymic: stud.Get_patronymic(),
-					Email:		stud.Get_email(),
+					Email:      stud.Get_email(),
 					Group:      g.Name,
+					Courses:    crs,
 				})
 			}
 		}
@@ -325,7 +347,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 				println("email: ", studentmail)
 				l := proto.CP{}
 				row := db.QueryRow("SELECT * FROM cpview where student_id = (select StudentID from Student where Email = $1)", studentmail)
-				err = row.Scan(&l.Subject, &l.Description, &l.StartDate, &l.Deadline, &l.Student_id, 
+				err = row.Scan(&l.Subject, &l.Description, &l.StartDate, &l.Deadline, &l.Student_id,
 					&l.ProjAssignment, &l.TitleOfProject, &l.RecievedScore, &l.DateOfPassing)
 				if err != nil {
 					fmt.Println(err)
@@ -338,7 +360,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 		if errorMsg != "" {
 			log.Println("client: fetching studentproject info failed", "reason", errorMsg)
 			client.respond("failed", errorMsg)
-		}	
+		}
 	default:
 		log.Println("client: unknown command")
 		client.respond("failed", "unknown command")

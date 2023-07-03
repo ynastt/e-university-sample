@@ -27,6 +27,7 @@ type Stud struct {
 	Patronymic string
 	Email      string
 	Group      string
+	Courses    []string
 }
 
 type Course struct {
@@ -98,15 +99,15 @@ type Subject struct {
 }
 
 type CP struct {
-	Subject string
-	Description string
-	StartDate string
-	Deadline string
-	student_id []uint8
+	Subject        string
+	Description    string
+	StartDate      string
+	Deadline       string
+	student_id     []uint8
 	ProjAssignment string
 	TitleOfProject string
-	RecievedScore int
-	DateOfPassing string
+	RecievedScore  int
+	DateOfPassing  string
 }
 
 var err error
@@ -124,6 +125,8 @@ func send_request(encoder *json.Encoder, command string, data interface{}) {
 
 func auth(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Authentification")
+	conn = connectToServer()
+	defer conn.Close()
 	t, err := template.ParseFiles("templs/auth.html", "templs/header.html")
 	if err != nil {
 		fmt.Fprintf(w, err.Error())
@@ -144,6 +147,7 @@ func check_student(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	// запрос на сервер
+	conn = connectToServer()
 	defer conn.Close()
 	encoder, decoder := json.NewEncoder(conn), json.NewDecoder(conn)
 	// данные для передачи на сервер
@@ -242,6 +246,7 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 				stud.Patronymic = info.Patronymic
 				stud.Email = info.Email
 				stud.Group = info.Group
+				stud.Courses = info.Courses
 				println("student is:", stud.Surname)
 			}
 		}
@@ -250,9 +255,9 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 	}
 	var crs []Course
 	var strct StructForPage
-	m := configs.SubjectsForStudents.Subjects
-	for _, course := range m[stud.Group] {
-		crs = append(crs, Course{CourseLink: course.Link, CourseName: course.Name})
+	m := configs.SubjectsLinks.Subjects
+	for _, c := range stud.Courses {
+		crs = append(crs, Course{CourseLink: m[c], CourseName: c})
 	}
 	strct.StudentInfo = stud
 	strct.CourseInfo = crs
@@ -345,16 +350,14 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 	var ex Exam
 	// данные для передачи на сервер
 	var info proto.SubjectInfo
-	m := configs.SubjectsForStudents.Subjects
-	for i, course := range m[stud.Group] {
-		if strings.ToUpper(crsname) == course.Name {
-			info.Name = course.Name
-			break
-		}
-		if i == len(m[stud.Group])-1 && strings.ToUpper(crsname) != course.Name {
-			log.Fatal("error: unknown subject")
-		}
+	m := configs.SubjectsLinks.Subjects
+	_, ok := m[strings.ToUpper(crsname)]
+	if !ok {
+		log.Fatal("error: unknown subject")
+	} else {
+		info.Name = strings.ToUpper(crsname)
 	}
+	
 	info.Mods = []proto.Module{}
 	info.Exam = proto.Exam{}
 	send_request(encoder, "databases", &info)
