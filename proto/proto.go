@@ -42,11 +42,12 @@ type LoginInfo struct {
 
 // StudInfo -- ФИО студента.
 type StudInfo struct {
-	Name       string `json:"name"`
-	Surname    string `json:"surname"`
-	Patronymic string `json:"patronymic"`
-	Email      string `json:"studemail"`
-	Group      string `json:"group"`
+	Name       string   `json:"name"`
+	Surname    string   `json:"surname"`
+	Patronymic string   `json:"patronymic"`
+	Email      string   `json:"studemail"`
+	Group      string   `json:"group"`
+	Courses    []string `json:"courses"`
 }
 
 type Lab struct {

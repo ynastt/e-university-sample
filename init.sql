@@ -140,13 +140,12 @@ CREATE TABLE IF NOT EXISTS StudentInQueue (
 	PRIMARY KEY(student_id, queue_id)
 );
 
-CREATE TABLE IF NOT EXISTS TeacherSubject (
-	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE CASCADE
-	,
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE
-	,
+CREATE TABLE IF NOT EXISTS TeacherSubjectGroup (
+	teacher_id UUID NOT NULL REFERENCES Teacher(TeacherID) ON DELETE CASCADE,
+	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE CASCADE,
+	group_id UUID NOT NULL REFERENCES StudentGroup(GroupID) ON DELETE CASCADE,
 	TeacherRole Int NOT NULL,
-	PRIMARY KEY(teacher_id, subject_id)
+	PRIMARY KEY(teacher_id, subject_id, group_id)
 );
 
 CREATE TABLE IF NOT EXISTS Supervisor (
@@ -193,7 +192,7 @@ CREATE TABLE IF NOT EXISTS LabInstance (
 	,
 	lab_id UUID UNIQUE NOT NULL REFERENCES Lab(LabID) ON DELETE CASCADE
 	,
-	DateOdPassing DATE NOT NULL,
+	DateOfPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
@@ -207,7 +206,7 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 	,
 	bc_id UUID UNIQUE NOT NULL REFERENCES BC(BCID) ON DELETE CASCADE
 	,
-	DateOdPassing DATE NOT NULL,
+	DateOfPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	Variant INT,
@@ -220,7 +219,7 @@ CREATE TABLE IF NOT EXISTS ExamInstance (
 	,
 	exam_id UUID UNIQUE NOT NULL REFERENCES Exam(ExamID) ON DELETE CASCADE
 	,
-	DateOdPassing DATE NOT NULL,
+	DateOfPassing DATE NOT NULL,
 	NumOfInstance INT UNIQUE NOT NULL,
 	RecievedScore INT NOT NULL,
 	TicketNumber INT,
