@@ -13,12 +13,16 @@
   <div class="lead">
     {{range $item := .CourseInfo}}
         <div>
-          <a href="{{$item.CourseLink}}" class="btn btn-lg btn-light fw-bold border-white bg-white" style="margin-bottom: 20px;">{{$item.CourseName}}</a>
+          <a href="{{$item.CourseLink}}" class="btn btn-lg btn-light fw-bold" style="margin-bottom: 20px;">{{$item.CourseName}}</a>
         </div>
     {{end}}
     <div>
-      <a href="/coursework" class="btn btn-lg btn-light fw-bold border-white bg-white" style="margin-bottom: 20px;">КУРСОВАЯ РАБОТА</a>
+      <a href="/coursework" class="btn btn-lg btn-light fw-bold" style="margin-bottom: 20px;">КУРСОВАЯ РАБОТА</a>
     </div>
+  </div>
+  <p class="lead" style="font-size: 200%; margin-top: 30px">Очередь на сдачу лабораторных работ</p>
+  <div>
+    <a href="http://t.me/stud_queue_bot" class="btn btn-lg btn-light fw-bold" style="margin-top: 10px; margin-bottom: 20px;">ЗАПИСАТЬСЯ</a>
   </div>
 </main>
 </body>
