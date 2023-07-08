@@ -1458,6 +1458,78 @@ func upd_teacher(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+type GrSb struct {
+	Subj  dataBase.Subject
+	Grs   []dataBase.StudentGroup
+}
+
+func show_list_groups_with_subj(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+            rows, err := db.Query( fmt.Sprintf("Select * from Subject where SubjectId in (select Distinct subject_id from TeacherSubjectGroup Where teacher_id in (Select TeacherID From Teacher Where user_id = '%s'))", session.UserId))
+            if err != nil {
+                log.Println(err)
+            }
+            defer rows.Close()
+            
+            gs := []GrSb{}
+            //subjs := []dataBase.Subject{}
+     
+            for rows.Next(){
+                g := GrSb{}
+                p := dataBase.Subject{}
+                err := rows.Scan(&p.Id, &p.Description, &p.Program, &p.Hours, &p.Credits)
+                if err != nil{
+                    fmt.Println(err)
+                    continue
+                }
+                g.Subj = p
+                fmt.Println(p.Description)
+                rowsg, errg := db.Query( fmt.Sprintf("select * from StudentGroup where GroupId in (select group_id from TeacherSubjectGroup Where subject_id = '%s' and teacher_id in (Select TeacherID From Teacher Where user_id = '%s'))", p.Id, session.UserId))
+                if errg != nil {
+                    log.Println(errg)
+                }
+                defer rowsg.Close()
+                //subjs := []dataBase.Subject{}
+        
+                for rowsg.Next(){
+                    gr := dataBase.StudentGroup{}
+                    err := rowsg.Scan(&gr.Id, &gr.Name, &gr.YearOfAdm, &gr.Course, &gr.Amount)
+                    if err != nil{
+                        fmt.Println(err)
+                        continue
+                    }
+                    fmt.Println(gr.Name)
+                    g.Grs = append(g.Grs, gr)
+                }
+                gs = append(gs, g)
+            }
+        
+            tmpl, _ := template.ParseFiles("teacher/templs/show_groups_and_subjs.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+            tmpl.ExecuteTemplate(w, "show_groups_and_subjs", gs)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 
 func show_list_subjects(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
@@ -1571,6 +1643,37 @@ type Sbj struct {
     Description string
     IsLab bool
     IsSem bool
+}
+
+type Sbj2 struct {
+    Exams dataBase.Exam
+    Examinst dataBase.ExamInstance
+    EXid string
+    Modules []ModInfo
+    Description string
+    IsLab bool
+    IsSem bool
+}
+
+type Stud struct {
+    Id uuid.UUID
+    Name string
+	Surname string
+	Patronymic string
+	Email string
+    Phone string
+    Courses int
+    Number int
+    Year int
+    Userid []uint8
+    Groupid []uint8
+    Idstr string
+}
+
+type stHstr struct {
+    Students []Stud
+    Subjn string
+    Groupn string
 }
 
 func show_subject(w http.ResponseWriter, r *http.Request){
@@ -1741,6 +1844,130 @@ func show_subject(w http.ResponseWriter, r *http.Request){
 
 }
 
+func show_students(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Grname := vars["grname"]
+            Subjname := vars["subjname"]
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected! students\n\n")
+            
+            rowsSt, errSt := db.Query(fmt.Sprintf("Select * from Student where group_id in (Select GroupId from StudentGroup where GroupName = '%s') order by NumInGroup", Grname))
+            if errSt != nil {
+                log.Println(errSt)
+            }
+            defer rowsSt.Close()
+            stds := []Stud{}
+     
+            for rowsSt.Next(){
+                s := Stud{}
+                errSt := rowsSt.Scan(&s.Id, &s.Name, &s.Surname, &s.Patronymic, &s.Email, &s.Phone, &s.Year, &s.Courses, &s.Number, &s.Userid, &s.Groupid)
+                s.Idstr = s.Id.String()
+                fmt.Println(s.Name, s.Number)
+                if errSt != nil{
+                    fmt.Println(errSt)
+                    continue
+                }
+                stds = append(stds, s)
+            }
+            shs := stHstr{}
+            shs.Students = stds
+            shs.Subjn = Subjname
+            shs.Groupn = Grname
+            tmpl, _ := template.ParseFiles("teacher/templs/show_students.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+            tmpl.ExecuteTemplate(w, "show_students", shs)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func show_marks(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Subjname := vars["subjname"]
+            Studname := vars["studname"]
+            var subj = Sbj2{}
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+            rows, err := db.Query(fmt.Sprintf("select * from Exam Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Subjname))
+            if err != nil {
+                log.Println(err)
+            }
+            defer rows.Close()
+            var date time.Time;
+            for rows.Next(){
+                p := dataBase.Exam{}
+                err := rows.Scan(&p.Id, &p.Questions, &p.MaxScore, &p.MinScore, &date, &p.SubjectID)
+                p.Date = date.String()[:11]
+                //fmt.Printf("%s %s %s %s\n", p.Questions, p.MaxScore, p.MinScore,p.Date)
+                if err != nil{
+                    fmt.Println(err)
+                    continue
+                }
+                subj.Exams = p
+            }
+            subj.Description = Subjname
+
+            rowsei, errei := db.Query(fmt.Sprintf("select * from ExamInstance Where student_id = '%s' and exam_id = '%s' ", Studname, subj.Exams.Id))
+            if errei != nil {
+                log.Println(errei)
+            }
+            defer rowsei.Close()
+            for rowsei.Next(){
+                p := dataBase.ExamInstance{}
+                errei := rowsei.Scan(&p.StudentId, &p.ExamID, &date, &p.NumOfInstance, &p.Score, &p.Ticket)
+                p.Date = date.String()[:11]
+                fmt.Printf("%s %s %s %s\n", date, p.NumOfInstance, p.Score,p.Ticket)
+                if errei != nil{
+                    fmt.Println(errei)
+                    continue
+                }
+                subj.Examinst = p
+            }
+            subj.Description = Subjname
+        
+            tmpl, _ := template.ParseFiles("teacher/templs/show_marks.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+            tmpl.ExecuteTemplate(w, "show_marks", subj)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+
 type mmn struct {
 	Students []stud
 }
@@ -1789,17 +2016,9 @@ func save_group(w http.ResponseWriter, r *http.Request){
                 panic(err)
             }
 
-            fmt.Printf("Successfully connected!\n\n")
-            res, err := db.Query(
-                fmt.Sprintf("INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course , AmountOfStudents) Values (gen_random_uuid(),'%s', '%s','%s',  '%s')",
-                group_num, course, amount_of_students, year_of_admission))
-                
-            if err != nil {
-                panic(err)
-            }
-
-            defer res.Close()
-
+            fmt.Printf("Successfully connected to save group!\n\n")
+            
+            groupid := uuid.New()
             for _, aa := range app.Students {
                 sname := aa.Name
                 ssurname := aa.Surname
@@ -1811,8 +2030,8 @@ func save_group(w http.ResponseWriter, r *http.Request){
                 syear := aa.Year
                 suserLogin := aa.UserLogin
                 res1, err := db.Query(
-                    fmt.Sprintf("INSERT INTO Student(StudentID, StudentName, Surname, Patronymic , Email, Phone, YearOfAdmission, PassedCourses, NumInGroup,user_id, group_id ) Values (gen_random_uuid(),'%s', '%s','%s',  '%s',  '%s',  '%d',  '%d',  '%d',(SELECT UserID From Users Where Login = '%s'), (SELECT GroupID From StudentGroup Where GroupName = '%s'))",
-                    sname, ssurname, spatronymic, semail, sphone, scourses, snumber, syear, suserLogin, group_num))
+                    fmt.Sprintf("INSERT INTO Student(StudentID, StudentName, Surname, Patronymic , Email, Phone, YearOfAdmission, PassedCourses, NumInGroup,user_id, group_id ) Values (gen_random_uuid(),'%s', '%s','%s',  '%s',  '%s',  '%d',  '%d',  '%d',(SELECT UserID From Users Where Login = '%s'), '%s')",
+                    sname, ssurname, spatronymic, semail, sphone, syear, scourses, snumber, suserLogin, groupid))
                 
                 if err != nil {
                     panic(err)
@@ -1820,7 +2039,15 @@ func save_group(w http.ResponseWriter, r *http.Request){
                 defer res1.Close()
             }
 
+            res, err := db.Query(
+                fmt.Sprintf("INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course , AmountOfStudents) Values ('%s','%s', '%s','%s',  '%s')",
+                groupid, group_num, course, amount_of_students, year_of_admission))
+                
+            if err != nil {
+                panic(err)
+            }
 
+            defer res.Close()
             
             http.Redirect(w,r,"/", http.StatusSeeOther)
             return
@@ -1997,6 +2224,48 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
 
             fmt.Printf("Successfully connected!\n\n")
 
+            
+
+            rowsEx, errEx := db.Query(fmt.Sprintf("select * from Exam Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Description))
+            if errEx != nil {
+                log.Println(errEx)
+            }
+            defer rowsEx.Close()
+            var date time.Time;
+            e := dataBase.Exam{}
+            for rowsEx.Next(){
+                errEx := rowsEx.Scan(&e.Id, &e.Questions, &e.MaxScore, &e.MinScore, &date, &e.SubjectID)
+                e.Date = date.String()[:11]
+                //fmt.Printf("%s %s %s %s\n", p.Questions, p.MaxScore, p.MinScore,p.Date)
+                if errEx != nil{
+                    fmt.Println(errEx)
+                    continue
+                }
+            }
+
+            rowsSt, errSt := db.Query(fmt.Sprintf("select * from Student Where group_id IN (SELECT GroupID From StudentGroup Where GroupName = '%s')", GroupName))
+            if errSt != nil {
+                log.Println(errSt)
+            }
+            defer rowsSt.Close()
+            //var date time.Time;
+            for rowsSt.Next(){
+                s := dataBase.Student{}
+                errSt := rowsSt.Scan(&s.Id, &s.Name, &s.Surname, &s.Patronymic, &s.Email, &s.Phone,&s.Year, &s.Courses, &s.Number, &s.Userid, &s.Groupid)
+                //fmt.Printf("%s %s %s %s\n", s.Name)
+                if errSt != nil{
+                    fmt.Println(errSt)
+                    continue
+                }
+                res, err := db.Query(
+                    fmt.Sprintf("INSERT INTO ExamInstance(student_id, exam_id, DateOdPassing, NumOfInstance, RecievedScore, TicketNumber) Values ('%s', '%s' , '%s',  1, 0, 0)",
+                    s.Id, e.Id, e.Date ))
+                if err != nil {
+                    panic(err)
+                }
+                defer res.Close()
+
+            }
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO TeacherSubjectGroup(teacher_id, subject_id, group_id, TeacherRole) Values ((SELECT TeacherID From Teacher Where Email = '%s'), (SELECT SubjectID From Subject Where Description = '%s') , (SELECT GroupID From StudentGroup Where GroupName = '%s'),  '%s')",
                 Email, Description, GroupName, TeacherRole ))
@@ -2222,6 +2491,79 @@ func save_ex(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+func save_exinst(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Exid := vars["exid"]
+            Date := r.FormValue("date")
+            Number := r.FormValue("number")
+            Score := r.FormValue("score")
+            Ticket := r.FormValue("ticket")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update ExamInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore = '%s', TicketNumber = '%s' where student_id = '%s' AND exam_id = '%s'",
+                Date, Number, Score, Ticket, Studid, Exid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
+            if errgr != nil {
+                log.Println(errgr)
+            }
+            defer rowsgr.Close()
+            g := dataBase.StudentGroup{}
+            for rowsgr.Next(){
+                errgr := rowsgr.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
+                if errgr != nil{
+                    fmt.Println(errgr)
+                    continue
+                }
+            }
+
+            rowssubj, errsubj := db.Query(fmt.Sprintf("select * from Subject Where SubjectID IN (Select subject_id from Exam where ExamID = '%s')", Exid))
+            if errsubj != nil {
+                log.Println(errsubj)
+            }
+            defer rowssubj.Close()
+            sub := dataBase.Subject{}
+            for rowssubj.Next(){
+                errsubj := rowssubj.Scan(&sub.Id, &sub.Description, &sub.Program, &sub.Hours, &sub.Credits)
+                if errsubj != nil{
+                    fmt.Println(errsubj)
+                    continue
+                }
+            }
+//{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 func save_module(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
 
@@ -2376,6 +2718,8 @@ func handleFunc() {
     router.HandleFunc("/subjects/", show_list_subjects)
 	router.HandleFunc("/subjects/show_coursePrs", show_list_coursePr)
     router.HandleFunc("/subjects/{descr}", show_subject)
+    router.HandleFunc("/show_groups_and_subjs/{grname}+{subjname}", show_students)
+    router.HandleFunc("/show_groups_and_subjs/{grname}+{subjname}/{subjname}+{studname}", show_marks)
     router.HandleFunc("/new_bc", new_bc)
     router.HandleFunc("/save_bc", save_bc)
     router.HandleFunc("/new_lab", new_lab)
@@ -2433,6 +2777,8 @@ func handleFunc() {
     router.HandleFunc("/upd_teacher", upd_teacher)
     router.HandleFunc("/new_connTGS", new_connTGS)
     router.HandleFunc("/save_connTGS", save_connTGS)
+    router.HandleFunc("/show_groups_and_subjs", show_list_groups_with_subj)
+    router.HandleFunc("/save_exinst/{stid}+{exid}",save_exinst)
     router.HandleFunc("/postLogOut", postLogOut)
     http.Handle("/", router)
     fmt.Println("Server is listening...")
@@ -2441,21 +2787,6 @@ func handleFunc() {
 
 func main() {
     handleFunc()
-
-
-    /*studentGroups := []dataBase.StudentGroup{}
-    for res.Next(){
-        g := dataBase.StudentGroup{}
-        err := res.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
-        g.Db = db
-        if err != nil{
-            fmt.Println(err)
-            continue
-        }
-        studentGroups = append(studentGroups, g)
-    }
-    fmt.Println("\nstudentGroups names:")
-    for _, g := range studentGroups{
-        fmt.Println(g.Get_name())
-    }*/
 }
+
+

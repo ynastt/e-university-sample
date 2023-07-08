@@ -2,12 +2,13 @@ package dataBase
 
 import (
 	"database/sql"
+    "github.com/google/uuid"
 )
 
 // экзамен по дисциплине
 type Exam struct {
-    Id []uint8
-	SubjectID []uint8
+    Id uuid.UUID
+	SubjectID uuid.UUID
 	Questions string
 	MaxScore int
 	MinScore int
@@ -16,7 +17,7 @@ type Exam struct {
 }
 
 
-func (e Exam) Get_id() ([]uint8, []uint8) { return e.Id, e.SubjectID }
+func (e Exam) Get_id() (uuid.UUID, uuid.UUID) { return e.Id, e.SubjectID }
 func (e Exam) Get_questions() string { 
 	return e.Questions 
 }
@@ -59,8 +60,8 @@ func (e *Exam) Set_date(date string) {
 
 // экзамен студента
 type ExamInstance struct {
-    StudentId []uint8
-	ExamID []uint8
+    StudentId uuid.UUID
+	ExamID uuid.UUID
     Date string 
 	NumOfInstance int
 	Score int
@@ -68,7 +69,7 @@ type ExamInstance struct {
 	Db *sql.DB
 }
 
-func (i ExamInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.ExamID }
+func (i ExamInstance) Get_id() (uuid.UUID, uuid.UUID) { return i.StudentId, i.ExamID }
 func (i ExamInstance) Get_date() string { return i.Date }
 func (i ExamInstance) Get_num_of_instance() int { return i.NumOfInstance }
 func (i ExamInstance) Get_score() int { return i.Score }

@@ -1,0 +1,22 @@
+{{define "show_groups_and_subjs"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+        <h4><br></h4>
+        <h3> Ваши группы и предметы : </h3>
+        <div class="container" style="padding-left: 400px"> 
+        <table width="300px" border-collapse="collapse" >
+                {{range . }}
+                <tr>
+                    {{$ss := .Subj.Description}}
+                    <td padding="3px" border="1px solid white"><p></p><h4><a href="http://localhost:8080/subjects/{{.Subj.Description}}">{{.Subj.Description}}</a>&nbsp;&nbsp;</h4></p></td>
+                    {{range $group := .Grs }}
+                        <td padding="3px" border="1px solid white"><p><h4><a href="http://localhost:8080/show_groups_and_subjs/{{$group.Name}}+{{$ss}}">{{$group.Name}}</a>&nbsp;&nbsp;</h4></p></td>
+                    {{end}}
+                    
+                </tr>
+                {{end}}
+        </table>
+        </div>
+    </main>
+{{template "footer"}}
+{{end}}

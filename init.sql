@@ -187,10 +187,10 @@ CREATE TABLE IF NOT EXISTS BCInstance (
 );
 
 CREATE TABLE IF NOT EXISTS ExamInstance (
-	student_id UUID UNIQUE NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	exam_id UUID UNIQUE NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
+	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
+	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
 	DateOdPassing DATE NOT NULL,
-	NumOfInstance INT UNIQUE NOT NULL,
+	NumOfInstance INT NOT NULL,
 	RecievedScore INT NOT NULL,
 	TicketNumber INT,
 	PRIMARY KEY(student_id, exam_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
@@ -238,13 +238,103 @@ INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfSt
 SELECT * FROM StudentGroup;
 
 INSERT INTO Users(UserID, Login, Passw, UsersRights) VALUES
-	(gen_random_uuid(),'Iliin', 'dskdfjkfdn',False),
-    (gen_random_uuid(),'Kozoch', 'dskdjkfdn',False),
-    (gen_random_uuid(),'SPKirich', 'dskdkfdn',False),
-    (gen_random_uuid(),'Belyaev', 'skdfjkfdn',False),
-    (gen_random_uuid(),'Yarov', 'dskdfjkfdn',False),
-    (gen_random_uuid(),'IgorE', 'bdiscool',true),
-    (gen_random_uuid(),'SoFa325', 'yyy',true),
-    (gen_random_uuid(),'Anastasia', 'djkbfhkd',true),
-    (gen_random_uuid(),'Tsarukan', 'fff',false),
-	(gen_random_uuid(), 'Pos', 'kdjckdk', True);
+	(gen_random_uuid(),'Iliin', 'dskdfjkfdn',1),
+    (gen_random_uuid(),'Kozoch', 'dskdjkfdn',1),
+    (gen_random_uuid(),'Belyaev', 'skdfjkfdn',1),
+    (gen_random_uuid(),'Yarov', 'dskdfjkfdn',1),
+    (gen_random_uuid(),'IgorE', 'bdiscool',2),
+    (gen_random_uuid(),'SoFa325', 'yyy',1),
+    (gen_random_uuid(),'Tsarukan', 'fff',1),
+	(gen_random_uuid(), 'Pos', 'kdjckdk', 2),
+	(gen_random_uuid(),'Chibiz', 'fkfdkdf',1),
+    (gen_random_uuid(),'Ivanov', 'lsakds',1),
+    (gen_random_uuid(),'Konst', 'vhjhf',1),
+    (gen_random_uuid(),'Saykin', 'ldlkfd',1),
+    (gen_random_uuid(),'Kotov', 'msdlft',1),
+    (gen_random_uuid(),'Bayev', 'lqwkvco',1),
+    (gen_random_uuid(),'Petryaev', 'msjducdb',1),
+    (gen_random_uuid(),'Pashkevich', 'risjd',1);
+
+	/*Isc9-62b
+	{
+    "students": [
+    {
+      "name": "Sophya",
+      "surname": "Belyakova",
+      "patronymic": "Sergeevna",
+      "email":"ajdhdshsjkfd",
+      "phone":"89002805152",
+      "courses": 3,
+      "number": 1,
+      "year": 2020,
+      "userLogin":"SoFa325"
+    },
+    {
+      "name": "Artem",
+      "surname": "Ivanov",
+      "patronymic": "",
+      "email":"bjdshdshkdkj",
+      "phone":"89005553322",
+      "courses":3,
+      "number":2,
+      "year":2020,
+      "userLogin":"Ivanov"
+    },
+    {
+      "name": "Andrey",
+      "surname": "Iliin",
+      "patronymic": "",
+      "email":"crkfdjfdj",
+      "phone":"89116620590",
+      "courses":3,
+      "number":3,
+      "year":2020,
+      "userLogin":"Iliin"
+    },
+    {
+      "name": "Michail",
+      "surname": "Kozochkin",
+      "patronymic": "",
+      "email":"ddfdjkfdjkfdjk",
+      "phone":"88005553535",
+      "courses":3,
+      "number":4,
+      "year":2020,
+      "userLogin":"Kozoch"
+    },
+    {
+      "name": "Polina",
+      "surname": "Konstantinova",
+      "patronymic": "",
+      "email":"eejyszdbszj",
+      "phone":"89005553535",
+      "courses":3,
+      "number":5,
+      "year":2020,
+      "userLogin":"Konst"
+    },
+    {
+      "name": "Gevorg",
+      "surname": "Tsarukan",
+      "patronymic": "",
+      "email":"glclcx",
+      "phone":"89116620590",
+      "courses":3,
+      "number":6,
+      "year":2000,
+      "userLogin":"Tsarukan"
+    },
+		{
+      "name": "Alina",
+      "surname": "Chibizova",
+      "patronymic": "",
+      "email":"ljdhdshsjkfd",
+      "phone":"89002805152",
+      "courses": 3,
+      "number": 7,
+      "year": 2020,
+      "userLogin":"Chibiz"
+    }
+  ]
+}
+	*/

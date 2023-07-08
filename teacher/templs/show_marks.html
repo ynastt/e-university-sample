@@ -1,0 +1,39 @@
+{{define "show_marks"}}
+{{template "header"}}
+<main role="main" class="inner cover">
+    <h2>{{.Description}}</h2>
+    <div class="container"> 
+        <h3 style="text-align:left">Экзамен :</h3>
+        <form action="/save_exinst/{{.Examinst.StudentId}}+{{.Examinst.ExamID}}" method="post">
+            <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                <th><h5>Минимальный балл</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Максимальный балл</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Дата сдачи</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Попытка сдачи</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Полученный балл</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Номер билета</h5></th>
+                    <tr>
+                        <td>{{.Exams.MinScore}}</td>
+                        <td>&nbsp;</td>
+                        <td>{{.Exams.MaxScore}}</td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" name = "date" id = "date" placeholder="{{.Examinst.Date}}" class="form-control"></td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" name = "number" id = "number" placeholder="{{.Examinst.NumOfInstance}}" class="form-control"></td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" name = "score" id = "score" placeholder="{{.Examinst.Score}}" class="form-control"></td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" name = "ticket" id = "ticket" placeholder="{{.Examinst.Ticket}}" class="form-control"></td>
+                    </tr>
+            </table><br>
+            <p><button class="btn btn-warning">Изменить</button></p>
+        </form> 
+    </div>
+</main>
+{{template "footer"}}
+{{end}}

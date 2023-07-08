@@ -1,0 +1,27 @@
+{{define "show_students"}}
+{{template "header"}}
+<main role="main" class="inner cover">
+    <h4><br></h4>
+    <h3> {{.Groupn}} : </h3>
+    <h4><br></h4>
+    <div class="container" style="padding-left: 500px"> 
+    <table>
+        <th><h5>Номер</h5></th>
+        <th><h5>&nbsp;</h5></th>
+        <th><h5>ФИО</h5></th>
+        <th><h5>&nbsp;</h5></th>
+        {{$gr := .Groupn}}
+        {{$sn := .Subjn}}
+            {{range $st := .Students }}
+            <tr>
+                <p> <td><h4>{{$st.Number}}</h4></td></p>
+                <td>&nbsp;</td>
+                <td><h4><a href="http://localhost:8080/show_groups_and_subjs/{{$gr}}+{{$sn}}/{{$sn}}+{{$st.Idstr}}">{{$st.Surname}} {{$st.Name}} {{$st.Patronymic}}</a></h4></td>
+                <td>&nbsp;</td> 
+            </tr>
+            {{end}}
+    </table>
+    </div>
+</main>
+{{template "footer"}}
+{{end}}
