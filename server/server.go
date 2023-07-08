@@ -11,7 +11,7 @@ import (
 	"log"
 	"net"
 
-	fill "e-university-sample/fill"
+	// fill "e-university-sample/fill"
 
 	_ "github.com/lib/pq"
 )
@@ -427,6 +427,6 @@ func main() {
 	}
 
 	fmt.Printf("Successfully connected!\n\n")
-	fill.ConnectAndFill()
+	// fill.ConnectAndFill()
 	openConnection()
 }
