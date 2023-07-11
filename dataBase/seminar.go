@@ -2,19 +2,20 @@ package dataBase
 
 import (
 	"database/sql"
+    "github.com/google/uuid"
 )
 
 // семинар в модуле
 type Seminar struct {
-    Id []uint8
-	ModuleID []uint8
+    Id uuid.UUID
+	ModuleID uuid.UUID
 	Theme string
 	Text string
 	Db *sql.DB
 }
 
 
-func (s Seminar) Get_id() ([]uint8, []uint8) { return s.Id, s.ModuleID }
+func (s Seminar) Get_id() (uuid.UUID, uuid.UUID) { return s.Id, s.ModuleID }
 func (s Seminar) Get_text() string { 
 	return s.Text 
 }
@@ -39,14 +40,14 @@ func (s *Seminar) Set_theme(t string) {
 
 // посещение семинара студентом
 type SeminarAttendance struct {
-    StudentId []uint8
-	SeminarID []uint8
+    StudentId uuid.UUID
+	SeminarID uuid.UUID
 	Attendance bool
 	BonusScore int
 	Db *sql.DB
 }
 
-func (a SeminarAttendance) Get_id() ([]uint8, []uint8) { return a.StudentId, a.SeminarID }
+func (a SeminarAttendance) Get_id() (uuid.UUID, uuid.UUID) { return a.StudentId, a.SeminarID }
 func (a SeminarAttendance) Get_attendance() bool { return a.Attendance }
 func (a SeminarAttendance) Get_bonus_score() int { return a.BonusScore }
 

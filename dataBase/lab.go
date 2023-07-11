@@ -2,13 +2,13 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
+    "github.com/google/uuid"
 )
 
 // лабораторная работа в модуле
 type Lab struct {
-    Id []uint8
-	ModuleID []uint8
+    Id uuid.UUID
+	ModuleID uuid.UUID
 	Name string
 	Text string
 	MaxScore int
@@ -19,7 +19,7 @@ type Lab struct {
 }
 
 
-func (l Lab) Get_id() ([]uint8, []uint8) { return l.Id, l.ModuleID }
+func (l Lab) Get_id() (uuid.UUID, uuid.UUID) { return l.Id, l.ModuleID }
 func (l Lab) Get_text() string { 
 	return l.Text
 }
@@ -70,28 +70,25 @@ func (l *Lab) Set_deadline(date string) {
 
 // лабораторная работa студента
 type LabInstance struct {
-    StudentId []uint8
-	LabID []uint8
+    StudentId uuid.UUID
+	LabID uuid.UUID
     Date string 
 	NumOfInstance int
 	Score int
     Variant int
-    Remarks json.RawMessage
+    Remarks string
     BonusScore int
 	Db *sql.DB
 }
 
-func (i LabInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.LabID }
+func (i LabInstance) Get_id() (uuid.UUID, uuid.UUID) { return i.StudentId, i.LabID }
 func (i LabInstance) Get_date() string { return i.Date }
 func (i LabInstance) Get_num_of_instance() int { return i.NumOfInstance }
 func (i LabInstance) Get_score() int { return i.Score }
 func (i LabInstance) Get_variant() int { return i.Variant }
 func (i LabInstance) Get_remarks() string { 
-	j, err := json.Marshal(i.Remarks)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
+
+	return i.Remarks 
 }
 func (i LabInstance) Get_bonus_score() int { return i.BonusScore}
 
@@ -124,12 +121,8 @@ func (i *LabInstance) Set_variant(v int)  {
     }
 }
 
-func (i *LabInstance) Set_remarks(text []byte) {
-    i.Remarks = json.RawMessage(text)
-	_, err := i.Db.Exec("update LabInstance SET Remarks = $1 where student_id = $2 and lab_id = $3", i.Remarks, i.StudentId, i.LabID)
-    if err != nil {
-        panic(err)
-    }
+func (i *LabInstance) Set_remarks(text string) {
+    i.Remarks = text
 }
 
 func (i *LabInstance) Set_bonus_score(score int)  {

@@ -3,6 +3,150 @@
 <main role="main" class="inner cover">
     <h2>{{.Description}}</h2>
     <div class="container"> 
+        {{$perL := .IsLab}}
+        {{$perS := .IsSem}}
+        {{range $item := .Modules}}
+
+            <h3 style="text-align:left">{{$item.Module.Name}}<br></h3>
+
+            {{if $perL}}
+            <div class="container">
+                <h4 style="text-align:left">Лабораторные : <br></h4> 
+                <ul type="circle">
+                    <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                        <th><h5>Название</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Дата сдачи</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Попытка сдачи</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Полученный балл</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Вариант</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Заметки</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Бонусный балл</h5></th>
+                            {{range $labi := $item.Ms.LabInstances}}
+                            <tr>
+                                <td>{{$labi.Name}}</td>
+                                <td>&nbsp;</td> 
+                            <form action="/save_labi/{{$labi.StudentId}}+{{$labi.LabID}}" method="post">
+                                
+                                    
+                                    <td><input type="text" name = "Date" id = "Date" placeholder="{{$labi.Date}}" class="form-control"></td>
+                                    <td>&nbsp;</td>
+                                    <td><input type="text" name = "NumOfInstance" id = "NumOfInstance" placeholder="{{$labi.NumOfInstance}}" class="form-control"></td>
+                                    <td>&nbsp;</td>
+                                    <td><input type="text" name = "Score" id = "Score" placeholder="{{$labi.Score}}" class="form-control"></td>
+                                    <td>&nbsp;</td>
+                                    <td><input type="text" name = "Variant" id = "Variant" placeholder="{{$labi.Variant}}" class="form-control"></td>
+                                    <td>&nbsp;</td>
+                                    <td><input type="text" name = "Remarks" id = "Remarks" placeholder="{{$labi.Remarks}}" class="form-control"></td>
+                                    <td>&nbsp;</td>
+                                    <td><input type="text" name = "BonusScore" id = "BonusScore" placeholder="{{$labi.BonusScore}}" class="form-control"></td>
+                                    <p><button class="btn btn-warning">Изменить</button></p></form>
+                                </tr>
+                                {{end}}
+                                
+                        </table><br>
+                       
+               
+                </ul>
+            </div>
+            {{else}} 
+            {{end}}
+
+
+            <div class="container">
+                <h4 style="text-align:left">Лекции : <br></h4> 
+                <ul type="circle">
+                    <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                        <th><h5>Тема</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Посещение</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Бонусный балл</h5></th>
+                        {{range $lecta := $item.Ms.LectureAttendances}}
+                        <tr>
+                            <td>{{$lecta.Theme}}</td>
+                            <td>&nbsp;</td> 
+                                <form action="/save_lectatt/{{$lecta.StudentId}}+{{$lecta.LectureID}}" method="post">
+                                <td><input type="text" name = "Attendance" id = "Attendance" placeholder="{{$lecta.Attendance}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "BonusScore" id = "BonusScore" placeholder="{{$lecta.BonusScore}}" class="form-control"></td>
+                                <td><p><button class="btn btn-warning">Изменить</button></p> </td>
+                            </form>
+                            </tr>
+                            {{end}}
+                            
+                    </table><br>
+                </ul>
+                {{if $perS}}
+                <h4 style="text-align:left">Семинары : <br></h4>
+                <ul type="circle">
+                    <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                        <th><h5>Тема</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Посещение</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Бонусный балл</h5></th>
+                        {{range $semas := $item.Ms.SeminarAttendances}}
+                        <tr>
+                            <td>{{$semas.Theme}}</td>
+                            <td>&nbsp;</td>  
+                            <form action="/save_sematt/{{$semas.StudentId}}+{{$semas.SeminarID}}" method="post">
+                                <td><input type="text" name = "Attendance" id = "Attendance" placeholder="{{$semas.Attendance}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "BonusScore" id = "BonusScore" placeholder="{{$semas.BonusScore}}" class="form-control"></td>
+                                <td><p><button class="btn btn-warning">Изменить</button></p> </td>
+                            </form>
+                            </tr>
+                            {{end}}
+                            
+                    </table><br>
+                    
+                </ul>
+                {{else}} 
+                {{end}}
+                <h4 style="text-align:left">Рк : <br></h4>
+                <ul type="circle">
+                    <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                        <th><h5>Тема рк</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Дата сдачи</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Попытка сдачи</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Полученный балл</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Вариант</h5></th>
+                        <th><h5>&nbsp;</h5></th>
+                        <th><h5>Заметки</h5></th>
+                        {{range $bci := $item.Ms.BCInstances}}
+                        <tr>
+                            <td>{{$bci.Theme}}</td>
+                            <td>&nbsp;</td>  
+                        <form action="/save_bcinst/{{$bci.StudentId}}+{{$bci.BCID}}" method="post">
+                            
+                                <td><input type="text" name = "Date" id = "Date" placeholder="{{$bci.Date}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "NumOfInstance" id = "NumOfInstance" placeholder="{{$bci.NumOfInstance}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "Score" id = "Score" placeholder="{{$bci.Score}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "Variant" id = "Variant" placeholder="{{$bci.Variant}}" class="form-control"></td>
+                                <td>&nbsp;</td>
+                                <td><input type="text" name = "Remarks" id = "Remarks" placeholder="{{$bci.Remarks}}" class="form-control"></td>
+                                <p><button class="btn btn-warning">Изменить</button></p> </form>
+                            </tr>
+                            {{end}}
+                           
+                    </table><br>
+                   
+                </ul>
+            </div>
+        {{end}}
         <h3 style="text-align:left">Экзамен :</h3>
         <form action="/save_exinst/{{.Examinst.StudentId}}+{{.Examinst.ExamID}}" method="post">
             <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
@@ -29,10 +173,10 @@
                         <td><input type="text" name = "score" id = "score" placeholder="{{.Examinst.Score}}" class="form-control"></td>
                         <td>&nbsp;</td>
                         <td><input type="text" name = "ticket" id = "ticket" placeholder="{{.Examinst.Ticket}}" class="form-control"></td>
+                        <p><button class="btn btn-warning">Изменить</button></p></form>
                     </tr>
             </table><br>
-            <p><button class="btn btn-warning">Изменить</button></p>
-        </form> 
+            
     </div>
 </main>
 {{template "footer"}}

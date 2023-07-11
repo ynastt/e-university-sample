@@ -2,13 +2,13 @@ package dataBase
 
 import (
 	"database/sql"
-	"encoding/json"
+    "github.com/google/uuid"
 )
 
 // рубежный контроль в модуле
 type Bc struct {
-    Id []uint8
-	ModuleID []uint8
+    Id uuid.UUID
+	ModuleID uuid.UUID
 	Theme string
 	Questions string
 	MaxScore int
@@ -17,7 +17,7 @@ type Bc struct {
 }
 
 
-func (b Bc) Get_id() ([]uint8, []uint8) { return b.Id, b.ModuleID }
+func (b Bc) Get_id() (uuid.UUID, uuid.UUID) { return b.Id, b.ModuleID }
 func (b Bc) Get_theme() string { return b.Theme }
 func (b Bc) Get_questions() string { 
 	return b.Questions
@@ -60,27 +60,23 @@ func (b *Bc) Set_min_score(score int) {
 
 // рубежный контроль студента
 type BCInstance struct {
-    StudentId []uint8
-	BCID []uint8
+    StudentId uuid.UUID
+	BCID uuid.UUID
     Date string 
 	NumOfInstance int
 	Score int
     Variant int
-    Remarks json.RawMessage
+    Remarks string
 	Db *sql.DB
 }
 
-func (i BCInstance) Get_id() ([]uint8, []uint8) { return i.StudentId, i.BCID }
+func (i BCInstance) Get_id() (uuid.UUID, uuid.UUID) { return i.StudentId, i.BCID }
 func (i BCInstance) Get_date() string { return i.Date }
 func (i BCInstance) Get_num_of_instance() int { return i.NumOfInstance }
 func (i BCInstance) Get_score() int { return i.Score }
 func (i BCInstance) Get_variant() int { return i.Variant }
 func (i BCInstance) Get_remarks() string { 
-	j, err := json.Marshal(i.Remarks)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
+	return i.Remarks 
 }
 
 func (i *BCInstance) Set_date(date string) {
@@ -112,10 +108,6 @@ func (i *BCInstance) Set_variant(v int)  {
     }
 }
 
-func (i *BCInstance) Set_remarks(text []byte) {
-    i.Remarks = json.RawMessage(text)
-	_, err := i.Db.Exec("update BCInstance SET Remarks = $1 where student_id = $2 and bc_id = $3", i.Remarks, i.StudentId, i.BCID)
-    if err != nil {
-        panic(err)
-    }
+func (i *BCInstance) Set_remarks(text string) {
+    i.Remarks = text
 }

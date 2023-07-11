@@ -1625,11 +1625,54 @@ func show_list_coursePr(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+type BCInstance2 struct {
+    StudentId uuid.UUID
+	BCID uuid.UUID
+    Date string 
+	NumOfInstance int
+	Score int
+    Variant int
+    Remarks string
+	Theme string
+}
+type LabInstance2 struct {
+    StudentId uuid.UUID
+	LabID uuid.UUID
+    Date string 
+	NumOfInstance int
+	Score int
+    Variant int
+    Remarks string
+    BonusScore int
+	Name string
+}
+
+type LectureAttendance2 struct {
+    StudentId uuid.UUID
+	LectureID uuid.UUID
+	Attendance bool
+	BonusScore int
+	Theme string
+}
+
+type SeminarAttendance2 struct {
+    StudentId uuid.UUID
+	SeminarID uuid.UUID
+	Attendance bool
+	BonusScore int
+    Theme string
+}
+
+
 type Mods struct {
     Labs []dataBase.Lab
+    LabInstances []LabInstance2
     Sems []dataBase.Seminar
+    SeminarAttendances []SeminarAttendance2
     Lects []dataBase.Lecture
+    LectureAttendances []LectureAttendance2
     Bc []dataBase.Bc
+    BCInstances []BCInstance2
 }
 
 type ModInfo struct {
@@ -1645,15 +1688,7 @@ type Sbj struct {
     IsSem bool
 }
 
-type Sbj2 struct {
-    Exams dataBase.Exam
-    Examinst dataBase.ExamInstance
-    EXid string
-    Modules []ModInfo
-    Description string
-    IsLab bool
-    IsSem bool
-}
+
 
 type Stud struct {
     Id uuid.UUID
@@ -1898,6 +1933,25 @@ func show_students(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+type Idsubj struct {
+    Examid uuid.UUID 
+    Modules []Mods
+    IsLab bool
+    IsSem bool
+    IsBc bool
+    IsLect bool
+}
+
+type Sbj2 struct {
+    Exams dataBase.Exam
+    Examinst dataBase.ExamInstance
+    EXid string
+    Modules []ModInfo
+    Description string
+    IsLab bool
+    IsSem bool
+}
+
 func show_marks(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
 
@@ -1941,6 +1995,201 @@ func show_marks(w http.ResponseWriter, r *http.Request){
             }
             subj.Description = Subjname
 
+            
+            
+            rows1, err1 := db.Query(fmt.Sprintf("select * from Modules Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Subjname))
+            if err1 != nil {
+                log.Println(err1)
+            }
+            defer rows1.Close()
+            subj.Modules = []ModInfo{}
+            for rows1.Next(){
+                p := dataBase.Module{}
+                err1 := rows1.Scan(&p.Id, &p.SubjectID, &p.Name, &p.MaxScore, &p.MinScore)
+                fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
+                if err1 != nil{
+                    fmt.Println(err1)
+                    continue
+                }
+
+                rowslab, errLab := db.Query(fmt.Sprintf("select * from Lab Where module_id = '%s'", p.Id))
+                if errLab != nil {
+                    log.Println(errLab)
+                }
+                defer rowslab.Close()
+                //var mms Mods
+                lbs := []dataBase.Lab{}
+                lbis := []LabInstance2{}
+                var datelab1 time.Time;
+                var datelab2 time.Time;
+                for rowslab.Next(){
+                    l := dataBase.Lab{}
+                    errlab := rowslab.Scan(&l.Id, &l.Name, &l.Text, &l.MaxScore, &l.MinScore, &datelab1, &datelab2, &l.ModuleID)
+                    fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
+                    l.Date = datelab1.String()[:11]
+                    l.Deadline = datelab2.String()[:11]
+                    if errlab != nil{
+                        fmt.Println(errlab)
+                        continue
+                    }
+                    lbs = append(lbs, l)
+                    rowslbi, errlbi := db.Query(fmt.Sprintf("select * from LabInstance Where student_id = '%s' and lab_id = '%s' ", Studname, l.Id))
+                    if errlbi != nil {
+                        log.Println(errlbi)
+                    }
+                    defer rowslbi.Close()
+                    lbi := LabInstance2{}
+                    for rowslbi.Next(){   
+                        errlbi := rowslbi.Scan(&lbi.StudentId, &lbi.LabID, &date, &lbi.NumOfInstance, &lbi.Score, &lbi.Variant, &lbi.Remarks, &lbi.BonusScore)
+                        lbi.Date = date.String()[:11]
+                        lbi.Name = l.Name
+                        fmt.Printf("%s %s %s\n", date, lbi.NumOfInstance, lbi.Score)
+                        if errlbi != nil{
+                            fmt.Println(errlbi)
+                            continue
+                        }
+                    }
+                    lbis = append(lbis, lbi)
+                }
+
+                
+
+                rowssem, errsem := db.Query(fmt.Sprintf("select * from Seminar Where module_id = '%s'", p.Id))
+                if errsem != nil {
+                    log.Println(errsem)
+                }
+                defer rowssem.Close()
+                //var mms Mods
+                sems := []dataBase.Seminar{}
+                semas := []SeminarAttendance2{}
+                for rowssem.Next(){
+                    s := dataBase.Seminar{}
+                    errsem := rowssem.Scan(&s.Id, &s.Theme, &s.Text, &s.ModuleID)
+                    fmt.Printf("%s\n", s.Theme)
+                    if errsem != nil{
+                        fmt.Println(errsem)
+                        continue
+                    }
+                    sems = append(sems, s)
+
+                    rowssema, errsema := db.Query(fmt.Sprintf("select * from SeminarAttendance Where student_id = '%s' and seminar_id = '%s' ", Studname, s.Id))
+                    if errsema != nil {
+                        log.Println(errsema)
+                    }
+                    defer rowssema.Close()
+                    sema := SeminarAttendance2{}
+                    for rowssema.Next(){   
+                        errsema := rowssema.Scan(&sema.StudentId, &sema.SeminarID, &sema.Attendance, &sema.BonusScore)
+                        sema.Theme = s.Theme
+                        //fmt.Printf("%s %s %s\n", dlbi.NumOfInstance, lbi.Score)
+                        if errsema != nil{
+                            fmt.Println(errsema)
+                            continue
+                        }
+                    }
+                    semas = append(semas, sema)
+                }
+
+                rowslect, errlect := db.Query(fmt.Sprintf("select * from Lecture Where module_id = '%s'", p.Id))
+                if errlect != nil {
+                    log.Println(errlect)
+                }
+                defer rowslect.Close()
+                //var mms Mods
+                lects := []dataBase.Lecture{}
+                lectas := []LectureAttendance2{}
+                for rowslect.Next(){
+                    lt := dataBase.Lecture{}
+                    errlect := rowslect.Scan(&lt.Id, &lt.Theme, &lt.Text, &lt.ModuleID)
+                    fmt.Printf("%s\n", lt.Theme)
+                    if errlect != nil{
+                        fmt.Println(errlect)
+                        continue
+                    }
+                    lects = append(lects, lt)
+
+                    rowslecta, errlecta := db.Query(fmt.Sprintf("select * from LectureAttendance Where student_id = '%s' and lecture_id = '%s' ", Studname, lt.Id))
+                    if errlecta != nil {
+                        log.Println(errlecta)
+                    }
+                    defer rowslecta.Close()
+                    lecta := LectureAttendance2{}
+                    for rowslecta.Next(){   
+                        errlecta := rowslecta.Scan(&lecta.StudentId, &lecta.LectureID, &lecta.Attendance, &lecta.BonusScore)
+                        lecta.Theme = lt.Theme
+                        //lbi.Date = date.String()[:11]
+                        //fmt.Printf("%s %s %s\n", date, lbi.NumOfInstance, lbi.Score)
+                        if errlecta != nil{
+                            fmt.Println(errlecta)
+                            continue
+                        }
+                    }
+                    lectas = append(lectas, lecta)
+                }
+
+                rowsbc, errbc := db.Query(fmt.Sprintf("select * from BC Where module_id = '%s'", p.Id))
+                if errbc != nil {
+                    log.Println(errbc)
+                }
+                defer rowsbc.Close()
+                //var mms Mods
+                bcs := []dataBase.Bc{}
+                bcis := []BCInstance2{}
+                for rowsbc.Next(){
+                    b := dataBase.Bc{}
+                    errbc := rowsbc.Scan(&b.Id, &b.Theme, &b.Questions, &b.MaxScore, &b.MinScore, &b.ModuleID)
+                    fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
+                    if errbc != nil{
+                        fmt.Println(errbc)
+                        continue
+                    }
+                    bcs = append(bcs, b)
+
+                    rowsbci, errbci := db.Query(fmt.Sprintf("select * from BCInstance Where student_id = '%s' and bc_id = '%s' ", Studname, b.Id))
+                    if errbci != nil {
+                        log.Println(errbci)
+                    }
+                    defer rowsbci.Close()
+                    bci := BCInstance2{}
+                    for rowsbci.Next(){   
+                        errbci := rowsbci.Scan(&bci.StudentId, &bci.BCID, &date, &bci.NumOfInstance, &bci.Score, &bci.Variant, &bci.Remarks)
+                        bci.Date = date.String()[:11]
+                        bci.Theme = b.Theme
+                        fmt.Printf("%s %s %s\n", date, bci.NumOfInstance, bci.Score)
+                        if errbci != nil{
+                            fmt.Println(errbci)
+                            continue
+                        }
+                    }
+                    bcis = append(bcis, bci)
+                }
+            
+
+                var mm ModInfo
+                mm.Module = p
+                mm.Ms.Labs = lbs
+                mm.Ms.LabInstances = lbis
+                if len(lbs) == 0 {
+                    subj.IsLab = false
+                    //fmt.Println("aaaaaaaaaaaaaaaaaaa")
+                } else {
+                    subj.IsLab =true
+                }
+                mm.Ms.Sems = sems
+                mm.Ms.SeminarAttendances = semas
+                if len(sems) == 0 {
+                    subj.IsSem = false
+                    //fmt.Println("jkdsxjdcfjkdsfjkdfjkkfjd") 
+                } else {
+                    subj.IsSem =true
+                }
+                mm.Ms.Lects = lects
+                mm.Ms.LectureAttendances = lectas
+                mm.Ms.Bc = bcs
+                mm.Ms.BCInstances = bcis
+                subj.Modules = append(subj.Modules, mm)
+            }
+            //вся инфа о предмете получена
             rowsei, errei := db.Query(fmt.Sprintf("select * from ExamInstance Where student_id = '%s' and exam_id = '%s' ", Studname, subj.Exams.Id))
             if errei != nil {
                 log.Println(errei)
@@ -1957,8 +2206,6 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 }
                 subj.Examinst = p
             }
-            subj.Description = Subjname
-        
             tmpl, _ := template.ParseFiles("teacher/templs/show_marks.html", "teacher/templs/header.html", "teacher/templs/footer.html")
             tmpl.ExecuteTemplate(w, "show_marks", subj)
             return
@@ -2212,11 +2459,12 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
             "password=%s dbname=%s sslmode=disable",
             host, port, user, password, dbname)
             db, err := sql.Open("postgres", psqlInfo)
+            
             if err != nil {
                 panic(err)
             }
             defer db.Close()
-
+            //db.SetConnMaxLifetime(0)
             err = db.Ping()
             if err != nil {
                 panic(err)
@@ -2224,46 +2472,220 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
 
             fmt.Printf("Successfully connected!\n\n")
 
-            
+            var idsb = Idsubj{}
 
-            rowsEx, errEx := db.Query(fmt.Sprintf("select * from Exam Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Description))
+            rowsEx, errEx := db.Query(fmt.Sprintf("select ExamID, ExamDate  from Exam Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Description))
             if errEx != nil {
                 log.Println(errEx)
             }
             defer rowsEx.Close()
-            var date time.Time;
-            e := dataBase.Exam{}
+            //var date time.Time;
+            //fmt.Println("ksdjkfdjkfdjkfgjkfgjkfdjkf")
+            var e uuid.UUID
+            var date time.Time
+            var edate string
             for rowsEx.Next(){
-                errEx := rowsEx.Scan(&e.Id, &e.Questions, &e.MaxScore, &e.MinScore, &date, &e.SubjectID)
-                e.Date = date.String()[:11]
+                errEx := rowsEx.Scan(&e, &date)
+                edate = date.String()[:11]
+                //fmt.Println("экзамен")
                 //fmt.Printf("%s %s %s %s\n", p.Questions, p.MaxScore, p.MinScore,p.Date)
                 if errEx != nil{
                     fmt.Println(errEx)
                     continue
                 }
             }
+            //subj.Description = Description
+            rows1, err1 := db.Query(fmt.Sprintf("select ModuleID from Modules Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Description))
+            if err1 != nil {
+                log.Println(err1)
+            }
+            defer rows1.Close()
+            //subj.Modules = []ModInfo{}
+            for rows1.Next(){
+                var mid []uint8
+                err1 := rows1.Scan(&mid)
+                //fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
+                if err1 != nil{
+                    fmt.Println(err1)
+                    continue
+                }
 
-            rowsSt, errSt := db.Query(fmt.Sprintf("select * from Student Where group_id IN (SELECT GroupID From StudentGroup Where GroupName = '%s')", GroupName))
+                rowslab, errLab := db.Query(fmt.Sprintf("select LabID, Deadline from Lab Where module_id = '%s'", mid))
+                if errLab != nil {
+                    log.Println(errLab)
+                }
+                 
+                //var mms Mods
+                lbs := []dataBase.Lab{}
+                var datelab2 time.Time;
+                for rowslab.Next(){
+                    l := dataBase.Lab{}
+                    errlab := rowslab.Scan(&l.Id, &datelab2)
+                    //fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
+                    l.Deadline = datelab2.String()[:11]
+                    if errlab != nil{
+                        fmt.Println(errlab)
+                        continue
+                    }
+                    lbs = append(lbs, l)
+                }
+
+                rowssem, errsem := db.Query(fmt.Sprintf("select SeminarID from Seminar Where module_id = '%s'", mid))
+                if errsem != nil {
+                    log.Println(errsem)
+                }
+                
+                //var mms Mods
+                sems := []dataBase.Seminar{}
+                for rowssem.Next(){
+                    s := dataBase.Seminar{}
+                    errsem := rowssem.Scan(&s.Id)
+                    //fmt.Printf("%s\n", s.Theme)
+                    if errsem != nil{
+                        fmt.Println(errsem)
+                        continue
+                    }
+                    sems = append(sems, s)
+                }
+
+                rowslect, errlect := db.Query(fmt.Sprintf("select LectureID from Lecture Where module_id = '%s'", mid))
+                if errlect != nil {
+                    log.Println(errlect)
+                }
+                
+                //var mms Mods
+                lects := []dataBase.Lecture{}
+                for rowslect.Next(){
+                    lt := dataBase.Lecture{}
+                    errlect := rowslect.Scan(&lt.Id)
+                    //fmt.Printf("%s\n", lt.Theme)
+                    if errlect != nil{
+                        fmt.Println(errlect)
+                        continue
+                    }
+                    lects = append(lects, lt)
+                }
+
+                rowsbc, errbc := db.Query(fmt.Sprintf("select BCID from BC Where module_id = '%s'", mid))
+                if errbc != nil {
+                    log.Println(errbc)
+                }
+                
+                //var mms Mods
+                bcs := []dataBase.Bc{}
+                for rowsbc.Next(){
+                    b := dataBase.Bc{}
+                    errbc := rowsbc.Scan(&b.Id)
+                    //fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
+                    if errbc != nil{
+                        fmt.Println(errbc)
+                        continue
+                    }
+                    bcs = append(bcs, b)
+                }
+            
+
+                var mm Mods
+                mm.Labs = lbs
+                if len(lbs) == 0 {
+                    idsb.IsLab = false
+                    //fmt.Println("aaaaaaaaaaaaaaaaaaa")
+                } else {
+                    idsb.IsLab =true
+                }
+                mm.Sems = sems
+                if len(sems) == 0 {
+                    idsb.IsSem = false
+                    //fmt.Println("jkdsxjdcfjkdsfjkdfjkkfjd") 
+                } else {
+                    idsb.IsSem =true
+                }
+                mm.Lects = lects
+                mm.Bc = bcs
+                idsb.Modules = append(idsb.Modules, mm)
+                defer rowslab.Close()
+                defer rowssem.Close()
+                defer rowslect.Close()
+                defer rowsbc.Close()
+            }
+            //получили всю информацию о предмете
+
+            rowsSt, errSt := db.Query(fmt.Sprintf("select StudentID, StudentName from Student Where group_id IN (SELECT GroupID From StudentGroup Where GroupName = '%s')", GroupName))
             if errSt != nil {
                 log.Println(errSt)
             }
             defer rowsSt.Close()
+            st := dataBase.Student{}
             //var date time.Time;
             for rowsSt.Next(){
-                s := dataBase.Student{}
-                errSt := rowsSt.Scan(&s.Id, &s.Name, &s.Surname, &s.Patronymic, &s.Email, &s.Phone,&s.Year, &s.Courses, &s.Number, &s.Userid, &s.Groupid)
-                //fmt.Printf("%s %s %s %s\n", s.Name)
+                st = dataBase.Student{}
+                errSt := rowsSt.Scan(&st.Id, &st.Name)
+                fmt.Println(st.Name,st.Id, "aboba")
                 if errSt != nil{
                     fmt.Println(errSt)
                     continue
                 }
-                res, err := db.Query(
-                    fmt.Sprintf("INSERT INTO ExamInstance(student_id, exam_id, DateOdPassing, NumOfInstance, RecievedScore, TicketNumber) Values ('%s', '%s' , '%s',  1, 0, 0)",
-                    s.Id, e.Id, e.Date ))
-                if err != nil {
+                resExm, errExm := db.Query(
+                    fmt.Sprintf("INSERT INTO ExamInstance(student_id, exam_id, DateOdPassing, NumOfInstance, RecievedScore, TicketNumber) Values ('%s', '%s' , '%s' ,  1, 0, 0)",
+                    st.Id, e, edate))
+                if errExm != nil {
                     panic(err)
                 }
-                defer res.Close()
+                defer resExm.Close()
+
+                for _, mod := range idsb.Modules {
+                    for _, lec := range mod.Lects {
+                        //lecture attendance
+                        fmt.Println(st.Name, "lecture")
+                        reslc, errlc := db.Query(
+                            fmt.Sprintf("INSERT INTO LectureAttendance(student_id, lecture_id, WasAttended, BonusScore) Values ('%s', '%s' ,  False, 0)",
+                            st.Id, lec.Id ))
+                        if errlc != nil {
+                            panic(errlc)
+                        }
+                        reslc.Close()
+                        
+                    }
+                    if (idsb.IsSem) {
+                        for _, sem := range mod.Sems {
+                            //seminar attendance
+                            fmt.Println(st.Name, "seminar")
+                            fmt.Println(st.Id, sem.Id)
+                            ressm, errsm := db.Query(
+                                fmt.Sprintf("INSERT INTO SeminarAttendance(student_id, seminar_id, WasAttended, BonusScore) Values ('%s', '%s' ,  False, 0)",
+                                st.Id, sem.Id))
+                            if errsm != nil {
+                                panic(errsm)
+                            }
+                            ressm.Close()
+                        }
+                    }
+                    if (idsb.IsLab) {
+                        for _, lab := range mod.Labs {
+                            //Lab instance
+                            fmt.Println(st.Name, "lab")
+                            reslb, errlb := db.Query(
+                                fmt.Sprintf("INSERT INTO LabInstance(student_id, lab_id, DateOdPassing, NumOfInstance, RecievedScore, Variant, Remarks, BonusScore) Values ('%s', '%s' , '%s', 1, 0 , 0, '', 0)",
+                                st.Id, lab.Id, lab.Deadline))
+                            if errlb != nil {
+                                panic(errlb)
+                            }
+                            reslb.Close()
+                        }
+                    }
+
+                    for _, bc := range mod.Bc {
+                        //BC instance
+                        fmt.Println(st.Name, "bc")
+                        resbc, errbc := db.Query(
+                            fmt.Sprintf("INSERT INTO BCInstance(student_id, bc_id, DateOdPassing, NumOfInstance, RecievedScore, Variant, Remarks) Values ('%s', '%s' , '2000-01-01', 1, 0 , 0, '')",
+                            st.Id, bc.Id))
+                        if errbc != nil {
+                            panic(errbc)
+                        }
+                        resbc.Close()
+                    }
+                }
 
             }
             res, err := db.Query(
@@ -2555,7 +2977,7 @@ func save_exinst(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-//{grname}+{subjname}/{subjname}+{studname}
+            //{grname}+{subjname}/{subjname}+{studname}
             ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
             http.Redirect(w,r,ss, http.StatusSeeOther)
             return
@@ -2563,6 +2985,298 @@ func save_exinst(w http.ResponseWriter, r *http.Request){
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
+
+func save_lectatt(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Ltid := vars["ltid"]
+            Attendance := r.FormValue("Attendance")
+            BonusScore := r.FormValue("BonusScore")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update LectureAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND lecture_id = '%s'",
+                Attendance, BonusScore, Studid, Ltid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
+            if errgr != nil {
+                log.Println(errgr)
+            }
+            defer rowsgr.Close()
+            g := dataBase.StudentGroup{}
+            for rowsgr.Next(){
+                errgr := rowsgr.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
+                if errgr != nil{
+                    fmt.Println(errgr)
+                    continue
+                }
+            }
+
+            rowssubj, errsubj := db.Query(fmt.Sprintf("select * from Subject Where SubjectID IN (Select subject_id from Modules where ModuleID in (Select module_id from Lecture where LectureID = '%s'))", Ltid))
+            if errsubj != nil {
+                log.Println(errsubj)
+            }
+            defer rowssubj.Close()
+            sub := dataBase.Subject{}
+            for rowssubj.Next(){
+                errsubj := rowssubj.Scan(&sub.Id, &sub.Description, &sub.Program, &sub.Hours, &sub.Credits)
+                if errsubj != nil{
+                    fmt.Println(errsubj)
+                    continue
+                }
+            }
+            //{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func save_sematt(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Smid := vars["smid"]
+            Attendance := r.FormValue("Attendance")
+            BonusScore := r.FormValue("BonusScore")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update SeminarAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND seminar_id = '%s'",
+                Attendance, BonusScore, Studid, Smid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
+            if errgr != nil {
+                log.Println(errgr)
+            }
+            defer rowsgr.Close()
+            g := dataBase.StudentGroup{}
+            for rowsgr.Next(){
+                errgr := rowsgr.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
+                if errgr != nil{
+                    fmt.Println(errgr)
+                    continue
+                }
+            }
+
+            rowssubj, errsubj := db.Query(fmt.Sprintf("select * from Subject Where SubjectID IN (Select subject_id from Modules where ModuleID in (Select module_id from Seminar where SeminarID = '%s'))", Smid))
+            if errsubj != nil {
+                log.Println(errsubj)
+            }
+            defer rowssubj.Close()
+            sub := dataBase.Subject{}
+            for rowssubj.Next(){
+                errsubj := rowssubj.Scan(&sub.Id, &sub.Description, &sub.Program, &sub.Hours, &sub.Credits)
+                if errsubj != nil{
+                    fmt.Println(errsubj)
+                    continue
+                }
+            }
+            //{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func save_bcinst(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Bcid := vars["bcid"]
+            Date := r.FormValue("Date")
+            NumOfInstance := r.FormValue("NumOfInstance")
+            Score := r.FormValue("Score")
+            Variant := r.FormValue("Variant")
+            Remarks := r.FormValue("Remarks")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update BCInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s' where student_id = '%s' AND bc_id = '%s'",
+                Date, NumOfInstance, Score, Variant, Remarks, Studid, Bcid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
+            if errgr != nil {
+                log.Println(errgr)
+            }
+            defer rowsgr.Close()
+            g := dataBase.StudentGroup{}
+            for rowsgr.Next(){
+                errgr := rowsgr.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
+                if errgr != nil{
+                    fmt.Println(errgr)
+                    continue
+                }
+            }
+
+            rowssubj, errsubj := db.Query(fmt.Sprintf("select * from Subject Where SubjectID IN (Select subject_id from Modules where ModuleID in (Select module_id from BC where BCID = '%s'))", Bcid))
+            if errsubj != nil {
+                log.Println(errsubj)
+            }
+            defer rowssubj.Close()
+            sub := dataBase.Subject{}
+            for rowssubj.Next(){
+                errsubj := rowssubj.Scan(&sub.Id, &sub.Description, &sub.Program, &sub.Hours, &sub.Credits)
+                if errsubj != nil{
+                    fmt.Println(errsubj)
+                    continue
+                }
+            }
+            //{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func save_labi(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Lbid := vars["lbid"]
+            Date := r.FormValue("Date")
+            NumOfInstance := r.FormValue("NumOfInstance")
+            Score := r.FormValue("Score")
+            Variant := r.FormValue("Variant")
+            Remarks := r.FormValue("Remarks")
+            BonusScore := r.FormValue("BonusScore")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update LabInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s', BonusScore = '%s' where student_id = '%s' AND lab_id = '%s'",
+                Date, NumOfInstance, Score, Variant, Remarks, BonusScore, Studid, Lbid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
+            if errgr != nil {
+                log.Println(errgr)
+            }
+            defer rowsgr.Close()
+            g := dataBase.StudentGroup{}
+            for rowsgr.Next(){
+                errgr := rowsgr.Scan(&g.Id, &g.Name, &g.YearOfAdm, &g.Course, &g.Amount)
+                if errgr != nil{
+                    fmt.Println(errgr)
+                    continue
+                }
+            }
+
+            rowssubj, errsubj := db.Query(fmt.Sprintf("select * from Subject Where SubjectID IN (Select subject_id from Modules where ModuleID in (Select module_id from Lab where LabID = '%s'))", Lbid))
+            if errsubj != nil {
+                log.Println(errsubj)
+            }
+            defer rowssubj.Close()
+            sub := dataBase.Subject{}
+            for rowssubj.Next(){
+                errsubj := rowssubj.Scan(&sub.Id, &sub.Description, &sub.Program, &sub.Hours, &sub.Credits)
+                if errsubj != nil{
+                    fmt.Println(errsubj)
+                    continue
+                }
+            }
+            //{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 
 func save_module(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
@@ -2779,6 +3493,10 @@ func handleFunc() {
     router.HandleFunc("/save_connTGS", save_connTGS)
     router.HandleFunc("/show_groups_and_subjs", show_list_groups_with_subj)
     router.HandleFunc("/save_exinst/{stid}+{exid}",save_exinst)
+    router.HandleFunc("/save_lectatt/{stid}+{ltid}",save_lectatt)
+    router.HandleFunc("/save_sematt/{stid}+{smid}",save_sematt)
+    router.HandleFunc("/save_bcinst/{stid}+{bcid}",save_bcinst)
+    router.HandleFunc("/save_labi/{stid}+{lbid}",save_labi)
     router.HandleFunc("/postLogOut", postLogOut)
     http.Handle("/", router)
     fmt.Println("Server is listening...")
