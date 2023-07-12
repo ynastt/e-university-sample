@@ -2,12 +2,12 @@ package dataBase
 
 import (
     "database/sql"
-    "encoding/json"
+    "github.com/google/uuid"
 )
 
 // курсовая работа по дисциплине
 type CourseProject struct {
-    Id []uint8
+    Id uuid.UUID
     Subject string
     Description string
 	Hours int
@@ -16,7 +16,7 @@ type CourseProject struct {
 	Db *sql.DB
 }
 
-func (p CourseProject) Get_id() []uint8 { return p.Id }
+func (p CourseProject) Get_id() uuid.UUID { return p.Id }
 func (p CourseProject) Get_subject() string { 
 	return p.Subject
 }
@@ -102,37 +102,25 @@ func (s *Supervisor) Set_role(name string) {
 
 // курсовой проект студента
 type StudentCourseProject struct {
-    StudentId []uint8
-	ProjectId []uint8
-    Assignment json.RawMessage
-    Title string
+    StudentId uuid.UUID
+	ProjectId uuid.UUID
+    Assignment string
 	Score int
     Date string
 	Db *sql.DB
 }
 
-func (s StudentCourseProject) Get_id() ([]uint8, []uint8) { return s.StudentId, s.ProjectId }
+func (s StudentCourseProject) Get_id() (uuid.UUID, uuid.UUID) { return s.StudentId, s.ProjectId }
 func (s StudentCourseProject) Get_assignment() string {
-    j, err := json.Marshal(s.Assignment)
-	if err != nil {
-		panic(err)
-	}
-	return string(j) 
+	return s.Assignment 
 }
-func (s StudentCourseProject) Get_title() string { return s.Title }
+
 func (s StudentCourseProject) Get_score() int { return s.Score }
 func (s StudentCourseProject) Get_date() string { return s.Date }
 
-func (s *StudentCourseProject) Set_assignment(text []byte) {
-    s.Assignment = json.RawMessage(text)
+func (s *StudentCourseProject) Set_assignment(text string) {
+    s.Assignment = text
 	_, err := s.Db.Exec("update StudentCourseProject SET ProjAssignment = $1 where student_id = $2 and project_id =$3", s.Assignment, s.StudentId, s.ProjectId)
-    if err != nil {
-        panic(err)
-    }
-}
-func (s *StudentCourseProject) Set_title(name string) { 
-    s.Title = name
-	_, err := s.Db.Exec("update StudentCourseProject SET TitleOfProject = $1 where student_id = $2 and project_id =$3", s.Title, s.StudentId, s.ProjectId)
     if err != nil {
         panic(err)
     }

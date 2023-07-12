@@ -1,0 +1,15 @@
+{{define "new_connCrprT"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о преподавателе и курсовой работе</h1>
+      <form action="/save_connCrprT" method="post">
+        <input type="text" name = "Description" id = "Description" placeholder="Введите описание курсовой работы" class="form-control"><br>
+        <input type="text" name = "Email" id = "Email" placeholder="Введите почту преподавателя" class="form-control"><br>
+        <input type="text" name = "SupervisorRole" id = "SupervisorRole" placeholder="Введите роль преподавателя" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

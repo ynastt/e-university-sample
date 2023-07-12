@@ -94,6 +94,42 @@ func new_coursePr(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+func new_connCrprT(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            t, err := template.ParseFiles("teacher/templs/new_connCrprT.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+
+            if err != nil {
+                fmt.Fprintf(w, err.Error())
+            }
+
+            t.ExecuteTemplate(w, "new_connCrprT", nil)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func new_connCrprS(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            t, err := template.ParseFiles("teacher/templs/new_connCrprS.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+
+            if err != nil {
+                fmt.Fprintf(w, err.Error())
+            }
+
+            t.ExecuteTemplate(w, "new_connCrprS", nil)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 func new_bc(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
 
@@ -1577,6 +1613,11 @@ func show_list_subjects(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+type CrprSt struct {
+    Crpr dataBase.CourseProject
+    Students []Stud
+}
+
 func show_list_coursePr(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
 
@@ -1619,6 +1660,145 @@ func show_list_coursePr(w http.ResponseWriter, r *http.Request){
         
             tmpl, _ := template.ParseFiles("teacher/templs/show_coursePrs.html", "teacher/templs/header.html", "teacher/templs/footer.html")
             tmpl.ExecuteTemplate(w, "show_coursePrs", subjs)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func show_pers_coursePr(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+            rows, err := db.Query( fmt.Sprintf("Select project_id from Supervisor where teacher_id in (Select TeacherID From Teacher Where user_id = '%s')", session.UserId))
+            if err != nil {
+                log.Println(err)
+            }
+            defer rows.Close()
+            subjs := []CrprSt{}
+            var pid uuid.UUID
+            for rows.Next(){
+                scp := CrprSt{}
+                err := rows.Scan(&pid)
+                if err != nil{
+                    fmt.Println(err)
+                    continue
+                }
+                rowsscps, errscps := db.Query( fmt.Sprintf("Select * from CourseProject Where ProjectID = '%s'", pid))
+                if errscps != nil {
+                    log.Println(errscps)
+                }
+                defer rowsscps.Close()
+                
+                for rowsscps.Next(){
+                    p := dataBase.CourseProject{}
+                    errscps := rowsscps.Scan(&p.Id, &p.Subject, &p.Description, &p.Hours, &p.StartDate, &p.Deadline)
+                    if errscps != nil{
+                        fmt.Println(errscps)
+                        continue
+                    }
+                    fmt.Println(p.Description)
+                    scp.Crpr = p
+                }
+                sts := []Stud{}
+                rowssts, errsts := db.Query( fmt.Sprintf("Select StudentID, StudentName, Surname, Patronymic from Student Where StudentID in (Select student_id from StudentCourseProject Where project_id = '%s')", pid))
+                if errsts != nil {
+                    log.Println(errsts)
+                }
+                defer rowssts.Close()
+                
+                for rowssts.Next(){
+                    st := Stud{}
+                    errsts := rowssts.Scan(&st.Id, &st.Name, &st.Surname, &st.Patronymic)
+                    if errsts != nil{
+                        fmt.Println(errsts)
+                        continue
+                    }
+                    fmt.Println(st.Name)
+                    sts = append(sts, st)
+                }
+                scp.Students = sts
+                subjs = append(subjs, scp)
+                
+            }
+        
+            tmpl, _ := template.ParseFiles("teacher/templs/show_pers_coursePr.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+            tmpl.ExecuteTemplate(w, "show_pers_coursePr", subjs)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+type StudentCourseProject2 struct {
+    StudentId uuid.UUID
+	ProjectId uuid.UUID
+    Assignment string
+	Score int
+    Date string
+	Description string
+}
+
+func show_pers_coursePr_mark(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Stid := vars["stid"]
+            Descr := vars["desc"]
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected! couursepr marks\n\n")
+            
+            rowsSt, errSt := db.Query(fmt.Sprintf("Select * from StudentCourseProject where student_id = '%s' and project_id = (Select ProjectID from  CourseProject where Description = '%s')", Stid, Descr))
+            if errSt != nil {
+                log.Println(errSt)
+            }
+            defer rowsSt.Close()
+            stcrpr := StudentCourseProject2{}
+            var date time.Time
+            for rowsSt.Next(){
+                s := StudentCourseProject2{}
+                errSt := rowsSt.Scan(&s.StudentId, &s.ProjectId, &s.Assignment, &s.Score, &date)
+                s.Date = date.String()[:11]
+                if errSt != nil{
+                    fmt.Println(errSt)
+                    continue
+                }
+                stcrpr = s
+            }
+            stcrpr.Description = Descr
+            tmpl, _ := template.ParseFiles("teacher/templs/show_pers_coursePr_mark.html", "teacher/templs/header.html", "teacher/templs/footer.html")
+            tmpl.ExecuteTemplate(w, "show_pers_coursePr_mark", stcrpr)
             return
         }
     }
@@ -2913,6 +3093,84 @@ func save_ex(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+func save_connCrprT(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            Description := r.FormValue("Description")
+            Email := r.FormValue("Email")
+            SupervisorRole := r.FormValue("SupervisorRole")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("INSERT INTO Supervisor(teacher_id, project_id, SupervisorRole) Values ((SELECT TeacherID From Teacher Where Email = '%s'), (SELECT ProjectID From CourseProject Where Description = '%s'), '%s')",
+                Email, Description, SupervisorRole))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+            http.Redirect(w,r,"/", http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
+func save_connCrprS(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            Description := r.FormValue("Description")
+            Email := r.FormValue("Email")
+            ProjAssignment := r.FormValue("ProjAssignment")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("INSERT INTO StudentCourseProject(student_id, project_id, DateOdPassing, ProjAssignment, RecievedScore) Values ((SELECT StudentID From Student Where Email = '%s'), (SELECT ProjectID From CourseProject Where Description = '%s'), (Select StartDate from CourseProject Where Description = '%s'), '%s', 0)",
+                Email, Description, Description, ProjAssignment, ))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+            http.Redirect(w,r,"/", http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 func save_exinst(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
 
@@ -3277,6 +3535,53 @@ func save_labi(w http.ResponseWriter, r *http.Request){
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
+func save_crprst(w http.ResponseWriter, r *http.Request){
+    token, _ := r.Cookie("token")
+
+	for _, session := range sessionTable {
+		if session.Token.String() == token.Value {
+            vars := mux.Vars(r)
+            Studid := vars["stid"]
+            Prid := vars["prid"]
+            Score := r.FormValue("score")
+            Date := r.FormValue("date")
+
+            psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+            "password=%s dbname=%s sslmode=disable",
+            host, port, user, password, dbname)
+            db, err := sql.Open("postgres", psqlInfo)
+            if err != nil {
+                panic(err)
+            }
+            defer db.Close()
+
+            err = db.Ping()
+            if err != nil {
+                panic(err)
+            }
+
+            fmt.Printf("Successfully connected!\n\n")
+
+            res, err := db.Query(
+                fmt.Sprintf("update StudentCourseProject SET RecievedScore  = '%s', DateOdPassing  = '%s' where student_id = '%s' AND project_id = '%s'",
+                Score, Date,Studid, Prid))
+            if err != nil {
+                panic(err)
+            }
+            defer res.Close()
+
+            
+
+           
+            //{grname}+{subjname}/{subjname}+{studname}
+            ss := "/show_pers_coursePr"
+            http.Redirect(w,r,ss, http.StatusSeeOther)
+            return
+        }
+    }
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+}
+
 
 func save_module(w http.ResponseWriter, r *http.Request){
     token, _ := r.Cookie("token")
@@ -3496,6 +3801,13 @@ func handleFunc() {
     router.HandleFunc("/save_sematt/{stid}+{smid}",save_sematt)
     router.HandleFunc("/save_bcinst/{stid}+{bcid}",save_bcinst)
     router.HandleFunc("/save_labi/{stid}+{lbid}",save_labi)
+    router.HandleFunc("/save_crprst/{stid}+{prid}",save_crprst)
+    router.HandleFunc("/new_connCrprT", new_connCrprT)
+    router.HandleFunc("/save_connCrprT", save_connCrprT)
+    router.HandleFunc("/new_connCrprS", new_connCrprS)
+    router.HandleFunc("/save_connCrprS", save_connCrprS)
+    router.HandleFunc("/show_pers_coursePr", show_pers_coursePr)
+    router.HandleFunc("/show_pers_coursePr/{stid}+{desc}", show_pers_coursePr_mark)
     router.HandleFunc("/postLogOut", postLogOut)
     http.Handle("/", router)
     fmt.Println("Server is listening...")

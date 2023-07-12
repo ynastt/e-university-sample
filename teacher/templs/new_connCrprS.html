@@ -1,0 +1,15 @@
+{{define "new_connCrprS"}}
+{{template "header"}}
+    <main role="main" class="inner cover">
+      <h1 class="cover-heading">Введите данные о студенте и курсовой работе</h1>
+      <form action="/save_connCrprS" method="post">
+        <input type="text" name = "Description" id = "Description" placeholder="Введите описание курсовой работы" class="form-control"><br>
+        <input type="text" name = "Email" id = "Email" placeholder="Введите почту студента" class="form-control"><br>
+        <input type="text" name = "ProjAssignment" id = "ProjAssignment" placeholder="Введите полное описание курсовой работы" class="form-control"><br>
+        <button class="btn btn-warning">Добавить</button>
+      </form>
+    </main>
+    {{template "footer"}}
+    {{end}}
+
+    

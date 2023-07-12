@@ -141,7 +141,6 @@ CREATE TABLE IF NOT EXISTS StudentCourseProject (
 	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
 	project_id UUID NOT NULL REFERENCES CourseProject(ProjectID) ON DELETE CASCADE,
 	ProjAssignment TEXT NOT NULL,
-	TitleOfProject VARCHAR(100) NOT NULL,
 	RecievedScore INT NOT NULL,
 	DateOdPassing DATE,
 	PRIMARY KEY(student_id, project_id)

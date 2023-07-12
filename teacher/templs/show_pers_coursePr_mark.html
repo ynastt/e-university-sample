@@ -1,0 +1,33 @@
+{{define "show_pers_coursePr_mark"}}
+{{template "header"}}
+<main role="main" class="inner cover">
+    <div class="container"> 
+        <br>
+        <h3>Курсовой проект :</h3>
+       <br>
+            <table class="table table-dark " style="color: #fff; border: 1.5px solid #fff;">
+                <th><h5>Название</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Описание</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Полученная оценка</h5></th>
+                <th><h5>&nbsp;</h5></th>
+                <th><h5>Дата сдачи</h5></th>
+                    <tr>
+                        <td>{{.Description}}</td>
+                        <td>&nbsp;</td>
+                        <td>{{.Assignment}}</td>
+                        <td>&nbsp;</td>
+                        <form action="/save_crprst/{{.StudentId}}+{{.ProjectId}}" method="post">
+                        <td><input type="text" name = "score" id = "score" placeholder="{{.Score}}" class="form-control"></td>
+                        <td>&nbsp;</td>
+                        <td><input type="text" name = "date" id = "date" placeholder="{{.Date}}" class="form-control"></td>
+                        
+                    </tr>
+            </table><br>
+            <p><button class="btn btn-warning">Изменить</button></p></form>
+        
+    </div>
+</main>
+{{template "footer"}}
+{{end}}
