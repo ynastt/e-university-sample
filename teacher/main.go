@@ -3408,8 +3408,9 @@ func postLogOut(w http.ResponseWriter, r *http.Request) {
 			sessionTable = sessionTable[:len(sessionTable)-1]
 		}
 		fmt.Println(sessionTable)
-		http.Redirect(w, r, "/logIn", http.StatusSeeOther)
+		
 	}
+    http.Redirect(w, r, "/logIn", http.StatusSeeOther)
 }
 
 func handleFunc() {
