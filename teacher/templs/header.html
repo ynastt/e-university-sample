@@ -16,7 +16,7 @@
       <div class="inner">
         <nav class="nav nav-masthead justify-content-center">
           <a class="nav-link active" href="/" style="color:#29E451; margin: 10px 10px 10px 40px; margin-right: 50px">Главная</a>
-            <select id="mySelect" onchange="myFunction()" style="color:#29E451; background-color:#212529; border-color:#212529; margin: 10px">
+            <select id="mySelect" onchange="myFunction()" style="color:#29E451; background-color:#212529; border-color:#212529; margin: 10px; width: 200px;">
               <option value="1" style="color:#29E451">Добавить</option>
               <option value="2">Добавить преподавателя</option>
               <option value="3">Добавить предмет</option>
@@ -29,6 +29,8 @@
               <option value="10">Добавить семинар</option>
               <option value="11">Добавить лекцию</option>
               <option value="12">Добавить курсовую работу</option>
+              <option value="13">Соеденить преподавателя,
+                 предмет и группу</option>
             </select>
             <script>
               function myFunction() {
@@ -44,6 +46,7 @@
                 if (x == 10) {location.replace("http://localhost:8080/new_sem")}
                 if (x == 11) {location.replace("http://localhost:8080/new_lect")}
                 if (x == 12) {location.replace("http://localhost:8080/new_coursePr")}
+                if (x == 13) {location.replace("http://localhost:8080/new_connTGS")}
                 //document.getElementById("demo").innerHTML = "You selected: " + x;
               }
               </script>
