@@ -526,7 +526,7 @@ func del_student(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("DELETE FROM Student Where Email = '%s'", DEmail))
             if err != nil {
-                panic(err)
+                http.Redirect(w, r, "/delete_student", http.StatusSeeOther)
             }
             defer res.Close()
             http.Redirect(w,r,"/", http.StatusSeeOther)
@@ -1112,11 +1112,12 @@ func upd_student(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("update Student SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
             if err != nil {
-                panic(err)
+                http.Redirect(w, r, "/update_student", http.StatusSeeOther)
+            } else {
+                defer res.Close()
+                http.Redirect(w,r,"/", http.StatusSeeOther)
+                return
             }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1150,12 +1151,13 @@ func upd_bc(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update BC SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue,Theme, ModuleName, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_bc", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1186,12 +1188,13 @@ func upd_ex(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Exam SET %s  = '%s' Where subject_id IN (SELECT SubjectID From Subject Where Description = '%s')", Uchange, Uvalue, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_ex", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1222,12 +1225,13 @@ func upd_group(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update StudentGroup SET %s  = '%s' where GroupName = '%s'", Uchange, Uvalue, GroupName))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_group", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1259,12 +1263,13 @@ func upd_coursePr(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update CourseProject SET %s  = '%s' where Description = '%s'", Uchange, Uvalue, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_coursePr", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1297,12 +1302,13 @@ func upd_lab(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Lab SET %s  = '%s' where LabName = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, LabName, ModuleName, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_lab", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1335,12 +1341,13 @@ func upd_lect(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Lecture SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, Theme, ModuleName, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_lect", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1372,12 +1379,13 @@ func upd_module(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Modules SET %s  = '%s' Where ModuleID IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, ModuleName, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_module", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1410,12 +1418,13 @@ func upd_sem(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Seminar SET %s  = '%s' where Theme = '%s' AND module_id IN (SELECT ModuleID From Modules Where ModuleName = '%s' AND subject_id IN (SELECT SubjectID From Subject Where Description = '%s'))", Uchange, Uvalue, Theme, ModuleName, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_sem", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1446,12 +1455,13 @@ func upd_subject(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Subject SET %s  = '%s' Where SubjectID IN (SELECT SubjectID From Subject Where Description = '%s')", Uchange, Uvalue, Description))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_subject", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1483,12 +1493,13 @@ func upd_teacher(w http.ResponseWriter, r *http.Request){
 
             res, err := db.Query(
                 fmt.Sprintf("update Teacher SET %s  = '%s' where Email = '%s'", Uchange, Uvalue, UEmail))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/update_teacher", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -1537,7 +1548,7 @@ func show_list_groups_with_subj(w http.ResponseWriter, r *http.Request){
                     continue
                 }
                 g.Subj = p
-                fmt.Println(p.Description)
+                //fmt.Println(p.Description)
                 rowsg, errg := db.Query( fmt.Sprintf("select * from StudentGroup where GroupId in (select group_id from TeacherSubjectGroup Where subject_id = '%s' and teacher_id in (Select TeacherID From Teacher Where user_id = '%s'))", p.Id, session.UserId))
                 if errg != nil {
                     log.Println(errg)
@@ -1552,7 +1563,7 @@ func show_list_groups_with_subj(w http.ResponseWriter, r *http.Request){
                         fmt.Println(err)
                         continue
                     }
-                    fmt.Println(gr.Name)
+                    //fmt.Println(gr.Name)
                     g.Grs = append(g.Grs, gr)
                 }
                 gs = append(gs, g)
@@ -1650,7 +1661,7 @@ func show_list_coursePr(w http.ResponseWriter, r *http.Request){
                 err := rows.Scan(&p.Id, &p.Subject, &p.Description, &p.Hours, &p.StartDate, &p.Deadline)
                 p.StartDate = p.StartDate[:10]
                 p.Deadline = p.Deadline[:10]
-                fmt.Println(p.Description)
+                //fmt.Println(p.Description)
                 if err != nil{
                     fmt.Println(err)
                     continue
@@ -1713,7 +1724,7 @@ func show_pers_coursePr(w http.ResponseWriter, r *http.Request){
                         fmt.Println(errscps)
                         continue
                     }
-                    fmt.Println(p.Description)
+                    //fmt.Println(p.Description)
                     scp.Crpr = p
                 }
                 sts := []Stud{}
@@ -1730,7 +1741,7 @@ func show_pers_coursePr(w http.ResponseWriter, r *http.Request){
                         fmt.Println(errsts)
                         continue
                     }
-                    fmt.Println(st.Name)
+                    //fmt.Println(st.Name)
                     sts = append(sts, st)
                 }
                 scp.Students = sts
@@ -1929,7 +1940,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
                 p := dataBase.Exam{}
                 err := rows.Scan(&p.Id, &p.Questions, &p.MaxScore, &p.MinScore, &date, &p.SubjectID)
                 p.Date = date.String()[:11]
-                fmt.Printf("%s %s %s %s\n", p.Questions, p.MaxScore, p.MinScore,p.Date)
+                //fmt.Printf("%s %s %s %s\n", p.Questions, p.MaxScore, p.MinScore,p.Date)
                 if err != nil{
                     fmt.Println(err)
                     continue
@@ -1947,7 +1958,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
             for rows1.Next(){
                 p := dataBase.Module{}
                 err1 := rows1.Scan(&p.Id, &p.SubjectID, &p.Name, &p.MaxScore, &p.MinScore)
-                fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
+                //fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
                 if err1 != nil{
                     fmt.Println(err1)
                     continue
@@ -1965,7 +1976,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
                 for rowslab.Next(){
                     l := dataBase.Lab{}
                     errlab := rowslab.Scan(&l.Id, &l.Name, &l.Text, &l.MaxScore, &l.MinScore, &datelab1, &datelab2, &l.ModuleID)
-                    fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
+                    //fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
                     l.Date = datelab1.String()[:11]
                     l.Deadline = datelab2.String()[:11]
                     if errlab != nil{
@@ -1985,7 +1996,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
                 for rowssem.Next(){
                     s := dataBase.Seminar{}
                     errsem := rowssem.Scan(&s.Id, &s.Theme, &s.Text, &s.ModuleID)
-                    fmt.Printf("%s\n", s.Theme)
+                    //fmt.Printf("%s\n", s.Theme)
                     if errsem != nil{
                         fmt.Println(errsem)
                         continue
@@ -2003,7 +2014,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
                 for rowslect.Next(){
                     lt := dataBase.Lecture{}
                     errlect := rowslect.Scan(&lt.Id, &lt.Theme, &lt.Text, &lt.ModuleID)
-                    fmt.Printf("%s\n", lt.Theme)
+                    //fmt.Printf("%s\n", lt.Theme)
                     if errlect != nil{
                         fmt.Println(errlect)
                         continue
@@ -2021,7 +2032,7 @@ func show_subject(w http.ResponseWriter, r *http.Request){
                 for rowsbc.Next(){
                     b := dataBase.Bc{}
                     errbc := rowsbc.Scan(&b.Id, &b.Theme, &b.Questions, &b.MaxScore, &b.MinScore, &b.ModuleID)
-                    fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
+                    //fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
                     if errbc != nil{
                         fmt.Println(errbc)
                         continue
@@ -2094,7 +2105,7 @@ func show_students(w http.ResponseWriter, r *http.Request){
                 s := Stud{}
                 errSt := rowsSt.Scan(&s.Id, &s.Name, &s.Surname, &s.Patronymic, &s.Email, &s.Phone, &s.Year, &s.Courses, &s.Number, &s.Userid, &s.Groupid)
                 s.Idstr = s.Id.String()
-                fmt.Println(s.Name, s.Number)
+                //fmt.Println(s.Name, s.Number)
                 if errSt != nil{
                     fmt.Println(errSt)
                     continue
@@ -2186,7 +2197,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
             for rows1.Next(){
                 p := dataBase.Module{}
                 err1 := rows1.Scan(&p.Id, &p.SubjectID, &p.Name, &p.MaxScore, &p.MinScore)
-                fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
+                //fmt.Printf("%s %d %d\n", p.Name, p.MaxScore, p.MinScore)
                 if err1 != nil{
                     fmt.Println(err1)
                     continue
@@ -2205,7 +2216,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 for rowslab.Next(){
                     l := dataBase.Lab{}
                     errlab := rowslab.Scan(&l.Id, &l.Name, &l.Text, &l.MaxScore, &l.MinScore, &datelab1, &datelab2, &l.ModuleID)
-                    fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
+                   // fmt.Printf("%s %d %d\n", l.Name, l.MaxScore, l.MinScore)
                     l.Date = datelab1.String()[:11]
                     l.Deadline = datelab2.String()[:11]
                     if errlab != nil{
@@ -2223,7 +2234,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                         errlbi := rowslbi.Scan(&lbi.StudentId, &lbi.LabID, &date, &lbi.NumOfInstance, &lbi.Score, &lbi.Variant, &lbi.Remarks, &lbi.BonusScore)
                         lbi.Date = date.String()[:11]
                         lbi.Name = l.Name
-                        fmt.Printf("%s %s %s\n", date, lbi.NumOfInstance, lbi.Score)
+                       // fmt.Printf("%s %s %s\n", date, lbi.NumOfInstance, lbi.Score)
                         if errlbi != nil{
                             fmt.Println(errlbi)
                             continue
@@ -2245,7 +2256,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 for rowssem.Next(){
                     s := dataBase.Seminar{}
                     errsem := rowssem.Scan(&s.Id, &s.Theme, &s.Text, &s.ModuleID)
-                    fmt.Printf("%s\n", s.Theme)
+                    //fmt.Printf("%s\n", s.Theme)
                     if errsem != nil{
                         fmt.Println(errsem)
                         continue
@@ -2281,7 +2292,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 for rowslect.Next(){
                     lt := dataBase.Lecture{}
                     errlect := rowslect.Scan(&lt.Id, &lt.Theme, &lt.Text, &lt.ModuleID)
-                    fmt.Printf("%s\n", lt.Theme)
+                    //fmt.Printf("%s\n", lt.Theme)
                     if errlect != nil{
                         fmt.Println(errlect)
                         continue
@@ -2318,7 +2329,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 for rowsbc.Next(){
                     b := dataBase.Bc{}
                     errbc := rowsbc.Scan(&b.Id, &b.Theme, &b.Questions, &b.MaxScore, &b.MinScore, &b.ModuleID)
-                    fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
+                    //fmt.Printf("%s %d %d\n", b.Theme, b.MaxScore, b.MinScore)
                     if errbc != nil{
                         fmt.Println(errbc)
                         continue
@@ -2335,7 +2346,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                         errbci := rowsbci.Scan(&bci.StudentId, &bci.BCID, &date, &bci.NumOfInstance, &bci.Score, &bci.Variant, &bci.Remarks)
                         bci.Date = date.String()[:11]
                         bci.Theme = b.Theme
-                        fmt.Printf("%s %s %s\n", date, bci.NumOfInstance, bci.Score)
+                       // fmt.Printf("%s %s %s\n", date, bci.NumOfInstance, bci.Score)
                         if errbci != nil{
                             fmt.Println(errbci)
                             continue
@@ -2379,7 +2390,7 @@ func show_marks(w http.ResponseWriter, r *http.Request){
                 p := dataBase.ExamInstance{}
                 errei := rowsei.Scan(&p.StudentId, &p.ExamID, &date, &p.NumOfInstance, &p.Score, &p.Ticket)
                 p.Date = date.String()[:11]
-                fmt.Printf("%s %s %s %s\n", date, p.NumOfInstance, p.Score,p.Ticket)
+                //fmt.Printf("%s %s %s %s\n", date, p.NumOfInstance, p.Score,p.Ticket)
                 if errei != nil{
                     fmt.Println(errei)
                     continue
@@ -2470,14 +2481,13 @@ func save_group(w http.ResponseWriter, r *http.Request){
                 fmt.Sprintf("INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course , AmountOfStudents) Values ('%s','%s', '%s','%s',  '%s')",
                 groupid, group_num, course, amount_of_students, year_of_admission))
                 
-            if err != nil {
-                panic(err)
-            }
-
-            defer res.Close()
-            
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_group", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2512,13 +2522,13 @@ func save_coursePr(w http.ResponseWriter, r *http.Request){
                 fmt.Sprintf("INSERT INTO CourseProject(ProjectID, Subject, Description, NumberOfHours , StartDate, Deadline) Values (gen_random_uuid(),'%s', '%s','%s',  '%s', '%s')",
                 Subject, Description, NumberOfHours, StartDate,Deadline ))
                 
-            if err != nil {
-                panic(err)
-            }
-
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_coursePr", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2614,12 +2624,13 @@ func save_teacher(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Teacher(TeacherID, user_id, TeacherName, Surname,Patronymic, Email) Values (gen_random_uuid(),(SELECT UserID From Users Where Login = '%s') ,'%s', '%s','%s',  '%s')",
                     login, name, surname, patronymic, email ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                    if err != nil {
+                        http.Redirect(w, r, "/new_teacher", http.StatusSeeOther)
+                    } else {
+                        defer res.Close()
+                        http.Redirect(w,r,"/", http.StatusSeeOther)
+                        return
+                    }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2800,7 +2811,7 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
             for rowsSt.Next(){
                 st = dataBase.Student{}
                 errSt := rowsSt.Scan(&st.Id, &st.Name)
-                fmt.Println(st.Name,st.Id, "aboba")
+                //fmt.Println(st.Name,st.Id, "aboba")
                 if errSt != nil{
                     fmt.Println(errSt)
                     continue
@@ -2816,7 +2827,7 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
                 for _, mod := range idsb.Modules {
                     for _, lec := range mod.Lects {
                         //lecture attendance
-                        fmt.Println(st.Name, "lecture")
+                        //fmt.Println(st.Name, "lecture")
                         reslc, errlc := db.Query(
                             fmt.Sprintf("INSERT INTO LectureAttendance(student_id, lecture_id, WasAttended, BonusScore) Values ('%s', '%s' ,  False, 0)",
                             st.Id, lec.Id ))
@@ -2829,8 +2840,8 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
                     if (idsb.IsSem) {
                         for _, sem := range mod.Sems {
                             //seminar attendance
-                            fmt.Println(st.Name, "seminar")
-                            fmt.Println(st.Id, sem.Id)
+                            //fmt.Println(st.Name, "seminar")
+                            //fmt.Println(st.Id, sem.Id)
                             ressm, errsm := db.Query(
                                 fmt.Sprintf("INSERT INTO SeminarAttendance(student_id, seminar_id, WasAttended, BonusScore) Values ('%s', '%s' ,  False, 0)",
                                 st.Id, sem.Id))
@@ -2843,7 +2854,7 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
                     if (idsb.IsLab) {
                         for _, lab := range mod.Labs {
                             //Lab instance
-                            fmt.Println(st.Name, "lab")
+                            //fmt.Println(st.Name, "lab")
                             reslb, errlb := db.Query(
                                 fmt.Sprintf("INSERT INTO LabInstance(student_id, lab_id, DateOdPassing, NumOfInstance, RecievedScore, Variant, Remarks, BonusScore) Values ('%s', '%s' , '%s', 1, 0 , 0, '', 0)",
                                 st.Id, lab.Id, lab.Deadline))
@@ -2856,7 +2867,7 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
 
                     for _, bc := range mod.Bc {
                         //BC instance
-                        fmt.Println(st.Name, "bc")
+                        //fmt.Println(st.Name, "bc")
                         resbc, errbc := db.Query(
                             fmt.Sprintf("INSERT INTO BCInstance(student_id, bc_id, DateOdPassing, NumOfInstance, RecievedScore, Variant, Remarks) Values ('%s', '%s' , '2000-01-01', 1, 0 , 0, '')",
                             st.Id, bc.Id))
@@ -2871,12 +2882,13 @@ func save_connTGS(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO TeacherSubjectGroup(teacher_id, subject_id, group_id, TeacherRole) Values ((SELECT TeacherID From Teacher Where Email = '%s'), (SELECT SubjectID From Subject Where Description = '%s') , (SELECT GroupID From StudentGroup Where GroupName = '%s'),  '%s')",
                 Email, Description, GroupName, TeacherRole ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_connTGS", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2911,12 +2923,13 @@ func save_subject(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Subject(SubjectID, Description, SubjectProgram, NumberOfHours,NumberOfCredits) Values (gen_random_uuid(),'%s', '%s','%s',  '%s')",
                 description, subjectProgram, numberOfHours, numberOfCredits))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_subject", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2957,12 +2970,13 @@ func save_student(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Student(StudentID, StudentName, Surname, Patronymic , Email, Phone, YearOfAdmission, PassedCourses, NumInGroup,user_id, group_id ) Values (gen_random_uuid(),'%s', '%s','%s',  '%s',  '%s',  '%s',  '%s',  '%s',(SELECT UserID From Users Where Login = '%s'), (SELECT GroupID From StudentGroup Where GroupName = '%s'))",
                 Studname, Studsurname, Studpatronymic, Studemail, Studphone, Studseryear, StudpassedCourses, StudnumInGroup, Studuser_login, Studgroup_name))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_student", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -2998,12 +3012,13 @@ func save_bc(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO BC(BCID, Theme, Questions, MaxScore, MinScore, module_id) Values (gen_random_uuid(), '%s', '%s','%s',  '%s',(SELECT ModuleID From Modules Where ModuleName = '%s'))",
                 Theme, Questions, MaxScore, MinScore, module_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_bc", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3041,12 +3056,13 @@ func save_lab(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Lab(LabID, LabName, LabText, MaxScore, MinScore,LabDate,Deadline, module_id) Values (gen_random_uuid(), '%s', '%s','%s','%s','%s',  '%s',(SELECT ModuleID From Modules Where ModuleName = '%s'))",
                 LabName, LabText, MaxScore, MinScore, LabDate,Deadline,module_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_lab", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3082,12 +3098,13 @@ func save_ex(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Exam(ExamID, Questions, MaxScore, MinScore,ExamDate, subject_id) Values (gen_random_uuid(), '%s', '%s' , '%s' , '%s' ,(SELECT SubjectID From Subject Where Description = '%s'))",
                 Questions, MaxScore, MinScore, ExamDate,subject_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_ex", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3121,12 +3138,13 @@ func save_connCrprT(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Supervisor(teacher_id, project_id, SupervisorRole) Values ((SELECT TeacherID From Teacher Where Email = '%s'), (SELECT ProjectID From CourseProject Where Description = '%s'), '%s')",
                 Email, Description, SupervisorRole))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_connCrprT", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3160,12 +3178,13 @@ func save_connCrprS(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO StudentCourseProject(student_id, project_id, DateOdPassing, ProjAssignment, RecievedScore) Values ((SELECT StudentID From Student Where Email = '%s'), (SELECT ProjectID From CourseProject Where Description = '%s'), (Select StartDate from CourseProject Where Description = '%s'), '%s', 0)",
                 Email, Description, Description, ProjAssignment, ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_connCrprS", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3200,14 +3219,6 @@ func save_exinst(w http.ResponseWriter, r *http.Request){
 
             fmt.Printf("Successfully connected!\n\n")
 
-            res, err := db.Query(
-                fmt.Sprintf("update ExamInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore = '%s', TicketNumber = '%s' where student_id = '%s' AND exam_id = '%s'",
-                Date, Number, Score, Ticket, Studid, Exid))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-
             rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
             if errgr != nil {
                 log.Println(errgr)
@@ -3235,10 +3246,23 @@ func save_exinst(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+            
+
+            res, err := db.Query(
+                fmt.Sprintf("update ExamInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore = '%s', TicketNumber = '%s' where student_id = '%s' AND exam_id = '%s'",
+                Date, Number, Score, Ticket, Studid, Exid))
+                if err != nil {
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description + "/" + sub.Description +  "+" + Studid
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    //{grname}+{subjname}/{subjname}+{studname}
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                    return
+                }
+
+            
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3271,14 +3295,6 @@ func save_lectatt(w http.ResponseWriter, r *http.Request){
 
             fmt.Printf("Successfully connected!\n\n")
 
-            res, err := db.Query(
-                fmt.Sprintf("update LectureAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND lecture_id = '%s'",
-                Attendance, BonusScore, Studid, Ltid))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-
             rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
             if errgr != nil {
                 log.Println(errgr)
@@ -3306,10 +3322,20 @@ func save_lectatt(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+
+            res, err := db.Query(
+                fmt.Sprintf("update LectureAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND lecture_id = '%s'",
+                Attendance, BonusScore, Studid, Ltid))
+                if err != nil {
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description + "/" + sub.Description +  "+" + Studid
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    //{grname}+{subjname}/{subjname}+{studname}
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3341,15 +3367,6 @@ func save_sematt(w http.ResponseWriter, r *http.Request){
             }
 
             fmt.Printf("Successfully connected!\n\n")
-
-            res, err := db.Query(
-                fmt.Sprintf("update SeminarAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND seminar_id = '%s'",
-                Attendance, BonusScore, Studid, Smid))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-
             rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
             if errgr != nil {
                 log.Println(errgr)
@@ -3377,10 +3394,20 @@ func save_sematt(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+
+            res, err := db.Query(
+                fmt.Sprintf("update SeminarAttendance SET WasAttended  = '%s', BonusScore  = '%s' where student_id = '%s' AND seminar_id = '%s'",
+                Attendance, BonusScore, Studid, Smid))
+                if err != nil {
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description + "/" + sub.Description +  "+" + Studid
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    //{grname}+{subjname}/{subjname}+{studname}
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3415,15 +3442,6 @@ func save_bcinst(w http.ResponseWriter, r *http.Request){
             }
 
             fmt.Printf("Successfully connected!\n\n")
-
-            res, err := db.Query(
-                fmt.Sprintf("update BCInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s' where student_id = '%s' AND bc_id = '%s'",
-                Date, NumOfInstance, Score, Variant, Remarks, Studid, Bcid))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-
             rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
             if errgr != nil {
                 log.Println(errgr)
@@ -3451,10 +3469,21 @@ func save_bcinst(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+            
+
+            res, err := db.Query(
+                fmt.Sprintf("update BCInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s' where student_id = '%s' AND bc_id = '%s'",
+                Date, NumOfInstance, Score, Variant, Remarks, Studid, Bcid))
+                if err != nil {
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description + "/" + sub.Description +  "+" + Studid
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    //{grname}+{subjname}/{subjname}+{studname}
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3491,14 +3520,6 @@ func save_labi(w http.ResponseWriter, r *http.Request){
 
             fmt.Printf("Successfully connected!\n\n")
 
-            res, err := db.Query(
-                fmt.Sprintf("update LabInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s', BonusScore = '%s' where student_id = '%s' AND lab_id = '%s'",
-                Date, NumOfInstance, Score, Variant, Remarks, BonusScore, Studid, Lbid))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-
             rowsgr, errgr := db.Query(fmt.Sprintf("select * from StudentGroup Where GroupID IN (Select group_id from Student where StudentID = '%s')", Studid))
             if errgr != nil {
                 log.Println(errgr)
@@ -3526,10 +3547,21 @@ func save_labi(w http.ResponseWriter, r *http.Request){
                     continue
                 }
             }
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+            
+
+            res, err := db.Query(
+                fmt.Sprintf("update LabInstance SET DateOdPassing  = '%s', NumOfInstance  = '%s', RecievedScore  = '%s', Variant  = '%s', Remarks  = '%s', BonusScore = '%s' where student_id = '%s' AND lab_id = '%s'",
+                Date, NumOfInstance, Score, Variant, Remarks, BonusScore, Studid, Lbid))
+                if err != nil {
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description + "/" + sub.Description +  "+" + Studid
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    //{grname}+{subjname}/{subjname}+{studname}
+                    ss := "/show_groups_and_subjs/" + g.Name + "+" + sub.Description
+                    http.Redirect(w,r,ss, http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3570,13 +3602,18 @@ func save_crprst(w http.ResponseWriter, r *http.Request){
             }
             defer res.Close()
 
-            
+            if err != nil {
+                ss := "/show_pers_coursePr/"
+                http.Redirect(w,r,ss, http.StatusSeeOther)
+            } else {
+                defer res.Close()
+                ss := "/show_pers_coursePr"
+                http.Redirect(w,r,ss, http.StatusSeeOther)
+                return
+            }
 
            
-            //{grname}+{subjname}/{subjname}+{studname}
-            ss := "/show_pers_coursePr"
-            http.Redirect(w,r,ss, http.StatusSeeOther)
-            return
+            
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3612,12 +3649,13 @@ func save_module(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Modules(ModuleID, ModuleName, MaxScore, MinScore, subject_id) Values (gen_random_uuid(), '%s', '%s','%s',(SELECT SubjectID From Subject Where Description = '%s'))",
                 ModuleName, MaxScore, MinScore,subject_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_module", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3651,12 +3689,13 @@ func save_sem(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Seminar(SeminarID, Theme, SeminarText,module_id) Values (gen_random_uuid(), '%s', '%s',(SELECT ModuleID From Modules Where ModuleName = '%s'))",
                 Theme, SeminarText, module_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_sem", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
@@ -3690,12 +3729,13 @@ func save_lect(w http.ResponseWriter, r *http.Request){
             res, err := db.Query(
                 fmt.Sprintf("INSERT INTO Lecture(LectureID, Theme, LectureText,module_id) Values (gen_random_uuid(), '%s', '%s',(SELECT ModuleID From Modules Where ModuleName = '%s'))",
                 Theme, LectureText, module_name ))
-            if err != nil {
-                panic(err)
-            }
-            defer res.Close()
-            http.Redirect(w,r,"/", http.StatusSeeOther)
-            return
+                if err != nil {
+                    http.Redirect(w, r, "/new_lect", http.StatusSeeOther)
+                } else {
+                    defer res.Close()
+                    http.Redirect(w,r,"/", http.StatusSeeOther)
+                    return
+                }
         }
     }
     http.Redirect(w, r, "/logIn", http.StatusSeeOther)
