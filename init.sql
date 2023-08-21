@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS Teacher (
 
 CREATE TABLE IF NOT EXISTS Subject (
 	SubjectID UUID PRIMARY KEY,
-	Description TEXT NOT NULL, 
+	Description VARCHAR(50) NOT NULL UNIQUE, 
 	SubjectProgram TEXT NOT NULL, 
 	NumberOfHours INT NOT NULL,
 	NumberOfCredits INT NOT NULL 
@@ -67,22 +67,22 @@ CREATE TABLE IF NOT EXISTS Exam (
 
 CREATE TABLE IF NOT EXISTS Lecture (
 	LectureID UUID PRIMARY KEY,
-	Theme TEXT NOT NULL,
+	Theme VARCHAR(100) NOT NULL UNIQUE,
 	LectureText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Seminar (
 	SeminarID UUID PRIMARY KEY, 
-	Theme TEXT NOT NULL,
+	Theme VARCHAR(100) NOT NULL UNIQUE,
 	SeminarText TEXT NOT NULL, 
 	module_id UUID NOT NULL REFERENCES Modules(ModuleID) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS Lab (
 	LabID UUID PRIMARY KEY,
-	LabName TEXT NOT NULL,
-	LabText TEXT NOT NULL, 
+	LabName VARCHAR(50) NOT NULL UNIQUE,
+	LabText TEXT, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
 	LabDate date NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS Lab (
 
 CREATE TABLE IF NOT EXISTS BC (
 	BCID uuid PRIMARY KEY, 
-	Theme TEXT NOT NULL,
+	Theme VARCHAR(50) NOT NULL UNIQUE,
 	Questions TEXT NOT NULL, 
 	MaxScore INT NOT NULL,
 	MinScore INT NOT NULL,
@@ -106,20 +106,6 @@ CREATE TABLE IF NOT EXISTS CourseProject (
 	NumberOfHours INT NOT NULL,
 	StartDate DATE NOT NULL,
 	Deadline DATE NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Queue (
-	QueueID UUID PRIMARY KEY,
-	StartDate DATE NOT NULL
-);
-
--- dop
-CREATE TABLE IF NOT EXISTS StudentInQueue (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	queue_id UUID NOT NULL REFERENCES Queue(QueueID) ON DELETE RESTRICT,
-	NumInQueue Int NOT NULL,
-	Task INT NOT NULL, -- делать enum
-	PRIMARY KEY(student_id, queue_id)
 );
 
 CREATE TABLE IF NOT EXISTS TeacherSubjectGroup (
@@ -194,41 +180,6 @@ CREATE TABLE IF NOT EXISTS ExamInstance (
 	TicketNumber INT,
 	PRIMARY KEY(student_id, exam_id, NumOfInstance) -- вместо даты в ключ переменную попытки сдачи, а дату оставить атрибутом
 );
-
-CREATE TABLE IF NOT EXISTS Task (
-	student_id UUID NOT NULL REFERENCES Student(StudentID) ON DELETE RESTRICT,
-	subject_id UUID NOT NULL REFERENCES Subject(SubjectID) ON DELETE RESTRICT,
-	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи 
-	Description TEXT NOT NULL, -- какой тип данных?
-	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL,
-	Deadline DATE NOT NULL,
-	RecievedScore INT NOT NULL,
-	PRIMARY KEY(student_id, subject_id, TaskID) --мне кажется это бредом
-);
-
-CREATE TABLE IF NOT EXISTS TaskExam (
-	exam_id UUID NOT NULL REFERENCES Exam(ExamID) ON DELETE RESTRICT,
-	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
-	Description TEXT NOT NULL, 
-	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL,
-	Deadline DATE NOT NULL,
-	RecievedScore INT NOT NULL,
-	PRIMARY KEY(exam_id, TaskID) --мб тоже см Task
-);
-
-CREATE TABLE IF NOT EXISTS TaskBC (
-	bc_id UUID NOT NULL REFERENCES BCInstance(bc_id) ON DELETE RESTRICT,
-	TaskID UUID NOT NULL, -- можно сделать это PRIMARY KEY и оставить внешние ключи
-	Description TEXT NOT NULL, 
-	MaxScore INT NOT NULL,
-	MinScore INT NOT NULL,
-	Deadline DATE NOT NULL,
-	RecievedScore INT NOT NULL,
-	PRIMARY KEY(bc_id, TaskID) --мб тоже см Task
-);
-
 
 INSERT INTO StudentGroup(GroupID, GroupName, YearOfAdmission, Course, AmountOfStudents) VALUES
 	(gen_random_uuid(),'ИУ9-61Б', 2020, 3, 28),
