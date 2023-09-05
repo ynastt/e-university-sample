@@ -52,7 +52,7 @@ type StudentClient struct {
 	enc  *json.Encoder // Объект для кодирования и отправки сообщений
 }
 
-// NewClient - конструктор клиента, принимает в качестве параметра
+// NewCStudentClient - конструктор клиента, принимает в качестве параметра
 // объект TCP-соединения.
 func NewStudentClient(conn *net.TCPConn) *StudentClient {
 	return &StudentClient{
