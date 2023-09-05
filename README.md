@@ -1,2 +1,2 @@
-# e-university-sample
-database course project
+# Euniversity
+database group course project
