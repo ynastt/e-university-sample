@@ -107,6 +107,10 @@ def get_text_messages(message):
         db.current_subject = db.Subject(db.subj_data[message.text], message.text)
         # print(db.current_subject.name, db.current_subject.id)
         conn, cur = connectDB()
+        # очищение не активных очередей !!!
+        cur.execute('delete from Queue where subject_id = %s and StartDate < %s',
+                     (db.current_subject.id, datetime.datetime.now().date()))
+        conn.commit()
         cur.execute('SELECT * from Queue where subject_id = %s and StartDate >= %s',
                      (db.current_subject.id, datetime.datetime.now().date()))
         active_queues = cur.fetchall()
