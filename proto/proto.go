@@ -37,6 +37,7 @@ type Response struct {
 type LoginInfo struct {
 	Username string `json:"login"`
 	Password string `json:"password"`
+	ID		 []uint8 `json:"user_id"`
 	Exists   bool   `json:"exists"`
 }
 

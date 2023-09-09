@@ -13,11 +13,14 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/skratchdot/open-golang/open"
+	// "github.com/gorilla/mux"
+    "github.com/google/uuid"
 )
 
 type UserDetails struct {
 	Username string
 	Password string
+	ID 		 []uint8
 	Succes   bool
 }
 
@@ -118,6 +121,13 @@ var (
 	isAuth bool
 )
 
+type Session struct {
+	Token  uuid.UUID
+	UserId []uint8
+}
+
+var sessionTable []Session
+
 // send_request - вспомогательная функция для передачи запроса с указанной командой
 // и данными. Данные могут быть пустыми (nil).
 func send_request(encoder *json.Encoder, command string, data interface{}) {
@@ -159,6 +169,7 @@ func check_student(w http.ResponseWriter, r *http.Request) {
 		data = UserDetails{
 			Username: r.FormValue("username"),
 			Password: r.FormValue("userpassword"),
+			ID:       nil,
 			Succes:   false,
 		}
 	}
@@ -200,6 +211,7 @@ func check_student(w http.ResponseWriter, r *http.Request) {
 			} else {
 				log.Printf("result: %v\n", info.Exists)
 				data.Succes = info.Exists
+				data.ID = info.ID
 			}
 		}
 	default:
@@ -207,13 +219,36 @@ func check_student(w http.ResponseWriter, r *http.Request) {
 	}
 	// print(data.Username, data.Password)
 	// print(data.Succes)
+
 	if data.Succes {
 		log.Printf("Successful authentification")
 		isAuth = true
+		u := uuid.New()
+		sessionTable = append(sessionTable, Session{u, data.ID})
+
+		c := http.Cookie{
+			Name:   "token",
+			Value:  u.String(),
+			MaxAge: 300,
+		}
+
+		http.SetCookie(w, &c)
 		http.Redirect(w, r, "/student", 301)
 	} else {
 		isAuth = false
 		log.Printf("Authentification error: %s is missing from the database", data.Username)
+		tokenC, err := r.Cookie("token")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(sessionTable)
+		for i, s := range sessionTable {
+			if s.Token.String() == tokenC.Value {
+				sessionTable[i] = sessionTable[len(sessionTable)-1]
+				sessionTable = sessionTable[:len(sessionTable)-1]
+			}
+			fmt.Println(sessionTable)
+		}
 		http.Redirect(w, r, "/badlogout", 301)
 	}
 }
@@ -287,6 +322,18 @@ func student_main(w http.ResponseWriter, r *http.Request) {
 	} else {
 		isAuth = false
 		log.Printf("Authentification error: %s is missing from the database", data.Username)
+		tokenC, err := r.Cookie("token")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(sessionTable)
+		for i, s := range sessionTable {
+			if s.Token.String() == tokenC.Value {
+				sessionTable[i] = sessionTable[len(sessionTable)-1]
+				sessionTable = sessionTable[:len(sessionTable)-1]
+			}
+			fmt.Println(sessionTable)
+		}
 		http.Redirect(w, r, "/badlogout", 301)
 	}
 
@@ -360,6 +407,18 @@ func courseproject(w http.ResponseWriter, r *http.Request) {
 	} else {
 		isAuth = false
 		log.Printf("Authentification error: %s is missing from the database", data.Username)
+		tokenC, err := r.Cookie("token")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(sessionTable)
+		for i, s := range sessionTable {
+			if s.Token.String() == tokenC.Value {
+				sessionTable[i] = sessionTable[len(sessionTable)-1]
+				sessionTable = sessionTable[:len(sessionTable)-1]
+			}
+			fmt.Println(sessionTable)
+		}		
 		http.Redirect(w, r, "/badlogout", 301)
 	}
 }
@@ -564,6 +623,18 @@ func dbases(w http.ResponseWriter, r *http.Request) {
 	} else {
 		isAuth = false
 		log.Printf("Authentification error: %s is missing from the database", data.Username)
+		tokenC, err := r.Cookie("token")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(sessionTable)
+		for i, s := range sessionTable {
+			if s.Token.String() == tokenC.Value {
+				sessionTable[i] = sessionTable[len(sessionTable)-1]
+				sessionTable = sessionTable[:len(sessionTable)-1]
+			}
+			fmt.Println(sessionTable)
+		}
 		http.Redirect(w, r, "/badlogout", 301)
 	}
 }

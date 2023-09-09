@@ -112,6 +112,7 @@ func (client *StudentClient) handleRequest(req *proto.Request) {
 					client.respond("ok", &proto.LoginInfo{
 						Username: user.Get_login(),
 						Password: user.Get_passw(),
+						ID:		  user.Get_id(),
 						Exists:   true,
 					})
 				}
